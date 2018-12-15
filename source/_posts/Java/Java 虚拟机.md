@@ -207,9 +207,324 @@ Java 虚拟机栈，这个栈与线程同时创建，用来存储栈帧，即存
 类加载机制就是虚拟机将字节码加载进内存，从而进行解析、运行等整个过程，它大致可以分为七个阶段：**加载**、**验证**、**准备**、**解析**、**初始化**、**使用**、**卸载**。
 
 ### 加载
+加载阶段是指类加载过程的第一个阶段。在这个阶段，JVM 的主要目的是将字节码从各个位置（网络、磁盘）转化为二进制字节流加载到内存中，接着会为这个类在 JVM 的方法区创建一个对应的 Class 对象，这个 Class 对象就是这个类各种数据的访问入口。
 
-> 加载阶段是指类加载过程的第一个阶段。在这个阶段，JVM 的主要目的是将字节码从各个位置（网络、磁盘）转化为二进制字节流加载到内存中，接着会为这个类在 JVM 的方法区创建一个对应的 Class 对象，这个 Class 对象就是这个类各种数据的访问入口。
+### 验证
+当 JVM 加载完 Class 字节码文件并在方法区创建对应的 Class 对象之后，JVM　便会启动对该字节码的校验，只有符合 JVM 字节码规范的文件才能被 JVM 正确执行。这个校验过程大致可以分为以下几类：
+- JVM 规范校验
+    JVM 会对字节码进行文件格式校验，判断其是否符合 JVM 规范，是否能被当前版本的虚拟机处理。
+    例如文件是否以 `0x cafe bene` 开头，主次版本号是否在当前虚拟机处理范围内。
+- 代码逻辑校验
+    JVM 会对代码组成的数据流和控制流进行校验，确保 JVM 运行该代码文件后不会出现致命错误。
+    例如一个方法要求传入 `int` 类型的参数，但是使用它的时候却传入了一个 `String` 类型的参数。
 
+### 准备（重点）
+当完成字节码文件的校验之后，JVM 便会开始为类变量分配内存并初始化。这里需要注意两个关键点：即内存分配的对象以及初始化的类型。
+- 内存分配的对象
+    Java 中的变量有「类变量」和「类成员变量」两种类型，「类变量」指的是被 `static` 修饰的变量，而其他所有类型的变量都属于「类成员变量」。在准备阶段，JVM 只会为「类变量」分配内存，而不会为「类成员变量」分配内存。「类成员变量」的内存分配需要等到初始化阶段才开始。
+    例如下面的代码在准备阶段，只会为 `factor` 属性分配内存，而不会为 `website` 属性分配内存。
+
+    ```java
+    public static int factor = 3;
+    public String website = "zhangqinghua.github.io";
+    ```
+- 初始化的类型
+    在准备阶段，JVM 会为「类变量」分配内存，变为其初始化。但是这里的初始化指的是为变量赋值 Java 语言中该数据类型的零值，而不是用户代码里初始化的值。
+    例如下面代码在准备阶段只会，`sector` 的值将是 0，而不是 3。
+    ```java
+    public static int sector = 3;
+    ```
+    但如果一个变量是常量（被 `static final` 修饰）的话，那么在准备阶段，属性便会被赋予用户希望的值。例如下面代码在准备阶段之后，`number` 将是 3，而不是 0。
+    ```java
+    public static final int number = 3;
+    ```
+    `final` 关键字在 Java 中代表不可改变的意思，即 number 的值一旦赋值就不会改变了，所以需要在一开始就给其赋予用户需要的值。而没有被 `final` 修饰的类变量，其可能在初始化阶段或者运行阶段发生变化，所以就没有必要在准备阶段对它赋予用户想要的值。
+
+### 解析
+当通过了准备阶段之后，JVM 针对类或者接口、字段、类方法、接口方法、方法类型、方法句柄和调用点限定符 7 类引用进行解析。这个阶段的主要任务是将其在常量池中的符号引用替换成直接在内存中的直接引用。
+
+### 初始化（重点）
+到了初始化阶段，用户定义的 Java 程序代码才开始真正执行。在这个阶段，JVM 会根据语句执行顺利对类对象进行初始化，一般来说当 JVM 遇到以下 5种情况的时候会触发初始化：
+- 遇到 `new`、`getstatic`、`putstatic`、`invokestatic` 这四个字节码指令时，如果类没有进行过初始化，则需要先触发其初始化。生成这 4 个指令的最常见的 Java 代码场景是：使用 `new` 关键字实例化对象的时候、读取或者设置一个类的静态字段（被 `final` 修饰、已在编译器把结果放入常量池的静态字段除外）的时候，以及调用一个类的静态方法的时候。
+- 使用 java.lang.reflect 包的方法对类进行反射调用的时候，如果类没有进行过初始化，则需要先触发其初始化。
+- 当初始化一个类时，如果发现其父类还没有进行初始化，则需要先触发其父类的初始化。
+- 当虚拟机启动时，用户需要指定一个要执行的主类（包含 main() 方法的那个类），虚拟机会先初始化这个主类。
+- 当使用 JDK1.7 动态语言支持时，如果一个 `java.lang.invoke.MethodHandle` 实例最后的解析结果是 `REF_getstatic`、`REF_putstatic`、`REF_invokeStatic` 的方法句柄，并且这个方法句柄所对应的类没有进行初始化，则需要先触发其初始化。
+
+### 使用
+当 JVM 完成初始化阶段后，JVM 便开始从入口方法执行用户的代码。
+
+### 卸载
+当用户程序代码执行完毕后，JVM 便开始销毁创建的 Class 对象，最后负责运行的 JVM 也退出内存。
+
+### 总结
+类构造器是指按顺序收集到的类中所有的静态代码块、类变量赋值语句。
+
+对象构造器是指按顺序收集到的成员变量赋值语句、普通代码块，最后收集构造函数。
+
+```java
+public class Book {
+	public static void main(String[] args) {
+		staticFunction();
+	}
+
+	static Book book = new Book();
+
+	static {
+		System.out.println("书的静态代码块");
+	}
+
+	{
+		System.out.println("书的普通代码块");
+	}
+
+	Book() {
+		System.out.println("书的构造方法");
+		System.out.println("price=" + price + ",amount=" + amount);
+	}
+
+	public static void staticFunction() {
+		System.out.println("书的静态方法");
+	}
+
+	int price = 110;
+	static int amount = 112;
+}
+```
+
+在上面这个例子中，类构造器组成是：
+```java
+static Book book = new Book();
+static {
+	System.out.println("书的静态代码块");
+}
+static int amount = 112;
+```
+
+对象构造器组成是：
+```java
+{
+	System.out.println("书的普通代码块");
+}
+int price = 110;
+Book() {
+	System.out.println("书的构造方法");
+	System.out.println("price=" + price + ",amount=" + amount);
+}
+```
+
+分析一个类的执行顺利大概可以按照如下步骤：
+1. 确定类变量的初始值
+    在类加载的准备阶段，JVM 会为类变量初始化零值，这时候类变量会有一个初始的零值。如果被 final 修复的类变量，则直接会被初始化成用户想要的值。
+1. 初始化入口方法
+    当进入类加载的初始化阶段后，JVM 会寻找整个 main 方法入口，从而初始化 main 方法所在的整个类。当需要对一个类进行初始化时，会首先初始化类构造器，之后初始化对象构造器。
+1. 初始化类构造器
+    JVM 会按顺利收集类变量的赋值语句、静态代码块，最终组成类构造器由 JVM 执行。
+1. 初始化对象构造器
+    JVM 会按照顺利收集成员变量的赋值语句、普通代码块，最后收集构造方法，将它们组成对象构造器，最终由 JVM 执行。
+
+如果在初始化 main 方法所在类的时候遇到其他类的初始化，那么就先加载对应的类，加载完成之后返回。如果反复执行，最终返回 main 方法所在的类。
+
+- 类构造器
+
+## JVM 垃圾回收机制
+因为内存总是有限的，我们需要一个机制来不断回收废弃的内存，从而实现内存的循环利用，这样程序才能正常运转下去。
+
+### 到底谁是垃圾
+在 Java 中，如果一个对象不可能再被引用，那么这个对象就是垃圾，应该被回收。
+
+现今的 Java 虚拟机判断垃圾对象使用的是：GC Root Tracing 算法。其大概过程是这样子的：从 CG Root 出发，所有可达的对象都是存活的对象，而所有不可达的对象都是垃圾。
+
+可以看到这里最重要的就是 GC Root 这个集合了，其实 CG Root 就是一组活跃引用的集合。但是这个集合又与一般的对象集合不太一样，这些集合是经过特意筛选出来的，通常包括：
+- 所有当前被加载的 Java 类
+- Java 类的引用类型静态变量
+- Java 类的运行时常量池的引用类型常量
+- JVM 的一些静态数据结构里指向 GC 堆里的对象的引用
+- 等等
+
+简单的说，GC Root 就是经过精心挑选的一组活跃引用，这些引用是肯定存活的。那么通过这些引用延伸到的对象，自然也是存活的。
+
+### 如何进行垃圾回收
+垃圾回收算法简单地说有三种：标记清除算法、复制算法、标记压缩算法。
+
+1. 标记清除算法
+    最基础的垃圾回收算法，分为两个阶段，标注和清除。标记阶段标记出所有需要回收的对象，清除阶段回收被标记的对象所占用的空间。
+    该算法最大的问题是内存碎片化严重，后续可能发生大对象不能找到可利用空间的问题。
+    ![](003.jpg)
+1. 复制算法
+    为了解决Mark-Sweep算法内存碎片化的缺陷而被提出的算法。按内存容量将内存划分为等大小的两块。每次只使用其中一块，当这一块内存满后将尚存活的对象复制到另一块上去，把已使用的内存清掉。
+    这种算法虽然实现简单，内存效率高，不易产生碎片，但是最大的问题是可用内存被压缩到了原本的一半。且存活对象增多的话，Copying 算法的效率会大大降低。
+    ![](004.jpg)
+1.  标记压缩算法
+    结合了以上两个算法，为了避免缺陷而提出。标记阶段和 Mark-Sweep 算法相同，标记后不是清理对象，而是将存活对象移向内存的一端。然后清除端边界外的对象。
+    ![](005.jpg)
+
+### JVM 中的垃圾回收
+目前大部分 JVM 采用的是分代收集算法，其核心思想是根据对象存活的不同生命周期将内存划分为不同的域，一般情况下将 GC 堆划分为年轻代和老年代。老年代的特点是每次垃圾回收时只有少量对象需要回收，年轻代的特点时每次垃圾回收时都有大量垃圾需要被回收，因此可以根据不同区域选择不同算法。
+
+目前大部分 JVM 的 GC 对于年轻代采用复制算法，因为年轻代中每次垃圾回收都要回收大部分对象，即要复制的操作比较少。每次使用 Eden 空间和其中的一块 Survivor 空间，当进行回收时，将该两块空间中还存活的对象复制到另一块 Survivor 空间中。
+
+![](006.jpg)
+
+对象的内存分配主要在年轻代的 Eden 区域和 From Servivor （Servivor 目前存放对象的那一块），少数情况会直接分配到老年代。当年轻代的 Eden 和 Survivor From 空间不足时就会发生一次 GC，进行 GC 后，Eden 和 Survivor From 区的存活对象就会被挪到 Survivor To 区去，然后将 Eden 和 Survivor From 进行清理。如果 Survivor To 区无法足够存储某个对象，则将这个对象存储到老年代。在进行 GC 后，使用的便是 Eden 和 Survivor To 了。如此反复循环，当对象在 Survivor 区躲过一次 GC 后，其年龄就会 +1。默认情况下年龄达到 15 的对象就会被移到老年代中。
+
+### 总结
+![](007.png)
+
+### JVM 中的垃圾回收器
+Java 虚拟机的垃圾回收器可以分为四大类：**串行回收器**、**并行回收器**、**CMS 回收器**、**G1 回收器**。
+
+
+## 实战分析
+
+1. 第一个例子
+    ```java
+    class Grandpa {
+        static {
+            System.out.println("爷爷在静态代码块");
+        }
+    }
+    class Father extends Grandpa {
+        static {
+            System.out.println("爸爸在静态代码块");
+        }
+
+        public static int factor = 25;
+
+        public Father() {
+            System.out.println("我是爸爸~");
+        }
+    }
+    class Son extends Father {
+        static {
+            System.out.println("儿子在静态代码块");
+        }
+
+        public Son() {
+            System.out.println("我是儿子~");
+        }
+    }
+    public class InitializationDemo {
+        public static void main(String[] args) {
+            System.out.println("爸爸的岁数:" + Son.factor); //入口
+        }
+    }
+    // 爷爷在静态代码块
+    // 爸爸在静态代码块
+    // 爸爸的岁数:25
+    ```
+    1. 首先程序到 main 方法这里，使用标准化输出 `Son` 类中的 `factor` 类成员变量，但是 `Son` 类中没有这个类成员变量。于是往父类去找。我们在 `Father` 类中找到了对应的类成员变量，于是触发了 `Father` 的初始化。
+    1. 当初始化一个类的时候，如果发现其父类还没有进行初始化，则需要先触发其父类的初始化。所以我们先初始化 Father 的父类，也就是先初始化 Grandpa 类再初始化 Father 类。于是我们初始化 Grandpa 类输出：”爷爷在静态代码块“，再初始化 Father 类输出：”爸爸在静态代码块“。
+    1. 最后，所有的父类都初始化完毕，Son 类才能调用父类的静态变量，从而输出”爸爸的岁数:25“。
+    对于静态字段，只有直接定义这个字段的类才会被初始化执行（执行静态代码块）。因为通过其字类来引用父类中定义的静态字段，只会触发父类的初始化而不会触发字类的初始化。
+1. 第二个例子
+    ```java
+    class Grandpa {
+        static {
+            System.out.println("爷爷在静态代码块");
+        }
+
+        public Grandpa() {
+            System.out.println("我是爷爷~");
+        }
+    }
+    class Father extends Grandpa {
+        static {
+            System.out.println("爸爸在静态代码块");
+        }
+
+        public Father() {
+            System.out.println("我是爸爸~");
+        }
+    }
+    class Son extends Father {
+        static {
+            System.out.println("儿子在静态代码块");
+        }
+
+        public Son() {
+            System.out.println("我是儿子~");
+        }
+    }
+    public class InitializationDemo {
+        public static void main(String[] args) {
+            new Son(); //入口
+        }
+    }
+    // 爷爷在静态代码块
+    // 爸爸在静态代码块
+    // 儿子在静态代码块
+    // 我是爷爷~
+    // 我是爸爸~
+    // 我是儿子~
+    ```
+    1. 首先在入口这里我们初始化一个 `Son` 对象，因此触发 `Father`，`Grandpa` 类的初始化。
+    1. 当 `Son` 初始化之后，便会调用 `Son` 类的构造方法，而 `Son` 类构造方法的调用同样会带动 `Father`、`Grandpa` 类构造方法的调用。
+1. 第三个例子
+    ```java
+    public class Book {
+        public static void main(String[] args) {
+            staticFunction();
+        }
+
+        static Book book = new Book();
+
+        static {
+            System.out.println("书的静态代码块");
+        }
+
+        {
+            System.out.println("书的普通代码块");
+        }
+
+        Book() {
+            System.out.println("书的构造方法");
+            System.out.println("price=" + price + ",amount=" + amount);
+        }
+
+        public static void staticFunction() {
+            System.out.println("书的静态方法");
+        }
+
+        int price = 110;
+        static int amount = 112;
+    }
+    // 书的普通代码块
+    // 书的构造方法
+    // price=110,amount=0
+    // 书的静态代码块
+    // 书的静态方法
+    ```
+    1. 在 JVM 准备阶段的时候，便会为类变量分配内存和进行初始化。此时，我们的 `book` 实例变量初始化为 `null`，`amount` 变量初始化为 0。
+    1. 当进入初始化阶段后，因为 `Book` 方法是程序的入口，所以 JVM 会初始化 `Book` 类。
+    1. JVM 对 `Book` 类进行初始化首先是执行类构造器，后执行对象的构造器。
+    1. 对于 `Book` 类，其类构造器是：
+        ```java
+        static Book book = new Book();
+        static {
+            System.out.println("书的静态代码块");
+        }
+        static int amount = 112;
+        ```
+    1. 由于 `static Book book = new Book();` 这一条语句，又触发了类的实例化。于是 JVM 执行对象构造器：
+        ```java
+        {
+            System.out.println("书的普通代码块");
+        }
+        int price = 110;
+        Book() {
+            System.out.println("书的构造方法");
+            System.out.println("price=" + price + ",amount=" + amount);
+        }
+        ```
+    1. 此时 `price` 赋值 110，输出「书的普通代码块」、「书的构造方法」、「price=110,amount=0」（`amount` 的赋值语句并未执行，所以只有在准备阶段赋值的零值）。
+    1. 当类实例化完成之后，JVM 继续进行类构造器的初始化，即输出「书的静态代码块」，之后对 `amount` 赋予 112 的值。
+    1. 到这里，类的初始化已经完成，JVM 执行 main 方法的内容：
+        ```java
+        public static void main(String[] args) {
+            staticFunction();
+        }
+        ```
 
 ```java
 class Grandpa {
