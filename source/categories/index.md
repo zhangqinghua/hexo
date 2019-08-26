@@ -1,6 +1,5 @@
 ---
-title: categories
-date: 2018-03-02 12:33:16
-type: "categories"
-comments: false
+title: Categories
+date: 2019-08-27 01:45:40
+type: categories
 ---
