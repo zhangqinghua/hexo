@@ -2,7 +2,7 @@
 title: 新时间与日期 API
 
 categories:
-- Java 8 教程
+- Java 8 系列
 
 tag:
 - Java 8
