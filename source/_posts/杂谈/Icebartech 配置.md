@@ -49,3 +49,5 @@ tar xf /data/deploy/Web/icebartech-home/icebartech-home-sys/package.tgz -o -C /d
 1. 名博
     https://mingbo.mib2019.com/api/swagger-ui.html
     https://mingbo.mib2019.com/sys
+
+    
