@@ -44,3 +44,8 @@ tar xf /data/deploy/Web/icebartech-home/icebartech-home-sys/package.tgz -o -C /d
 
 ## 项目数据
 
+1. 爱美丽
+
+1. 名博
+    https://mingbo.mib2019.com/api/swagger-ui.html
+    https://mingbo.mib2019.com/sys
