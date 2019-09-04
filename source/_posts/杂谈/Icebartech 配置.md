@@ -80,4 +80,6 @@ tar xf /data/deploy/Web/icebartech-home/icebartech-home-sys/package.tgz -o -C /d
     https://mingbo.mib2019.com/api/swagger-ui.html
     https://mingbo.mib2019.com/sys
 
-    
+1. 奥尼
+    服务器1 ssh -22 root@218.17.171.114 aoni.com 
+    服务器2 ssh -23 root@218.17.171.114 aoni.com 
