@@ -47,6 +47,7 @@ mysql -uroot -p  #输入查看到的密码
 ```sql
 set global validate_password_policy=0;
 set global validate_password_length=4;
+SET global sql_mode = '';
 ```
 
 1. 设置root密码
