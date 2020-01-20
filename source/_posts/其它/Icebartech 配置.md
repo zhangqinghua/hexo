@@ -4,7 +4,7 @@ tags:
 - Icebartech
 
 categories:
-- 杂谈
+- 其它
 
 date: 2019-08-27
 ---
