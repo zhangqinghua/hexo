@@ -15,3 +15,32 @@ body table {
   text-overflow:ellipsis !important;
   white-space: nowrap !important;
 }
+
+/* 修改你的模板css文件，添加全局样式 */
+.mermaid {
+  max-height: 200px;
+  position: relative;
+  overflow: hidden;
+  &:after {
+    content: 'Loading ...';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #1c1f20;
+    color: #FFF;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.mermaid[data-processed]{
+  max-height: none;
+  overflow: auto;
+  &:after {
+    content: none;
+  }
+}

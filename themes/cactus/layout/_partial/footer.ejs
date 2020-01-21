@@ -5,19 +5,19 @@
   <div class="footer-right">
     <nav>
       <ul>
-        <% for (var i in theme.nav) { %> 
-          <li><a href="<%- url_for(theme.nav[i]) %>"><%= __('nav.'+i).replace("nav.", "") %></a></li>
+        <% for (var i in theme.nav) { %>
+        <li><a href="<%- url_for(theme.nav[i]) %>"><%= __('nav.'+i).replace("nav.", "") %></a></li>
         <% } %>
       </ul>
     </nav>
   </div>
 </footer>
 <% if (theme.mermaid.enable) { %>
-               
-  <script src='https://unpkg.com/mermaid@<%= theme.mermaid.version %>/dist/mermaid.min.js'></script>
-  <script>
-    if (window.mermaid) {
-      mermaid.initialize({theme: 'dark'});
-    }
-  </script>
+
+<script src='https://unpkg.com/mermaid@<%= theme.mermaid.version %>/dist/mermaid.min.js'></script>
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: 'dark' });
+  }
+</script>
 <% } %>
