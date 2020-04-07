@@ -43,3 +43,9 @@ value: Warpping and Braces > Align when multiline
 path : Editor > Code Style > Java 
 value: Code Generation > Comment Code > enable add a space at comment start
 
+#### Cannot resolve symbol
+IDEA 无法识别同一个 package 里的其他类，将其显示为红色，但是 compile 没有问题。鼠标放上去后显示 “Cannot resolve symbol XXX”，重启 IDEA ，重新 sync gradle，Clean build 都没有用。
+
+多半是因为 IDEA 之前发生了错误，某些 setting 出了问题。解决方法如下：
+
+点击菜单中的 “File” -> “Invalidate Caches / Restart”，然后点击对话框中的 “Invalidate and Restart”，清空 cache 并且重启。语法就会正确的高亮了。
