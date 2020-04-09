@@ -4,6 +4,8 @@ title: What is a data structure and how to write your first algorithm in Java
 categories:
 - JavaWorld
 
+mathjax: true
+
 date: 2020-04-06 00:00:01
 ---
 Java programmer use data structures to store and organize data, and we use algorithms to manipulate (操纵) the data in those structures. The more you understand about data structures and alogrithm, and how they work together, the more efficient your Java programs will be.
@@ -179,4 +181,18 @@ END
 ```
 
 ## Time complexity and time-complexity functions
-You can express the time complexty of this algorithm by specifying the time-complexity function
+You can express the time complexty of this algorithm by specifying the time-complexity function $t(n) = an + b$, where $a$ (a constant multiplier) represents the amount of time to complete one loop  iteration, and $b$ represents the algorithm's setup time. In this example, the time complexity is linear.
+
+The $t(n) = an + b$ function assumes that time complexity is measured in terms of a chronological (按时间顺序的) value (such as seconds). Because you'll want to abstract machine details, you'll often express time complexity as the number of setps to complete.
+
+How we define a step can vary from (不同于) one algorithm to another. In this case, if you indentified the single print instruction as the program's step, you would rewrite the time-complexcity function in terms of the printing step: $t(n) = n$; for $n$ arrays elements, $n$ steps are needed to print the array.
+
+It's important to take care when defining an algorithm's steps, so that the definition is meaningful (有意义的) and correlates with the algorithm's input size. For example, it makes sense to define printing as the steps for the array-printing algorithm, because printing dominates (控制) the runtime and depends on the input size (number of array elements to print).
+
+It's also possible to define steps in terms of comparisons (比较) and exchanges. In a sorting algorithm, for instance, you might define steps in terms of comparisons if comparisons dominate the runtime or exchanges dominate the runtime.
+
+It's fairly easy to choose a time-complexify function for the array-printing example, but it can be more difficult to find this function for more complicated algorithms. Use the following rules-of -thumb to simplify this task: 
+- Algorithms with single loops are typically linear -- their time-complexify functions are specified in terms of $n$
+- Algorithms with two nested loops are typically quadratic -- their time-complexity functions are specified in terms of $n^2$
+- Algorithms with a triply-nested loop are typically cubic -- their time-complexity functions are spceified in terms of $n^3$
+- The pattern continues with quadruply and higher nested loops
