@@ -191,8 +191,8 @@ It's important to take care when defining an algorithm's steps, so that the defi
 
 It's also possible to define steps in terms of comparisons (比较) and exchanges. In a sorting algorithm, for instance, you might define steps in terms of comparisons if comparisons dominate the runtime or exchanges dominate the runtime.
 
-It's fairly easy to choose a time-complexify function for the array-printing example, but it can be more difficult to find this function for more complicated algorithms. Use the following rules-of -thumb to simplify this task: 
-- Algorithms with single loops are typically linear -- their time-complexify functions are specified in terms of $n$
+It's fairly easy to choose a time-complexity function for the array-printing example, but it can be more difficult to find this function for more complicated algorithms. Use the following rules-of -thumb to simplify this task: 
+- Algorithms with single loops are typically linear -- their time-complexity functions are specified in terms of $n$
 - Algorithms with two nested loops are typically quadratic -- their time-complexity functions are specified in terms of $n^2$
 - Algorithms with a triply-nested loop are typically cubic -- their time-complexity functions are spceified in terms of $n^3$
 - The pattern continues with quadruply and higher nested loops
@@ -216,5 +216,66 @@ END
 ```
 
 Because this algorithm consists of thw nested loops, you might think that its preformance is quadratic. That't only partially correct, however, because the algorithm's performanc depends on whether you choose comparisons (比较) or exchanges as the algorithm's step:
-- If you choose an exchange as one step (bacause you think that exchanges dominate the runtime) you end up with a linear time-complexify function bacause $n - 1$ exchagnes are required to sort $n$ data items. This function is specified as $t(n) = n - 1$.
+- If you choose an exchange as one step (bacause you think that exchanges dominate the runtime) you end up with a linear time-complexity function bacause $n - 1$ exchagnes are required to sort $n$ data items. This function is specified as $t(n) = n - 1$.
 - If you choose a comparison as one step (bacause you think that comparison deminate the runtime) you end up with $t(n) = (n - 1) + (n - 2) + ... + 1$, which sortens to $t(n) = \frac{n^2}{2} - \frac{n}{2}$. Comparison occur in the inner loop, which executes $n-1$ times for the first outer loop iteration, $n-2$ for the second, and so on down to once for the final outer loop iteration.
+
+## Space complexity and space-complexity funtions
+An algorithm's space complexity indicates the amount of extra memory needed to accomplish its task. For printing an array, a constant amount of extra memory (for code storege, stack space to store the return address whwen `PRINT` is called, and space for varialbe `i`'s value) is needed no matter how lager the array.
+
+You can express the array-printing algorithm's space complexity via space-complexity function $s(n) = c$, where $c$ signifies how much constant additional space is requried. This value represents overhead only; it doesn't include space for the data being processed. In this case, it doesn't include the array.
+
+Space complexity is expressed in terms of mechine-independent memory cells instead of mechine-dependent bytes. A memory cell holds some kind of data. For the array-printing algorithm, `i`'s memory cell stores an integer value.
+
+## Comparing algorithms
+You use time complexity and space complexity functions to compare the algorihm to other of a similar nature (one sorting algorithm to another sorting algorithm, for example). In order to ensure a fair comparison, you must use the same definition for step and memory cell in each algorithm.
+
+Even when you chosen identical (完全同样的) step an memory cell definations, however, comparing algorithms can still prove tricky (难办的). Because complexities are often nonlinear, an algorithm's input size can greatly affect the comparison result. As an example, consider two time-compleity functions:
+- $t_1(n) = 10n^2 + 15n$
+- $t_2(n) = 150n + 5$
+
+When $n$ equals 1, $t_1$ yields 25 steps, whereas $t_2$ yields 155 steps. In this case, $t_1$ is clearly better. This pattern continues until $n$ equals 14, at which point $t_1$ yields 2170 steps and $t_2$ yields 2105 steps. In this case, $t_2$ is the much better choice for this and successor value of $n$.
+
+## Using Big oh to represent upper bounds
+Computer scientists commonly compare algorithms as $n$ tends (趋于) to infinity (无限); this is knwon as asymptotic analysic (渐近分析). Complexity functions serve as the upper bound (上界) of the algorithm's asymptotic behavior (as $n$ approaches (接近) infinity), and a notation (标记法) called Big Oh is used to represent these upper bounds. Here's the formal (正规的) defination for Big Oh:
+> A function $f(n)$ is $O(g(n))$ if and only if there exist two constants $c$ and $n_0$ such that $f(n) <= cg(n)$ for all $n >= n_0$
+
+Note: $n$, $f(n)$, $c$, and $n_0$ must be positive.
+
+$f(n)$ represents the algorithm's computing time. When we say that this function is $O(g(n))$, we mean that (in terms of steps) it takes no longer than a constant multiplied by $g(n)$ for this function to execute. For example, here are the Big Oh notations for the previous time-complexity functions:
+$$
+\begin{equation}\begin{split}
+t_1(n) &= O(n^2) \\
+t_2(n) &= O(n)
+\end{split}\end{equation}
+$$
+
+> Simplifying Big Oh
+> It's common to throw away all terms (条件) except the largest and any constant multiplier for the largest term when specifiying $g(n)$. For example, you would speicfy $O(n)$ instead of $O(150n + 5)$
+
+## Comparing algorithms with Big Oh
+Suppose the Selection Sort algorithm if followed by the Array Printing algorithm. Because each algorithm offers it own time-complexity function, what is the overall time-complexity function for both algorithm? The answer is if $f_1(n) = O(g(n))$ and $f_2(n) = O(h(n))$ then:
+
+$$
+\begin{equation}\begin{split}
+
+(A) f_1(n) + f_2(n)      &= max(O(g(n)), O(h(n))) \\
+(B) f_1(n) \times f_2(n) &= O(g(n) \times h(n))
+
+\end{split}\end{equation}
+$$
+
+Part A covers cases where algorithm follow each other sequentially. For the Selection Sort algorithm followed by the Array Printing algorithm, the overall time-complexity function is the maxinum of each algorithm's time-complexity function, which happens to be $O(n^2)$ (assming that comparisons are the dominant steps).
+
+Part B covers where one algorithm nests inside another. For example, suppose the Array Printing algorithm is called after Selection Sort performs an exchange. Assuming that the sort's time-complxity function if $O(n^2)$ (comparisons are dominant), the overall time complexity changes to $O(n^3)$.
+
+How do you choose an efficient algorithm that means your application's needs? Start by obtaining the Big Oh-bounded time-complexity functions for the candidate algorithms being  considered, then deciding the range of $n$ values that will be input to these functions (and, hence (因此), the algorithms).
+
+Because it helps to see the impact (冲击) of various $n$ values in a tatular (表格式的) format, I've constructed a table that correlates the number of steps with common Big Oh-bounded time-complexity functions and various $n$ value. This table is presented in Figure 3.
+
+![Figure 3. Correlating step counts with common Big Oh-bounded time-complexity functions and various n values](003.jpg)
+
+The Big Oh-bouded time-complexity functions are sorted from the most efficient function (constant) at the top to the least efficient function (exponential 指数) at the bottom. As you move down the table, notice the functions becoming less efficient (with more steps to complete) for $n$ values starting at 16.
+
+It would be great if all algorithm were $O(1)$ becuase the would all be equally efficient. Because this doesn't happen in the real world, you need to carefully choose the most efficient algorithm based on Big Oh-bounded time-complexity functions and the desired range of $n$ values.
+
+Keep in mind that more efficient algorithms may be harder to code than less efficient ones. If the range of $n$ input values doesn't result in too many steps, you may find that it's better to use a less efficient algorithm with a smaller input range than a more efficient algorithm with a lager input range. You'll see an example of this in Part 2.
