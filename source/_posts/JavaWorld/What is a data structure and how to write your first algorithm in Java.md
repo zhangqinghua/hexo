@@ -196,3 +196,25 @@ It's fairly easy to choose a time-complexify function for the array-printing exa
 - Algorithms with two nested loops are typically quadratic -- their time-complexity functions are specified in terms of $n^2$
 - Algorithms with a triply-nested loop are typically cubic -- their time-complexity functions are spceified in terms of $n^3$
 - The pattern continues with quadruply and higher nested loops
+
+There rules-of-thumb (经验法则) work best when a loop executes $n$ times (where $n$ is the size of the input data). This isn't always the case, however, as demonstrated by the Selection Sort algorithm represented in pseudocode below:
+```java
+DECLARE INTEGER i, min, pass
+DECLARE INTEGER x[] = [ ... ]
+FOR pass = 0 TO LENGTH(x) - 2
+   min = pass
+   FOR i = pass + 1 TO LENGTH(x) - 1
+      IF x[i] LT x[min] THEN
+         min = i
+      END IF
+   NEXT i
+   IF min NE pass THEN
+      EXCHANGE x[min], x[pass]
+   END IF
+NEXT pass
+END
+```
+
+Because this algorithm consists of thw nested loops, you might think that its preformance is quadratic. That't only partially correct, however, because the algorithm's performanc depends on whether you choose comparisons (比较) or exchanges as the algorithm's step:
+- If you choose an exchange as one step (bacause you think that exchanges dominate the runtime) you end up with a linear time-complexify function bacause $n - 1$ exchagnes are required to sort $n$ data items. This function is specified as $t(n) = n - 1$.
+- If you choose a comparison as one step (bacause you think that comparison deminate the runtime) you end up with $t(n) = (n - 1) + (n - 2) + ... + 1$, which sortens to $t(n) = \frac{n^2}{2} - \frac{n}{2}$. Comparison occur in the inner loop, which executes $n-1$ times for the first outer loop iteration, $n-2$ for the second, and so on down to once for the final outer loop iteration.
