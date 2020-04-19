@@ -1,10 +1,13 @@
 ---
-title: Static classes and inner classes in Java
+title: Advanced features Part 4, Get started with method references in Java
+
+tag:
+- Advanced Java language features
 
 categories:
 - JavaWorld
 
-date: 2020-03-05
+date: 2020-03-05 00:00:04
 ---
 Nested (嵌套) classes are classes that are declared as members of others classes or scopes. Nested classed is one way to better organize your code. For example, say you have a non-nested class (also known as a top-level class) that stores objects in a resizable array, followed by an iterator class that returns each object. Rather than pollute the top-level class's namespace, you could declare the iterator class as a member of the rsizable array collection class. This works because the two are closely related.
 
