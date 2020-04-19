@@ -1,10 +1,12 @@
 ---
 title: Doubly-linked lists and circular-linked lists, and their algorithms
 
-mathjax: true
-
+tag:
+- Data structures and algorithms in Java
 categories:
 - JavaWorld
+
+mathjax: true
 
 date: 2020-04-06 00:00:06
 ---

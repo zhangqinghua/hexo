@@ -1,6 +1,8 @@
 ---
 title: Multidimensional arrays and the Matrix Multiplication algorithm
 
+tag:
+- Data structures and algorithms in Java
 categories:
 - JavaWorld
 

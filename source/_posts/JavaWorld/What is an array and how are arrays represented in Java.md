@@ -1,10 +1,14 @@
 ---
 title: What is an array and how are arrays represented in Java
 
+tag:
+- Data structures and algorithms in Java
+
 categories:
 - JavaWorld
 
 mathjax: true
+
 
 date: 2020-04-06 00:00:02
 ---

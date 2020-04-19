@@ -1,6 +1,9 @@
 ---
 title: What is a data structure and how to write your first algorithm in Java
 
+tag:
+- Data structures and algorithms in Java
+
 categories:
 - JavaWorld
 

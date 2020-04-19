@@ -1,6 +1,9 @@
 ---
 title: Singly-linked lists and their algorithms
 
+tag:
+- Data structures and algorithms in Java
+
 categories:
 - JavaWorld
 
