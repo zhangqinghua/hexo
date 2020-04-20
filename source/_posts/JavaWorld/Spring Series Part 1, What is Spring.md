@@ -177,3 +177,134 @@ So far, we've been able to use spring-boot to limit how much work we put in to g
 Now that we've got a baisc project setup, we're ready for our two examples.
 
 ## Example 2. Building RESTful endpoints with Spring Web
+We've used spring-boot-starter-web to bring in serveral dependencies that are useful for building web applications. Next we'll create a route handler for a URL path. Spring's web support is part of the Spring MVC (Model-View-Controller) module, but don't let that worry you: Spring Web has full and effective support for building RESTful endpoints, as well.
+
+The class whose job it is to field URL requests is known as a controller, as shown in Listing 8.
+
+### Listing 8. Spring MVC Rest controller
+```java
+@Controller
+public class GreetingController {
+    
+    @RequestMethod(value = "/hi", method = RequestMethod.GET) 
+    public String hi(@RequestParam(name = "name", required = false, defaultValue = "JavaWorld") String name, Model model) {
+        return "Hello " + name;
+    }
+}
+```
+
+### The @Controller annotation
+The @Controller annotation identifies a class as a controller. A class narked as a controller is also automatically identified as a component class, which makes it a candidate for auto-wiring. Wherever this controller is needed, it will be plugged into the framework. In this case, we'll plug it into the MVC system to handle requests.
+
+The controller is a specialized kind of component. It support the @RequestMapping and @ResponseBody annotations that you see on the `hi()` method. These annotations tell the framework how to map URL requests to the app.
+
+At this point, you can run the app with `mvn spring-boot:run`. When you hit the `/hi` URL, you'll get a response like "Hello JavaWorld".
+
+Notice how Spring has taken the basics of autowiring components, and delivered a whole web framework. With Spring, you don't have to explicitly connect anything togetehr!
+
+### The @Request annotations
+The @RequestMapping allows you to define a handler for a URL path. Options include defining the HTTP method you want, which is what we've done in this case. Leaving RequestMethod off would instruct the program to handle all HTTP method types.
+
+The @RequestParam argument annotation allows us to map the request parameters directly into the method signature, including requiring certain params and defining default values as we've done here. We can even map a request body to a class with the @RequestBody argument annotation.
+
+### REST and JSON response
+If you are creating a REST endpoint and you want to return JSON from the method, you can annotate the method with @ResponseBody. The response will then be automatically packaged as JSON. In this case you'll return an object from the method.
+
+> Using MVC with Spring Web
+> Similar to Struts, the Spring Web module can easily be used for a true model-view-controller setup. In this case, you would return a mapping in the given templating (like Thymeleaf), and Spring would resolve the mapping, provide the model you pass to it, and render the response. 
+
+## Example #3: Spring with JDBC
+Now let's do something more intertesting with our request hanlder: let's return some data from a database. For the purpose of this example, we'll use the H2 database. Thankfully, Spring Boot supports the in-memory H2 DB out of the box.
+
+You can add the H2 DB to your app by including it in your pom.xml, as shown in Lisinting 9. We'll also add a dependency to spring-boot-starter-jdbc. This brings in what we need to control JDBC with Spring.
+
+### Listing 9. Adding a Maven dependency to the H2 DB
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-jdbc</artifactId>
+</dependency>
+
+<dependency>
+	<groupId>com.h2database</groupId>
+	<artifactId>h2</artifactId>
+</dependency>
+```
+
+Next, you'll want to configure the database. This is done with a spring.database.properties file, which is located in the `/resources` directory. Listing 10 shows how we can use H2 with the in-memory mode activated.
+
+### Listing 10. H2 in-memory config
+```properties
+driverClassName=org.hsqldb.jdbc.JDBCDriver
+url=jdbc:hsqldb:mem:myDb
+username=sa
+password=sa
+```
+
+### Service component classes
+Now, we can start using the database. It's that easy. However, basic software design tells us never to access the data layer via the view layer. In this case, we don't want to access the JDBC support via the view controller. We need a service component. In Spring Web, we use the @Service annoation to create a service class. Like the @Controller annoation, using the @Service annotation designates a class as a kink of @Component. That means Spring will add it to the DI context, and you can autowire it into your controller.
+
+> Annotating components
+> Spring offers a few ways to annotate components. The most baisc way to indicate that a class is available for auto-wriring is via the @Component annotation. The @Service annotation does the same thing, but indicates a specific type of class. You could use the @Bean annotation to designate a method that would serve the purpose of creating a bean to be autowired.
+
+Lising 11 shows a simple Service Component.
+
+### Listing 11. Service component
+```java
+@Service("myService")
+public class MyService {
+  public String getGreeting(){
+    return "Hey There";
+  }
+	public boolean addSong(String name) {
+		if (name.length() > 15){
+		  return false;
+		}
+		return true;
+	}
+	public List<String> getSongs() {
+		return new ArrayList();
+	}
+}
+```
+
+Now we can access the service class from the controller. In listing 12, we'll injetc it.
+
+### Listing 12. Injetcing MyService into the controller
+```java
+@Controller
+public class GreetingController {
+  @Inject
+  private MyService myService;
+    @RequestMapping(value = "/hi", method = RequestMethod.GET)
+    public String hi(@RequestParam(name="name", required=false, defaultValue="JavaWorld") String name, Model model) {
+        return myService.getGreeting() + name;
+    }
+}
+```
+
+Now the Controller is makring use of the Service class. Notice how Spring is allowing us to define a layered architecture using the same DI system. We can do the same in defining a data layer that the service class can use, and leverage Spring's support for a variety of datastores and datastore access approaches at the same time.
+
+We can annotate our data layer class with @Repository, as seen in Listing 13, and the inject it into the service class. In the same way @Service allowed us to define the service layer, we are now defining the data layer in a decoupled way.
+
+## The JdbcTemplate class
+The data layer will require more than the service layer, because it will be talking to the database. Spring eases this primarily by providing the JdbcTemplate class.
+
+### Listing 13. Repository data class
+```java
+@Repository
+public class MyDataObject {
+  public void addName(String name){
+    jdbcTemplate.execute("DROP TABLE names IF EXISTS");
+    jdbcTemplate.execute("CREATE TABLE names("id SERIAL, name VARCHAR(255))");
+    jdbcTemplate.update("INSERT INTO names (name) VALUES (?)", name);
+  }
+}
+```
+
+Spring will automatically use the in-memory H2 DB we've configured. Notice how jdbcTemplate has eliminated all the boilerplate and error-handling code from this class. While this is a simplified example of accessing the database, it gives you an idea of how SPring works both to connect your application layers, and facilitates the use of other required services.
+
+## Conclusion
+Spring is one of the most advanced and compelete application development framewors for Java, bar none. It makes setting up an application easier, allows you to easily bring in the dependencies you need as the application grows, and is fully capable ofremping up the high-volume, production-grade use.
+
+It's tough to argue using Spring in a new Java application. The Spring platform is maintained and advanced with vigor, and virtually any task you might need to undertake is doable with Spring. Using this platform will spare you considerable heavy lifting, and will help ensure your application design is robust and flexible. If you can use Spring to ease your development path, then do it.
