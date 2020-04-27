@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest # 运行环境为最新版 Ubuntu
     name: A job to deploy blog.
     steps:
-    - name: Checkout # step1 获取源码
+    - name: 获取源码 # step1 获取源码
       uses: actions/checkout@v1 # 使用 actions/checkout@v1
       with: # 条件
         submodules: true # Checkout private submodules(themes or something else). 当有子模块时切换分支？
@@ -27,7 +27,7 @@ jobs:
       run: npm install # 安装 node modules 相关依赖
 
     # Deploy hexo blog website.
-    - name: Deploy # step4
+    - name: 部署 # step4
       id: deploy
       uses: sma11black/hexo-action@v1.0.0
       with:
