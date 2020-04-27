@@ -6,7 +6,7 @@ on:
 jobs:
   build: # job1 id
     runs-on: ubuntu-latest # 运行环境为最新版 Ubuntu
-    name: A job to deploy blog.
+    name: 部署HEXO博客
     steps:
     - name: 获取源码 # step1 获取源码
       uses: actions/checkout@v1 # 使用 actions/checkout@v1
@@ -34,4 +34,4 @@ jobs:
     #     deploy_key: ${{ secrets.DEPLOY_KEY }}
     #     user_name: zhangqinghua
     #     user_email: the.patron.saint.of.science@gmail.com
-    
+
