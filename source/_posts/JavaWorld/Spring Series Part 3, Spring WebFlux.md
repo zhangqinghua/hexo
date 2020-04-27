@@ -231,3 +231,268 @@ public interface BookRepository extends ReactiveMongoRepository<Book, String> {
 }
 ```
 
+The BookRepsiotry is a Spring Data interface, meaning that you define the interface and Spring Data weill generate the code that implements that interface. Specifically, BookRepository extends teh ReactiveMongoRepository, which defines the following reactive methods (remember that these are methods that return either monos or fluxs):
+- `Mono<Book> save()`
+- `Flux<Book> saveAll()`
+- `Flux<Book> findById()`
+- `Mono<Boolean> existsById()`
+- `Flux<Book> findAll()`
+- `Flux<Book> findAllById()`
+- `Mono<Long> count()`
+- `Mono<Void> delete()`
+- `Mono<Void> deleteById()`
+- `Mono<Voidd> delteAll()`
+- `Flux<Book> insert()`
+
+The query methods that return one element (such as `findById()`) return `Mono<Book>`. The methods that return more than one elements (such as `findAll()`) return `Flux<Book>`. It is interesting to note that the `delete` methods return a `Mono<Void>`. `Mono<Void>` means that there is no return type, but when the operation finishes it will publish a completion notification. Recall that these are publishers, so your code, or Spring WebFlux itself, will ultimately define functionality to execute when a message is published to its subscribers.
+
+The BookRepository is defined with two generic parameters: Book, which is the type of document that the repository managers, and String, which is the type of the primary key (the Book's id field). Your code can use the BookRepository methods to execute asynonchroous queries against MongoDB.
+
+Listing 5 and 6 show the source code for the BookService and BookServiceImpl, respectively.
+
+### Listing 5. BookService.java
+```java
+public interface BookService {
+
+    Mono<Book> findById(String id);
+
+    Flux<Book> findAll();
+
+    Mono<Book> save(Book book);
+
+    Mono<Void> deleteById(String id);
+}
+```
+
+### Listing 6. BookServiceImple.java
+```java
+@Service
+public class BookServiceImpl implements BookService {
+
+    private BookRepository bookRepository;
+
+    public BookServiceImpl(BookRepository bookRepsotiry) {
+        this.bookRepository = bookRepository;
+    }
+
+    @Override
+    public Mono<Book> findById(String id) {
+        return bookRepository.findById(id);
+    }
+
+    @Override
+    public Flux<Book> findAll() {
+        return bookRepository.findAll();
+    }
+
+    @Override
+    public Mono<Book> save(Book book) {
+        return bookRepository.save(book);
+    }
+
+    @Override
+    public Mono<Void> deleteById(String id) {
+        return bookRepository.deleteById(id);
+    }
+}
+```
+
+Services represent business functionality and are identified in Spring using the `@Service` annotation. In this example, business functionality simply delegates to the underlying (隐含的) repository. If you needed to perform more complex logic on the queries or on the objects being persisted, this is where you would do it.
+
+Listing 7 shows the source code for the BookController class.
+
+### Listing 7. BookController.java
+```java
+@RestController
+public class BookController {
+    private BookService bookService;
+    public BookController(BookService bookService) {
+        this.bookService = bookService;
+    }
+    @GetMapping(value = "/book/{id}")
+    public Mono<Book> getBookById(@PathVariable String id) {
+        return bookService.findById(id);
+    }
+    @GetMapping(value = "/books")
+    public Flux<Book> getAllBooks() {
+        return bookService.findAll();
+    }
+    @PostMapping(value = "/book")
+    public Mono<Book> createBook(@RequestBody Book book) {
+        return bookService.save(book);
+    }
+}
+```
+
+## About the code
+If you're already familiar with Spring MVC, you'll notice that the Spring WebFlux application code looks remarkably familiar. The only difference is that all controllers and services return reactive types, namely monos and fluxes. We've also employed a reactive MongoDB driver instead of a nonreactive driver. While the code is familiar, the implementation is quite different. Under the hood, Spring WebFlux will invoke your handler method, capture the reactive reponse, and then leverage Reactor to wait for the response to be published, all asynchronously.
+
+Here are some points to note about the example application:
+- `BookController` is annotated with the `@RestController` annotation, which is a convenience annotation. This annotation includes the `@Controller` annotation, which is used to identify a class that handles web request, and `@ResponseBody`, which indicates that method return values should be bound to the web response body
+- `getBookById()` method, which is annotated with the `@GetMapping` annotation. `@GetMapping` is a convenience annotation for `@RequestMapping(method = RequestMethod.GET)`. It handles the URI path: `/book/{id}`, where the id is the value retrieved from the path and passed as the `@PathVariable` in the method call. The implementation simply delegates to the BookService's `findById()` method. Note that this method returns a `Mono<Book>`, which again is a publisher that will provide WebFlux with a Book instance when it becomes available, ultimately from the reactive MongoDB call to `findById()`.
+- `getAllBooks()` method handles the `/books` URI path and delegates to the BookService's `findALl()` method. In this case it returns a `Flux<Book>`, which is a pulisher that send a stream of Books to Spring WebFlux. When all books have been retrieved from MongoDB, the reactive MongoDB `findAll()` method will publish a completion notification telling WebFlux that it is finished. WebFlux can then send the response back to the caller
+- Finally, the `createBook()` method is annotated with the `@PostMapping` annotation, which is a convenience annotation for `@RequestMapping(method = RequestMethod.POST)`. `@PostMapping` handles the `/book` URI path. The `@RequestBody` annotation, included when we added `@RestController` tells WebFlux to convert the object received from the caller into a Book instance. The `createBook()` method delegates to the BookService's `save()` method and then returns a `Mono<Book>` that publishes the newly created Book.
+
+> Three styles of denpendency injection
+> The BookController uses contructor injetcion to autowire a BookService into itself. Recall that Spring supports three types of denpendency injection:
+> - Constructor injection: when a Spring-managed bean defines a constructor that accepts another Spring-managed bean, Spring will automatically retrieve an instance of that bean from the application context and pass it to the constructor
+> - Setter injection: when a Spring-managed bean defines a setter method that accepts another Spring-managed bean, Spring will likewise find it in the application context and invoke the setter method
+> - @Autowired: when a Spring-managed bean defines a field annotated with the @Autowired annotation, Spring will automatically set the value of the filed
+
+## Run the application
+You can run your new service by exeucting the following command from the root directory of your project:
+```bash
+mvn spring-boot:run
+```
+
+Now take out your favorite REST service testing tool, like Poster, or execute the following cURL commands on your command-line. See the responses below each cURL command:
+```bash
+$ curl --header "Content-Type: application/json" --request POST --data '{"title": "Book 1", "author": "Mr Author"}' http://localhost:8080/book
+{"id":"5b2ea197c0f951f7354085d7","title":"Book 1","author":"Mr Author"}
+$ curl --header "Content-Type: application/json" --request POST --data '{"title": "Book 2", "author": "Other Author"}' http://localhost:8080/book
+{"id":"5b2ea1b0c0f951f7354085d8","title":"Book 2","author":"Other Author"}
+$ curl http://localhost:8080/books
+[{"id":"5b2ea197c0f951f7354085d7","title":"Book 1","author":"Mr Author"},{"id":"5b2ea1b0c0f951f7354085d8","title":"Book 2","author":"Other Author"}]
+$ curl http://localhost:8080/book/5b2ea197c0f951f7354085d7
+{"id":"5b2ea197c0f951f7354085d7","title":"Book 1","author":"Mr Author"}
+```
+
+## Functional reactive services with Spring WebFlux
+Spring WebFlux application can be built using either Spring MVC annotations (which you just saw) or functional programming techniques. Functional programming has many benefits, such as immutable data objects, inherent thread safety, the ability to pass functions to other functions, and the ability to program declaratively rather than imperatively (meaning that you describe the problem you are solving, not hte steps that define how to solve the problem).
+
+Pure functions -- or functions that provide the same result every time they are given the same input -- limit side-effects, which makes testing easier. They also allows for easy parallelization and caching. If you haven't taken the time to start learning functional programming, I encourage you to do so; It will change how you approach and solve problems.
+
+Arjen Poutsma, a mamber of the Spring WebFlux team, posted a vieo on YouTube entitled "New in Spring Framework 5.0: Functional Web framework" that describes the motivation behind building functional web applications and how Spring WebFlux can be used functionally. In short, he argues for more library, less framework, meaning that WebFlux can be used as a library that leaves you in control of your web application. This is an efficient alternative to utilizing the full Spring framework, which is the approach we took in the previous section.
+
+We'll conclude this tutorial by using Spring WebFlux to build another BookHandler application, this time using functional techniques.
+
+## Router and handler
+Our functional Spring WebFlux application will be based on two main components, a router and a handler. The router is responsible ofr routing HTTP requests to handler functions. Handler functions are responsible for executing business functionality and building responses.
+
+Listing 8 shows the source code for the BookHandler class.
+
+### Listing 8. BookHandler.java
+```java
+@Component
+public class BookHandler {
+    private final BookService bookService;
+    public BookHandler(BookService bookService) {
+        this.bookService = bookService;
+    }
+    public Mono<ServerResponse> findById(ServerRequest request) {
+        String id = request.pathVariable("id");
+        return ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(bookService.findById(id), Book.class);
+    }
+    public Mono<ServerResponse> findAll(ServerRequest request) {
+        return ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(bookService.findAll(), Book.class);
+    }
+    public Mono<ServerResponse> save(ServerRequest request) {
+        final Mono<Book> book = request.bodyToMono(Book.class);
+        return ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(fromPublisher(book.flatMap(bookService::save), Book.class));
+    }
+    public Mono<ServerResponse> delete(ServerRequest request) {
+        String id = request.pathVariable("id");
+        return ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(bookService.deleteById(id), Void.class);
+    }
+}
+```
+
+The BookHandler is annotated with `@Component`, a generic annotation that identifies the class as being a Spring-managed bean. Spring will discover this component when it does its component scan and add it to the application context. This is not a controller, but rather a standard Spring bean that will be wired into the BookRouter, defined below.
+
+The functions in the BookHandler return `Mono<ServerResponse>`. This component is a litte different from the BookController built in the previous section, which returned `Mono<Book>` and `Flux<Book>`. When building a handler function, you are responsible for building the response that will ultimately be returned to the caller. All methods are requried to return a `Mon<ServerResponse>`, even if the body of the response contains a Flux.
+
+Each method is passed a ServerRequest argument, which provides access to request parameters, such as path variables, query parameters, and, in the case of the `save()` method, the body of a POST or PUT.
+
+In order to build a response body, we construct it using a BodyBuilder. The `ok()` method returns a BodyBuilder with an HTTP status code of 200; it is a convenience method for `status(HttpStatus.OK)`. The BodyBuilder interface defines methods for setting the content type, content length, as well as HTTP header values. The `body()` method sets the contents to be returned to the caller and returns a `Mono<ServerResponse>`.
+
+## Important methods: save() and flatMap()
+The method in this class that deservers special attention is the `save()` method. First, in order to deserialize the body payload to a class instance, we invoke the `bodyToMono()` method. This mehtod returns a `Mono<Book>`, which is a publisher that will provide a Book instance asynchronously when it is available. With the `Mono<Book>` in hand, we construct the response using the `ok()` method, as usual, and then the `body()` method is implemented as folows:
+```java
+fromPublisher(book.flatMap(bookService::save), Book.class)
+```
+
+The `fromPbulisher()` method reutrns a BodyInserter, which the `body()` method expects, from a publisher function and the class of the object that will be published, Book.class in this case. The publisher function is passed the following:
+```java
+book.flatMap(bookService::save)
+```
+
+You're probably already familiar with the Java 8 `map()` funciton, which converts every input item in a stream (or in the Mono in this case) into another object. The Java 8 `flatMap()` function is similar, but it "flattens" the response. For example, if we were constructing a list of objects and the map function returned am embedded list, rather than a list of lists, the `flatMap()` funciton would return a single list that contained all of the elements in all embedded lists.
+
+We can read this function as follow: for each Book in the book object, which is a Mono so there will only be one, call the BookService's `save()` method, and return the result of `BookService::save` to the caller (`fromPublisher()` in this case) as a single Mono object (not a `Mono<Mono<Book>>`). The `faltMap()` function takes care of flattening embedded Monos into a single Mono.
+
+## Example application code
+Listing 9 show the source code for the BookRouter class.
+
+### Listing 9. BookRouther.java
+```java
+@Configuration
+public class BookRouter {
+    @Bean
+    public RouterFunction<ServerResponse> route(BookHandler handler) {
+        return RouterFunctions
+                .route(GET("/fbooks").and(accept(MediaType.APPLICATION_JSON)), handler::findAll)
+                .andRoute(GET("/fbook/{id}").and(accept(MediaType.APPLICATION_STREAM_JSON)), handler::findById)
+                .andRoute(POST("/fbook").and(accept(MediaType.APPLICATION_JSON)), handler::save)
+                .andRoute(DELETE("/fbook/{id}").and(accept(MediaType.APPLICATION_JSON)), handler::delete);
+    }
+}
+```
+
+The BookRouter class is annotated with `@Configuration`, which is a Spring annotation that identifies a class as a configuration class whose method create other Spring beans. In this example, the `router()` method creates a bean of type `RouterFunciton<ServerResponse>`. Router functions are responsible for translting HTTP routes (HTTP verb and URI path) into handler functions. For example, the first route reads: if there is a request of type GET for the URI path `/fbooks` and a media accept type of APOLICATION_JSON, then invoke the BookHandler's `findAll()` method.
+
+The syntax might look a little strange, so let's take it apart. First, consider the `GET()` method:
+```java
+GET("/fbooks").and(accept(MediaType.APPLICATION_JSON)), handler::findAll
+```
+
+The `GET()` method is statically imported from the RequestPredicates class and reutrns a RequestPredicate instance. A predicate is a boolean-valued function with a `test()` method that evaluates the predicate and returns true or false if the predicate's conditions are met. A RequestPredicate evaluates a ServerRequest to determine whether or not this route should handle the request. So our goal is to define the criteria under which our handler function should be called.
+
+`GET()` is a convenience method for 
+
+```
+method(HttpMethod.GET).and(path(String Pattern))
+```
+
+This means that the RequestPredicate will compare the HTTP verb in the ServerRequest to HttpMehod.GET and the path to the specified URI pattern. We then chain `accept(MediaType.APPICATION_JSON)` to the predicate using the `and()` method, which is a standard Predicate funciton that evaluates two prediates using AND boolean logic. The `accept()` method adds a condition to the predicate that verifies the "Accept" HTTP header against the provided media type. In the end, the `handler::findAll` method will be invoked if the following conditions are true:
+- The HTTP verb is GET
+- THe URI path is `/fbooks`
+- The HTTP "ACCEPT" header is "applicaiton/json"
+
+The `RoutherFunction::route` method returns a RouterFunction that allows you to add additional routes by invoking the `addRoute()` method. As you can see, we leverage this capability to chain together several different routes: GET with an id request parameter, POST and DELETE.
+
+The only other magic in the BookRouter::route method is the Spring injection of the BookHandler. The router() method is annotated with `@Bean`, which means that it returns a Spring-managed bean. When Spring invokes this method it will see that requires a BookHandler argument. Having already discovered the BookHandler (annotated with `@Component`), and having added it to the application context, it will pass the Spring-managed BookHandler to the `route()` method.
+
+In summary, the `BookRouter::route` create a RouterFunction, which is composed of several router functions that define the conditions for which specific handler functions should be invoked.
+
+## Run and test the application
+You can test this code by starting the Spring Boot application with the following command:
+```bash
+mvn spring-boot:run
+```
+
+Now you have two sets of end-points: `/book` uses the BookController and `/fbook` uses the functional BookRouter and BookHandler. The following are sample cURL commands to invoke these services:
+```bash
+$ curl --header "Content-Type: application/json" --request POST --data '{"title": "Book 1", "author": "Author"}' http://localhost:8080/fbook
+{"id":"5b394748aaac8a7c67f94367","title":"Book 1","author":"Author"}
+$ curl --header "Content-Type: application/json" --request POST --data '{"title": "Book 2", "author": "Author"}' http://localhost:8080/fbook
+{"id":"5b39474daaac8a7c67f94368","title":"Book 2","author":"Author"}
+$ curl http://localhost:8080/fbooks
+[{"id":"5b394748aaac8a7c67f94367","title":"Book 1","author":"Author"},
+ {"id":"5b39474daaac8a7c67f94368","title":"Book 2","author":"Author"}]
+$ curl http://localhost:8080/fbook/5b39474daaac8a7c67f94368
+{"id":"5b39474daaac8a7c67f94368","title":"Book 2","author":"Author"}
+$ curl --header "Content-Type: application/json" --request DELETE http://localhost:8080/fbook/5b39474daaac8a7c67f94368
+$ curl http://localhost:8080/fbooks
+[{"id":"5b394748aaac8a7c67f94367","title":"Book 1","author":"Author"}]
+```
+
+## Conclusion
+Spring WebFlux is Spring's reactive web framework that uses the Reactor library to asynchronously manage web requests. I start this article by reviewing reactive systems and the Reactive Streaming API, and described the problems they're designed to solve. I then showd you two ways to create a Spring WebFlux application: the tradition-based approach and the fuctnional approach. Spring WebFlux was introduced in Spring framework 5, and is new to the Spring ecosystem. It will undoubtedly continue to evolve. Still, it is already a powerful framework and library very scalable reactive web applications.
