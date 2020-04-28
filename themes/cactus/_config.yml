@@ -41,8 +41,8 @@ tags_overview: false
 #   - post_count: whether to show only the x most recent posts.
 #   - sort_updated: sort posts by last modification date instead of creation date.
 posts_overview:
-  show_all_posts: false
-  post_count: 20
+  show_all_posts: true
+  post_count: 50
   sort_updated: false
 
 # Customize the archive view.
@@ -57,7 +57,7 @@ archive:
 # Options:
 #   - show_updated: show the last modification date.
 post:
-  show_updated: false
+  show_updated: true
 
 ##############################################################################
 # Look and Feel
@@ -104,7 +104,7 @@ favicon:
 # Set the color scheme.
 # Available color schemes are 'dark', 'light', 'classic' and 'white'.
 # Alternatively, add your own custom color scheme to source/css/_colors.
-colorscheme: light
+colorscheme: dark
 
 # Maximal width of the page in rem units.
 page_width: 60
