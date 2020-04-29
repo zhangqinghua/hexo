@@ -24,8 +24,24 @@ date: 2020-04-28 00:00:21
 #### Java 栈什么时候会发生内存溢出，Java 堆呢？
 说一种场景
 
-#### 你了解哪些收集器？GMS 和 G1，详细讲讲 G1 的优点
+#### 你了解哪些收集器？GMS 和 G1，详细讲讲 G1 的优点           
 
 #### 你在项目中一般怎么调优 JVM 的呢
 
 #### 讲一下 GC 吧，什么时候进行 FULL GC 呢
+
+## void mian()
+
+## void main()
+
+## testing    nnnnnbbvjju
+
+## pbulic dkjgdskgjkfdjgkkkkkjqinhu
+
+## 
+
+public static void main(String[]) {
+    System.out.println("HelloWorld");
+}
+
+## void 
