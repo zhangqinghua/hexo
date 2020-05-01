@@ -30,3 +30,14 @@ So  building on top of HTTP, REST APIs provide the means to build flexible APIs 
 - A spectrum (系列) of stateless (无状态) to stateful (有状态) servcie
 
 What's important to realize is that REST, however ubiquitous (似乎无所不在的), is not a standard, per se (本质上), but an approach, a style, a set of constraints (约束) on your architecture that can help you build web-scale systems. In this tutorial we will use the Spring protfolio (作品集) to build a RESTful service while leveraging (对…施加影响) the stackless features of REST.
+
+## Getting Started
+As we work through this tutorial, we'll use Spring Boot. Go to Spring Initializr and select the follow:
+- Web
+- JPA
+- H2
+- Lombok
+
+Then choose "Generate Project". A `.zip` will downloaded. Unzip it. Inside you'll find a simple, Maven-based project including a `pom.xml` build file (NOTE: You can use Gradle. The example in this tutorial will be Maven based.)
+
+Spring Boot can work with any IDE. You can use Eclipse, IntelliJ IDEA, Netbeans, etc. The Spring Tool suite is an open-source, Eclipse-based IDE distribution (发行) that provides a superset of the Java EE distribution of Eclipse. It includes features that making working with Spring application even easier. It is, by no means, required. But consider it if you want that extra oomph (特质) for your keystrokes (按键). Here's a 
