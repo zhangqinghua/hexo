@@ -263,3 +263,80 @@ This will yield:
 * Connection #0 to host localhost left intact
 [{"id":1,"name":"Bilbo Baggins","role":"burglar"},{"id":2,"name":"Frodo Baggins","role":"thief"}]
 ```
+
+Here you can see the pre-loaded data, in a compacted format.
+
+If you try and query a user that doesn't exist...
+
+```bash
+$ curl -v localhost:8080/employees/99
+```
+
+You get...
+
+```bash
+*   Trying ::1...
+* TCP_NODELAY set
+* Connected to localhost (::1) port 8080 (#0)
+> GET /employees/99 HTTP/1.1
+> Host: localhost:8080
+> User-Agent: curl/7.54.0
+> Accept: */*
+>
+< HTTP/1.1 404
+< Content-Type: text/plain;charset=UTF-8
+< Content-Length: 26
+< Date: Thu, 09 Aug 2018 18:00:56 GMT
+<
+* Connection #0 to host localhost left intact
+Could not find employee 99
+```
+
+This message nicely shows an **HTTP 404** error with the custom message **Cound not find employee 99**.
+
+It's not hard to show the currently coded interactions...
+
+```bash
+$ curl -X POST localhost:8080/employees -H 'Content-type:application/json' -d '{"name": "Samwise Gamgee", "role": "gardener"}'
+```
+
+Creates a new **Employee** record, and then sends the content back to us:
+```
+{"id":3,"name":"Samwise Gamgee","role":"gardener"}
+```
+
+You can alter (更改) the user:
+```
+$ curl -X PUT localhost:8080/employees/3 -H 'Content-type:application/json' -d '{"name": "Samwise Gamgee", "role": "ring bearer"}'
+```
+
+Updates the user:
+```
+{"id":3,"name":"Samwise Gamgee","role":"ring bearer"}
+```
+
+> Depending on how you construct your service can have significant impacts (有很大关系). In this situation, replace is a better description than update. For example, if the name was NOT provided, it would instead get nulled out.
+
+And you can delete...
+
+```
+$ curl -X DELETE localhost:8080/employees/3
+$ curl localhost:8080/employees/3
+Could not find employee 3
+```
+
+This is all well and good, but do we have RESTful service yet? (IF you didn't catch the hint, the answer is no.)
+
+What's missing?
+
+## What makes something RESTful?
+So far, you have a web-based service that handles the core operations involving employee data. But that's not enough to make things "RESTful".
+- Pretty URLs like /employees/3 aren't REST.
+- Merely using **GET**, **POST**, etc. aren't REST.
+- Having all the CRUD operations laid out arent't REST.
+
+In fact, what we have built so far is better described as **RPC** (Remote Procedure Call 远程过程调用). That's because there is no way to know how to interact with this service. If you published this today, you'd also have to write a document or host a developer's portal somewhere with all the details.
+
+This **statement** (报告) of Roy Fielding may further lend a clue (线索) to the difference between **REST** and **RPC**:
+- I am getting frustrated by the number of people calling any HTTP-based interface a REST API. Today's example is the socialSite REST API. That is RPC. It screams RPC. There is so much coupling on display that it should be given an X rating.
+- 
