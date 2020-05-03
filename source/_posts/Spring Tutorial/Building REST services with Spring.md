@@ -338,5 +338,6 @@ So far, you have a web-based service that handles the core operations involving 
 In fact, what we have built so far is better described as **RPC** (Remote Procedure Call 远程过程调用). That's because there is no way to know how to interact with this service. If you published this today, you'd also have to write a document or host a developer's portal somewhere with all the details.
 
 This **statement** (报告) of Roy Fielding may further lend a clue (线索) to the difference between **REST** and **RPC**:
-- I am getting frustrated by the number of people calling any HTTP-based interface a REST API. Today's example is the socialSite REST API. That is RPC. It screams RPC. There is so much coupling on display that it should be given an X rating.
-- 
+
+> I am getting frustrated (沮丧) by the number of people calling any HTTP-based interface a REST API. Today's example is the socialsite (社交网站) REST API. That is RPC. It screams RPC. There is so much coupling on display that it should be given an X rating.
+> What needs to be done to make the REST architectural (建筑) ssyle clear on the notion that hypertext is a constraint? 
