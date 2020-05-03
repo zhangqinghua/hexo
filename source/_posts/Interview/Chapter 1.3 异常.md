@@ -1,10 +1,10 @@
 ---
-title: Chapter 1.2 异常体系
+title: Chapter 1.3 异常
 
 categories:
 - Interview
 
-date: 2020-04-28 00:00:12
+date: 2020-04-28 00:00:13
 ---
 #### Java 的异常体系
 ![](https://images2015.cnblogs.com/blog/936870/201707/936870-20170709120346087-1351539391.png)

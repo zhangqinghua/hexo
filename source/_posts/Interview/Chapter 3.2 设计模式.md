@@ -1,10 +1,10 @@
 ---
-title: Chapter 1.2 数据结构
+title: Chapter 3.2 设计模式
 
 categories:
 - Interview
 
-date: 2020-04-28 00:00:12
+date: 2020-04-28 00:00:32
 ---
 
 #### 常用数据结构简介

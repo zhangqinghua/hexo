@@ -1,10 +1,10 @@
 ---
-title: Chapter 1.3 线程
+title: Chapter 1.4 线程
 
 categories:
 - Interview
 
-date: 2020-04-28 00:00:13
+date: 2020-04-28 00:00:14
 ---
 #### 开启线程的三种方式
 
