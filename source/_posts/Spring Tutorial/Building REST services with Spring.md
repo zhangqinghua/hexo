@@ -339,5 +339,18 @@ In fact, what we have built so far is better described as **RPC** (Remote Proced
 
 This **statement** (报告) of Roy Fielding may further lend a clue (线索) to the difference between **REST** and **RPC**:
 
-> I am getting frustrated (沮丧) by the number of people calling any HTTP-based interface a REST API. Today's example is the socialsite (社交网站) REST API. That is RPC. It screams RPC. There is so much coupling on display that it should be given an X rating.
-> What needs to be done to make the REST architectural (建筑) ssyle clear on the notion that hypertext is a constraint? 
+> I am getting frustrated (沮丧) by the number of people calling any HTTP-based interface a REST API. Today's example is the socialsite (社交网站) REST API. That is RPC. It screams RPC. There is so much coupling (结合) on display that it should be given an X rating.
+
+> What needs to be done to make the REST architectural (建筑) style clear on the notion that hypertext is a constraint (约束)? In other words, if the engine of application state (and hence the API) is not being driven by hypertext, then it cannot be RESTful and cannot be a REST API. Period. Is there some broken manual somewhere that needs to be fixed?
+
+The side effect of NOT including hypermedia in our representationsis that clients MUST hard code URIs to navigate the API. This leads to the same brittle nature (脆弱性) that predated the rise of e-commerce (电子商务) on the web. It's a signal that our JSON output needs a little help.
+
+Introducing Spring HEATEOAS, a Spring project aimed at helping you write hypermedia-driven outputs. To upgrade your service to being RESTful, add this to your build:
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-hateoas</artifactId>
+</dependency>
+```
+
+This tiny library will give us the constructs to define a RESTful service and then render it in an acceptable format for client consumption (消费).
