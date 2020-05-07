@@ -119,7 +119,109 @@ final Node<K,V> getNode(int hash, Object key) {
 **ConcurrentHashMap** 是 Java 并发包中提供的一个线程安全且高效的 **HashMap** 实现。
 
 ## ArrayList
+#### 什么是 ArrayList
+**ArrayList** 是一个动态数组，从数据结构上来讲，是数组实现的线性表（即顺序表）。
+
+#### ArrayList 的优点
+- **ArrayList** 实现了 **Cloneable** 接口，能被克隆。
+- **ArrayList** 实现了 **Serializable** 接口，支持序列化。
+- **ArrayList** 实现了 **RandomAccess** 接口，支持快速随机访问。
+
+#### ArrayList 的缺点
+- 当容量不够时，每次增加元素，都要将原来的元素拷贝到一个新的数组中，非常之耗时，也因此建议在事先能确定元素数量的情况下，才使用 **ArrayList**，否则建议使用 **LinkedList**。
+- **ArrayList** 不是线程安全的，只能用在单线程环境下，多线程环境下可以考虑用 **Collections.synchronizedList(List l)** 函数返回一个线程安全的 **ArrayList** 类，也可以使用 concurrent 并发包下的 **CopyOnWriteArrayList** 类。
+
 #### ArrayList 底层原理
+**ArrayList** 是基于数组实现的，是一个动态数组，其容量能自动增长。
+
+
+
+#### ArrayList 的 3 个构造函数
+- 无参构造方法构造的 ArrayList 的容量默认为 10，实现数组为空数组。
+- 指定容量的构造方法创建一个指定容量的数组。
+- 带有 **Collection** 参数的构造方法，将 **Collection** 转化为数组赋给 **ArrayList** 的实现数组 **elementData**。
+
+#### ArrayList 的默认容量
+默认容量为 10。
+
+#### ArrayList 的最大容量
+**ArrayList** 最大容量是 **Integer.MAX_VALUE - 8**。
+
+因为数组对象有一个额外的元数据用于表示数组的大小。而 **Integer.MAX_VALUE** 的值为 2^31 = 2,147,483,648 = 8 bytes。
+
+#### ArrayList 的扩容算法
+- 每次在增加元素时，ArrayList 都判断容量是否足以容纳新元素。
+- 当现有容量不足以容纳新元素时，就设置新的容量为就的容量的 1.5 倍 + 1，如果还是不够，则直接设置新容量为插入的参数（也就是所需的容量）。例如现有容量为 10，所需容量为 11，则新容量为 10 + 10 / 2 + 1 = 16。现在容量为 10，所需容量为 17，则新容量设置为 17。
+- 根据新容量创建一个新数组，使用 **Arrays.copyof()** 方法将原有数组元素复制到新的数组。
+
+```java
+private void grow(int miniCapacity) {
+    // overflow-conscious code
+    int oldCapacity = elementData.length;
+    int newCapacity = oldCapacity + (oldCapacity >> 1);
+    if (newCapacity - miniCapacity < 0)
+        newCapacity = miniCapacity;
+    if (newCapacity - MAX_ARRAY_SIZE > 0)
+        newCapacity = hugeCapacity(miniCapacity);
+
+    // miniCapacity is usually close to size, so this is a win:
+    elementData = Arrays.copyOf(elementData, newCapacity);
+}
+```
+
+#### ArrayList 的优化要点
+- 如果我们大概知道元素的个数，可以指定个数的方式去构造 **ArrayList**，这样可以避免底层数组的多次拷贝，进而提高程序性能。
+- 
+
+#### 讲一下 Arrays.copyof() 方法
+该方法实际上是在其内部又创建了一个长度为 **newlength** 的数组，调用 **System.arraycopy()** 方法，将原来数组中的元素复制到了新的数组中。
+
+```java
+public static <T> T[] copyOf(T[] original, int newLength) {  
+    return (T[]) copyOf(original, newLength, original.getClass());  
+}
+
+public static <T,U> T[] copyOf(U[] original, int newLength, Class<? extends T[]> newType) {
+    T[] copy = ((Object)newType == (Object)Object[].class)
+                ? (T[]) new Object[newLength]
+                : (T[]) Array.newInstance(newType.getComponentType(), newLength);
+
+    System.arraycopy(original, 0, copy, 0, Math.min(original.length, newLength));
+    return copy;
+}
+```
+#### 讲一下 System.arraycopy() 方法
+该方法被标记了 **native**，调用了系统的 C/C++ 代码。该函数实际上最终调用了 C 语言的 **memmove()** 函数，因此它可以保证同一个数组内元素的正确复制和移动，比一般的复制方法的实现效率要高很多，很适合用来批量处理数组。Java 强烈推荐在复制大量数组元素时用该方法，以取得更高的效率。
+
+```java
+public static native void arraycopy(Object src,  int  srcPos,
+                                    Object dest, int destPos,
+                                    int length);
+```
+
+#### 什么是 fail-fast 机制
+
+## LinkedList
+#### LinkedList 简介
+**LinkedList** 是一个继承于 **AbstractSequentialList** 的双向链表。它也可以被当作堆栈、队列或双端队列进行操作。
+**LinkedList** 实现了 **List** 接口，能对它进行队列操作。
+**LinkedList** 实现了 **Deque** 接口，即能将 **LinkedList** 当作双端队列使用。
+**LinkedList** 实现了 **Cloneable** 接口，即覆盖了函数 **clone()**，能克隆。
+**LinkedList** 实现了 **Serializable** 接口，这意味着 **LinkedList** 支持序列化，能通过序列化去传输。
+**LinkedList** 是非同步的。
 
 #### LinkedList 底层原理
 
+#### LinkedList 的数据结构
+**LinkedList** 的本质是双向链表。
+
+- **LinkedList** 继承于 **AbstractSequentialList**，并且实现了 **Dequeue** 接口。
+- **LinkedList** 包含两个重要的成员：**header** 和 **size**。
+    - **header** 是双向链表的表头，它是双向链表节点所对应的类 **Entry** 的实例。**Entry** 中包含成员变量： **previous**, **next**, **element**。其中，**previous** 是该节点的上一个节点，**next** 是该节点的下一个节点，**element** 是该节点所包含的值。
+    - **size** 是双向链表中节点的个数。
+
+![](https://images0.cnblogs.com/blog/497634/201401/272345393446232.jpg)
+
+#### LinkedList 的源码解析
+
+#### LinkedList 的遍历方式

@@ -532,3 +532,6 @@ public static int digit(int codePoint, int radix) {
 - 一个 UTF-8 数字占 1 个字节
 - 一个 UTF-8 英文字母占 1 个字节
 - 少数是汉字每个占用 3 个字节，多数占用 4 个字节
+
+#### transient 关键字有什么用
+被标记为 **transient** 的属性在对象被序列化的时候不会被保存。
