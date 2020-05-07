@@ -9,10 +9,10 @@ date: 2020-04-28 00:00:12
 #### Java 集合是什么
 Java 集合是 Java 提供的工具包，包含了常用的数据结构：集合、链表、队列、栈、数组、映射等。
 
-Java 集合主要可以划分为 4 个部分：List 列表、Set 集合、Map 映射、工具类（Iterator 迭代器、Enumeration 枚举类、Arrays 和 Collections）。
+Java 集合主要可以划分为 4 个部分：**List** 列表、**Set** 集合、**Map** 映射、工具类（**Iterator** 迭代器、**Enumeration** 枚举类、**Arrays** 和 **Collections**）。
 
 #### Java 集合工具包框架图
-![](https://images0.cnblogs.com/blog/497634/201309/08171028-a5e372741b18431591bb577b1e1c95e6.jpg)
+![](https://en.proft.me/media/java/collectionsTable.png)
 
 - Map 
     **Map** 是一个映射接口，即键值对。**Map** 中的每一个元素包含一个 key 和它对应的值。
@@ -25,11 +25,7 @@ Java 集合主要可以划分为 4 个部分：List 列表、Set 集合、Map �
     - **Set** 是一个不允许有重复元素的集合，**Set** 的实现类有 **HashSet** 和 **TreeSet**。**HashSet** 依赖于 **HashMap**，它实际是通过 **HashMap** 实现的；**TreeSet** 依赖于 **TreeMap**。
     - **List** 是一个有序的队列，每一个元素都有它的索引。第一个元素的索引值是 0。**List** 的实现类有 **LinkedList**、**ArrayList**、**Vector**、**Stack**。
 
-#### 什么是 HashMap
-**HashMap** 是 JDK 1.2 提供的键值映射、线程不安全的数据结构。
 
-#### 什么是 Hashtable
-**Hashtable** 是 Java 一开始就提供的键值映射、线程安全的数据结构。
 
 #### HashMap 和 Hashtable 的区别
 参考[文章](https://blog.csdn.net/wangxing233/article/details/79452946)。
@@ -61,6 +57,69 @@ Java 集合主要可以划分为 4 个部分：List 列表、Set 集合、Map �
     ![](https://img-blog.csdn.net/20180306020714182?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvd2FuZ3hpbmcyMzM=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
     ![](https://img-blog.csdn.net/20180306020658482?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvd2FuZ3hpbmcyMzM=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
 
+#### 代码题：两个有序数组，数组中存在重复数字，合并成一个有序数组，去除重复数字。
+
+## HashMap
+#### 什么是 HashMap
+**HashMap** 是 JDK 1.2 提供的键值映射、线程不安全的数据结构。
+
+#### 什么是 Hashtable
+**Hashtable** 是 Java 一开始就提供的键值映射、线程安全的数据结构。
+
+#### HashMap 的实现原理
+
+
+#### HashMap 中的 get() 方法是如何实现的
+- 对输入的 key 的值计算 hash 值。
+- 首先判断 HashMap 中的数组是否为空和数组的长度是否为 0,如果为空和为 0,则直接放回 null。
+- 如果不为空和 0，计算 key 对应的数组下标，判断对应位置上的第一个 node 是否满足条件。如果满足条件，直接返回。
+- 如果不满足条件，判断当前 node 是否是最后一个。如果是，说明不存在 key，则返回 null。
+- 如果不是最后一个，判断是否是红黑树。如果是红黑树，则使用红黑树的方式获取对应的key。
+- 如果不是红黑树，遍历链表是否有满足条件的。如果有，直接放回，否则返回null。
+
+```java
+public V get(Object key) {
+    Node<K,V> e;
+    return (e = getNode(hash(key), key)) == null ? null : e.value;
+}
+
+/**
+    * Implements Map.get and related methods
+    *
+    * @param hash hash for key
+    * @param key the key
+    * @return the node, or null if none
+    */
+final Node<K,V> getNode(int hash, Object key) {
+    Node<K,V>[] tab; Node<K,V> first, e; int n; K k;
+    if ((tab = table) != null && (n = tab.length) > 0 &&
+        (first = tab[(n - 1) & hash]) != null) {
+        if (first.hash == hash && // always check first node
+            ((k = first.key) == key || (key != null && key.equals(k))))
+            return first;
+        if ((e = first.next) != null) {
+            if (first instanceof TreeNode)
+                return ((TreeNode<K,V>)first).getTreeNode(hash, key);
+            do {
+                if (e.hash == hash &&
+                    ((k = e.key) == key || (key != null && key.equals(k))))
+                    return e;
+            } while ((e = e.next) != null);
+        }
+    }
+    return null;
+}
+```
+
+#### HashMap 可以用在哪些场景
+
+#### HashMap及线程安全的ConcurrentHashMap，以及各自优劣势
 
 #### 什么是 CocurrentHashMap
 **ConcurrentHashMap** 是 Java 并发包中提供的一个线程安全且高效的 **HashMap** 实现。
+
+## ArrayList
+#### ArrayList 底层原理
+
+#### LinkedList 底层原理
+

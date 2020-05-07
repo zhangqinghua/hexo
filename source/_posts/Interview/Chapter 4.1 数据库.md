@@ -138,3 +138,11 @@ Spring 支持 7 种事务传播行为：
 - propagation_nested：如果当前存在事务，则在嵌套事务内执行。如果当前没有事务，则执行与 propagation_required 类似的操作。
 
 Spring 默认的事务传播行为是 propagation_requierd，它适合于绝大多数的情况。假设 ServiveX#methodX() 都工作在事务环境下（即都被 Spring 事务增强了），假设程序中存在如下的调用链：Service1#method1() -> Service2#method2() -> Service3#method3()，那么这 3 个服务类的 3 个方法通过 Spring 的事务传播机制都工作在同一个事务中。
+
+#### SQL优化，常用的索引？
+
+#### 数据库性能调优如何做
+
+#### 常用NOSQL，有做过比较?
+
+#### 数据库事务属性
