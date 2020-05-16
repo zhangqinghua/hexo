@@ -225,3 +225,73 @@ public static native void arraycopy(Object src,  int  srcPos,
 #### LinkedList 的源码解析
 
 #### LinkedList 的遍历方式
+
+## 迭代器
+#### Iterable 是什么
+**Iterable** 是一个接口，有一个抽象方法叫做 **iterator()**，返回结果是一个 **Iterator** 对象（一般是在集合中定义了 **Itr** 内部类，，该类实现了 **Iterator** 接口）
+
+#### Iterator 是什么
+**Iterator** 是一个接口，用于对集合（**Collection**）进行遍历。
+
+#### 可以使用 Iterator 遍历的本质是什么？
+实现 **Iterable** 接口。
+
+#### 哪些集合可以用迭代器进行遍历？
+实现了 **Collection** 接口的集合都可以使用迭代器进行遍历，包括 **Set**、**List**、**Queue**。
+
+**Map** 因为没有实现 **Iterable** 接口，所以不能使用迭代器进行遍历，但是 **Map** 可以使用 **entrySet()** 方法将 key 转成 **Set** 集合从而使用迭代器。
+
+#### foreach 增强循环为什么 JDK 1.5 后才能使用？
+**foreach** 循环底层使用了迭代器的方式，迭代器 1.5 版本才提供。
+
+#### foreach 和迭代器 Iterator 的区别？
+**foreach** 可以遍历数组和集合，迭代器只能遍历集合，不能遍历数组。
+
+#### foreach 有什么缺陷？
+- 不能方便访问数组的下标
+- 不能在 **foreach** 循环中尝试对变量进行赋值，只是一个临时变量
+- 与使用 **Iterator** 相比，不能方便的删除元素
+
+#### 迭代器提供了哪些方法？
+- **hasNext** 用于判断是否还有下一个元素，同一个迭代器只能使用一次，使用一次之后，指针已经指向末尾，再次调用 **hasNext** 方法时，返回 **false**。
+- **next** 用于获取下一个元素，并将指针下移一位。
+- **remove** 用于删除元素，每次调用 **next** 后只能调用一次 **remove** 方法。
+
+#### 什么是 ListIterator？
+在迭代器迭代集合的过程中，不允许对集合进行修改，否则会抛出异常（并发修改）。
+
+**ListIterator** 允许程序员按照任一方向遍历集合，并且可以在迭代期间修改集合并获取迭代器在集合中的位置。
+
+通过 **List.listIterator()** 方法获取一个 **ListIterator**。
+
+#### Iterator 和 ListIterator 的联系和区别？
+**Iterator** 是 **ListIterator** 的父接口。
+
+- **Iterator** 给所有的 **Collection** 使用，而 **ListIterator** 指给 **List** 及其实现类使用。
+- **Iterator** 只提供了 3 个方法：**hasNext**、**next** 和 **remove**。**ListIterator** 提供了其它很多方法，功能较多。
+- **Iterator** 只能对集合进行正序遍历，而 **ListIterator** 提供了正序和逆序遍历。
+- **Iterator** 只能实现删除元素的功能，在修改元素时可能会触发并发修改异常。**ListIterator** 支持在遍历时进行增删改的操作。
+- **Iterator** 不能获取元素的索引，而 **ListIterator** 可以获取元素的前后索引。
+
+## Collections
+#### Collections 是什么？
+**Collections** 是 Java 提供的一个工具类，用于程序员对 **Collection** 进行简化操作。
+
+#### Collections 有什么方法？
+- **void addAll(Collection c, T... elements)**
+    一次性向集中添加若干元素。
+    ```java
+    List<String> list = new ArrayList<>();
+    Collections.addAll(list, "a", "b", "c");
+    ```
+- **void sort(List list)**
+    自然排序，默认使用内部比较器进行排序。
+    ```java
+    List<String> list = new ArrayList<>();
+    Collections.addAll(list, "c", "b", "a");
+
+    Collections.sort(list);
+
+    // 自定义排序
+    Collections.sort(list, (a, b) -> a.lenght > b.lenght);
+    ```
