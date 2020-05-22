@@ -87,7 +87,7 @@ tar xf /data/deploy/Web/icebartech-home/icebartech-home-sys/package.tgz -o -C /d
 ## 体育中心
 
 #### git
-体育中心后端                      git@code.aliyun.com:icebartech-java/icebartech-sportscenter.git     
+体育中心后端                        git@code.aliyun.com:icebartech-java/icebartech-sportscenter.git     
 体育中心PC端                        git@code.aliyun.com:icebartech-web/icebartech-sportscenter-pc.git   
 体育中心后台管理                    git@code.aliyun.com:icebartech-web/icebartech-sportscenter-sys.git  
 体育中心i深圳 （嵌入APP的网页）     git@code.aliyun.com:icebartech-web/icebartech-sportscenter-isz.git  
@@ -95,7 +95,7 @@ tar xf /data/deploy/Web/icebartech-home/icebartech-home-sys/package.tgz -o -C /d
 
 
 #### 网址
-PC端        http://isz.sztyzx.com.cn/pc/ 
+PC端        http://isz.sztyzx.com.cn/pc/
 i深圳       http://isz.sztyzx.com.cn/sz/ 
 手机端      http://isz.sztyzx.com.cn/wechat/ 
 后台管理    http://isz.sztyzx.com.cn/sys/loginPage
@@ -105,6 +105,8 @@ i深圳       http://isz.sztyzx.com.cn/sz/
 交与[云效](https://rdc.aliyun.com/project/258421?spm=0.mix_pipeline.0.0.3fc01c05a48ynN)管理，提交代码自动部署。
 
 Java端使用dev配置。
+
+Web端提交dist自动部署。
 
 #### Redis
 database: 0
