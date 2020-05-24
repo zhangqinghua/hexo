@@ -1,5 +1,5 @@
 ---
-title: Linux 常用操作.md
+title: Linux 常用操作
 
 categories:
 - Linux 系列
