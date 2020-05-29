@@ -193,3 +193,13 @@ Redis
 启用、重启
 /usr/local/redis/bin/redis-server /usr/local/redis/etc/redis.conf 
 密码：Bg360123456 port: 6379
+
+## 餐饮
+https://catering.hanhuimedia.com/sys/loginPage
+
+餐饮平台
+服务器
+47.112.136.181
+root W0S5bJfc
+
+tQgu6LrPMS3Xgb4
