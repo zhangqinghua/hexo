@@ -183,3 +183,31 @@ $ history
 1099  find /data/deploy/Java/ | egrep "icebartech-gsm" 
 1100  history
 ```
+
+## 复制文件
+#### 上传文件到服务器
+```bash
+# 上传文件到服务站指定目录
+scp users/test.txt root@127.0.0.1:/usr/local/users
+
+# 上传文件到服务器指定目录并修改文件名
+scp users/test.txt root@127.0.0.1:/usr/local/users/tests2.txt
+
+# 上传文件夹到服务器指定目录
+scp -r users/ root@127.0.0.1:/usr/local
+
+# 上传文件夹到服务器指定目录并修改文件夹名称
+scp -r users/ root@127.0.0.1:/usr/local/test/
+
+```
+
+#### 从服务器下载文件
+从远程复制到本地，只要将从本地复制到远程的命令的后2个参数调换顺序即可。
+```bash
+scp root@www.runoob.com:/home/root/others/music /home/space/music/1.mp3 
+
+scp -r www.runoob.com:/home/root/others/ /home/space/music/
+
+# 如果远程服务器防火墙有为scp命令设置了指定的端口，我们需要使用 -P 参数来设置命令的端口号，命令格式如下：
+scp -P 4588 remote@www.runoob.com:/usr/local/sin.sh /home/administrator
+```
