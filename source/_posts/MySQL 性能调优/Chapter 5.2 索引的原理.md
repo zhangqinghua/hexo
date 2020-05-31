@@ -165,5 +165,4 @@ InnoDB 存储引擎支持覆盖索引（covering index，或称索引覆盖）�
 
 > 注意：覆盖索引技术最早是在 InnoDB Plugin 中完成并实现，这意味着对于 InnoD B版本小于 1.0 的，或者 MySQL 数据库版本为 5.0 以下的，InnoDB 存储引擎不支持覆盖索引特性。
 
-
-
+![](http://assets.processon.com/chart_image/5ed3cfc55653bb073440bcd1.png?_=1590939667033)
