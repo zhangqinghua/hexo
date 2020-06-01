@@ -4,5 +4,6 @@
     "markdown.preview.fontFamily": "Source Han Sans HW",
     "terminal.integrated.fontWeightBold": "normal",
     "terminal.integrated.fontSize": 11,
-    "debug.console.fontSize": 11
+    "debug.console.fontSize": 11,
+    "files.autoSave": "afterDelay"
 }
