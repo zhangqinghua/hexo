@@ -48,6 +48,13 @@ $ du folder
 240592	folder/SubFolder1
 240640	folder
 
+# 直查指定目录大小
+$ du --max-depth=1 /data/ -h
+1.9G	/data/deploy
+4.0K	/data/wwwlogs
+216M	/data/mysql
+2.1G	/data/
+
 # -a 全部文件与目录大小都列出来
 $ du -a folder
 16	folder/.DS_Store
@@ -79,6 +86,17 @@ $ du -h folder
 8.0K	folder/SubFolder2
 117M	folder/SubFolder1
 118M	folder
+```
+
+#### 磁盘释放已删除文件
+已删除的文件可能由于进程未结算，还占用空间。这时候需要杀掉进程或长期服务器才能把空间释放出来。
+
+```bash
+# 查询已删除但未释放空间的文件（-h 以合适的单位显示）
+$ lsof | grep deleted -h
+
+# 对待这种进程不停对文件写日志的操作，要释放文件占用的磁盘空间，最好在线清空这个文件
+$ echo "" > myfile.iso
 ```
 
 #### 磁盘的分区和格式化
@@ -140,6 +158,10 @@ $ stat /data
 $ find  -name "*.jar"
 ./file/icebartech-cutterbar.jar
 ./file/icebartech-cutterbar-1.jar
+
+# 将指定大小的文件搜索处理
+find . -type f -size +800M
+
 
 # 模糊搜索指定文件（目录、文件名）
 $ find /data -cmin -100 | egrep  "icebartech"

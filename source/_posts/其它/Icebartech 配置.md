@@ -58,6 +58,20 @@ build.command=sudo cnpm install babel-loader --save && sudo cnpm install && sudo
 
 ```
 
+## Agent操作
+```bash
+# 启动
+/home/staragent/bin/staragentctl restart;
+# 重启
+/home/staragent/bin/staragentctl restart;
+# 查看状态
+/home/staragent/bin/staragentctl status;
+# 卸载
+1. /home/staragent/bin/staragentctl stop;
+2. rm -rf /home/staragent;
+3. rm /usr/sbin/staragent_sn
+```
+
 ## 项目数据
 
 1. 阿里云服务器
