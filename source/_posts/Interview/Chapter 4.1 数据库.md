@@ -12,11 +12,11 @@ MySQL 的锁大致分为 3 种：表锁、页锁、行锁。
 
 他们的区别如下
 
-|锁名称|开销|并发量|锁定粒度|冲突概率|支持引擎|
+|锁名称|锁定粒度|开销|并发量|冲突概率|支持引擎|
 | :-- |
-|表锁|小|低|整张表|大|MyISAM、InnoDB|
-|页锁|中|中|邻的一组记录|中|BDB|
-|行锁|大|高|指定的记录|小|InnoDB|
+|表锁|整张表|小|低|大|MyISAM、InnoDB|
+|页锁|邻的一组记录|中|中|中|BDB|
+|行锁|指定的记录|大|高|小|InnoDB|
 
 #### MySQL 中有哪些不同的表格（存储引擎）？
 数据库存储引擎是数据库底层软件组件，数据库管理系统使用数据引擎进行创建、查询、更新和删除数据操作。不同的存储引擎提供不同的存储机制、索引技巧、锁定水平等功能，使用不同的存储引擎还可以获得特定的功能。
@@ -40,88 +40,123 @@ MySQL 的锁大致分为 3 种：表锁、页锁、行锁。
 
 |隔离界别|描述|脏读|不可重复读|幻读|
 | :-- |
-|read uncommited|读未提交|不可避免|不可避免|不可避免|
-|read committed|读已提交|可避免|不可避免|不可避免|
-|repeatable read|可重复读|可避免|可避免|不可避免|
-|serializable|串行化|可避免|可避免|可避免|
-
+|Read uncommited|读未提交|不可避免|不可避免|不可避免|
+|Read committed|读已提交|可避免|不可避免|不可避免|
+|Repeatable read|可重复读|可避免|可避免|不可避免|
+|Serializable|串行化|可避免|可避免|可避免|
 
 #### CHAR 和 VARCHAR 的区别？
-1. CHAR 和 VARCHAR 类型在存储和检索方面有所不同
-
-2. CHAR 列长度固定为创建表时声明的长度，长度值范围是 1 到 255，当 CHAR 值被存储时，它们被用空格填充到特定长度，检索 CHAR 值时需删除尾随空格。
 
 #### 主键和候选键有什么区别？
-1. 表格的每一行都由主键唯一标识,一个表只有一个主键。
-
-1. 主键也是候选键。按照惯例，候选键可以被指定为主键，并且可以用于任何外键引用。
 
 #### myisamchk 是用来做什么的？
-它用来压缩 MyISAM 表，这减少了磁盘或内存使用。
 
 #### MyISAM Static 和 MyISAM Dynamic 有什么区别？
-在 MyISAM Static 上的所有字段有固定宽度。动态 MyISAM 表将具有像 TEXT，BLOB 等字段，以适应不同长度的数据类型。
-
-MyISAM Static 在受损情况下更容易恢复。
 
 #### 如果一个表有一列定义为TIMESTAMP，将发生什么？
-每当行被更改时，时间戳字段将获取当前时间戳。
 
-#### 列设置为AUTO INCREMENT时，如果在表中达到最大值，会发生什么情况？
-它会停止递增，任何进一步的插入都将产生错误，因为密钥已被使用。
+#### 列设置为 AUTO INCREMENT 时，如果在表中达到最大值，会发生什么情况？
+它会停止递增，任何进一步的插入都将产生错误，因为密钥已被使用。（没法复现，不知多少才是最大值）
 
 #### 怎样才能找出最后一次插入时分配了哪个自动增量？
-LAST_INSERT_ID 将返回由 auto_increment 分配的最后一个值，并且不需要指定表名称。
+`LAST_INSERT_ID` 函数将返回由 `AUTO_INCREMENT` 分配的最后一个值，并且不需要指定表名称。
 
-#### 你怎么看到为表格定义的所有索引？
 ```sql
-show index from table_name;
+-- 插入数据，没有指定Id
+INSERT INTO user(id, name) VALUES(NULL, 'zhangsan');
+
+-- 查询指定的新增的Id（当前客户端的）
+select LAST_INSERT_ID();
+-- 10
 ```
 
-#### liek 声明中的 ％ 和 _ 是什么意思？
-％ 对应于 0 个或更多字符，_ 只是 like 语句中的一个字符。
+#### 你怎么看到为表格定义的所有索引？
+使用 `SHOW INDEX` 命令可以查看此表所定义的索引。
+
+```sql
+SHOW INDEX FROM table_name;
+```
+
+#### like 声明中的 ％ 和 _ 是什么意思？
+1. `%` 表示任意 0 个或多个字符。可匹配任意类型和长度的字符，有些情况下若是中文，请使用两个百分号表示。
+1. `_` 表示任意单个字符。匹配单个任意字符，它常用来限制表达式的字符长度语句。
+1. `\` 表示转义字符。
+1. `[]` ?? 表示括号内所列字符中的一个（类似正则表达式）。指定一个字符、字符串或范围，要求所匹配对象为它们中的任一个。
+1. `[^]` ?? 表示不在括号所列之内的单个字符。其取值和 [] 相同，但它要求所匹配对象为指定字符以外的任一个字符。
+
+示例：
+1. `%a` 以 a 结尾的数据
+1. `a%` 以 a 开头的数据
+1. `%a%` 含有 a 的数据
+1. `%a\_`  以 a_ 结尾的数据
+1. `_a` 两位且结尾字母是 a 的
+1. `a_` 两位且开头字母是 a 的
+1. `_a_` 三位且中间字母是 a 的
 
 #### 如何在 Unix 和 MySQL 时间戳之间进行转换？
-UNIX_TIMESTAMP 是从 MySQL 时间戳转换为 Unix 时间戳的命令
-FROM_UNIXTIME 是从 Unix 时间戳转换为 MySQL 时间戳的命令
+1. Unix 时间精确到秒，从协调世界时 1970 年 1 月 1 日 0 时 0 分 0 秒起至现在的总秒数。
+1. MySQL `FROM_UNIXTIME` 函数将 Unix 时间戳转为 MySQL 日期。
+1. MySQL `UNIX_TIMESTAMP` 函数将 MySQL 日期转换为 Unix 时间戳。
+
+```sql
+-- 获取 MySQL 当前时间
+SELECT NOW();
+-- 2020-06-02 17:11:09
+
+-- 获取 Unix 时间戳
+SELECT UNIX_TIMESTAMP(); 
+-- 1591089100
+
+-- Unix 时间戳转换成为 MySQL 时间
+SELECT FROM_UNIXTIME(1156219870); 
+-- 2006-08-22 12:11:10
+
+-- MySQL 日期转换成为 Unix 时间戳
+SELECT UNIX_TIMESTAMP(NOW()); 
+-- 1591089100
+```
 
 #### 列对比运算符是什么？
-在SELECT语句的列比较中使用=，<>，<=，<，> =，>，<<，>>，<=>，AND，OR或LIKE运算符。
+比较运算符可以判断表中的哪些记录是符合条件的。比较结果为真，则返回 1，为假则返回 0，比较结果不确定则返回 NULL。
+
+在 `SELECT` 语句的列比较中使用 `=`，`<>`，`<`，`<=`，`>`，`>=`，`<<`，`>>`，`<=>`，`AND`，`IS NULL`, `IS NOT NULL`, `OR` 或 `LIKE `运算符。
 
 #### BLOB 和 TEXT 有什么区别？
 1. BLOB 是一个二进制对象，可以容纳可变数量的数据。TEXT 是一个不区分大小写的 BLOB。
-
-1. BLOB 和 TEXT 类型之间的唯一区别在于对BLOB值进行排序和比较时区分大小写，对 TEXT 值不区分大小写。
+1. BLOB 和 TEXT 类型之间的唯一区别在于对 BLOB 值进行排序和比较时区分大小写，对 TEXT 值不区分大小写。
 
 #### mysql_fetch_array 和 mysql_fetch_object 的区别是什么？
-1. mysql_fetch_array – 将结果行作为关联数组或来自数据库的常规数组返回。
+PHP 不记。
 
+1. mysql_fetch_array – 将结果行作为关联数组或来自数据库的常规数组返回。
 1. mysql_fetch_object – 从数据库返回结果行作为对象。
 
 #### MyISAM 表格将在哪里存储，并且还提供其存储格式？
-每个MyISAM表格以三种格式存储在磁盘上：
-1. “.frm”文件存储表定义
-1. 数据文件具有“.MYD”（MYData）扩展名
-1. 索引文件具有“.MYI”（MYIndex）扩展名
+在没有指定的情况下，MySQL 数据存储在 `./data` 目录下。
+
+每个 MyISAM 表格以三种格式存储在磁盘上：
+1. `.frm` 文件存储表定义
+1. `.MYD` 文件存储表数据
+1. `.MYI` 文件存储表索引
 
 #### MySQL 如何优化 DISTINCT？
-DISTINCT 在所有列上转换为 GROUP BY，并与 ORDER BY 子句结合使用。
+`DISTINCT` 在所有列上转换为 `GROUP BY`，并与 `ORDER BY` 子句结合使用。
 
 ```sql
-select distinct t1.a from t1, t2 where t1.a = t2.a;
+SELECT DISTINCT t1.a FROM t1, t2 WHERE t1.a = t2.a;
 ```
 
 #### 如何显示前 50 行？
 ```sql
-select * from table_name limit 0, 50;
+SELECT * FROM table_name LIMIT 0, 50;
 ```
 
 #### 可以使用多少列创建索引？
 任何标准表最多可以创建 16 个索引列。
 
 #### NOW() 和 CURRENT_DATE() 有什么区别？
-1. NOW() 命令用于显示当前年份，月份，日期，小时，分钟和秒。
-1. CURRENT_DATE() 仅显示当前年份，月份和日期。
+1. `NOW()` 命令用于显示当前年份，月份，日期，小时，分钟和秒。
+1. `CURRENT_DATE()` 仅显示当前年份，月份和日期。
 
 #### 什么是非标准字符串类型？
 1. TINYTEXT
@@ -141,10 +176,9 @@ select * from table_name limit 0, 50;
 1. FROMDAYS（INT） – 将整数天数转换为日期值。
 
 #### MySQL 支持事务吗？
-在缺省模式下，MySQL 是 autocommit 模式的，所有的数据库更新操作都会即时提交，所以在缺省情况下，MySQL 是不支持事务的。
-
-但是如果你的 MySQL 表类型是使用 InnoDB Tables 或 BDB tables的话，你的 MySQL 就可以使用事务处理,使用 SET
-AUTOCOMMIT=0 就可以使 MySQL 允许在非 autocommit 模式，在非 autocommit 模式下，你必须使用 COMMIT 来提交你的更改，或者用 ROLLBACK 来回滚你的更改。
+1. MySQL 默认的 InnoDB 存储引擎是支持事务的，其它存储引擎不支持
+1. 缺省模式下，MySQL 是 autocommit 模式的，所有的数据库更新操作都会即时提交。
+1. 可以设置 `SET AUTOCOMMIT = 0` 关闭 autocommit 模式，在这种情况下，你必须使用 COMMIT 来提交你的更改，或者用 ROLLBACK 来回滚你的更改。
 
 #### MySQL 里记录货币用什么字段类型好
 NUMERIC 和 DECIMAL 类型被 MySQL 实现为同样的类型，这在 SQL92 标准允许。他们被用于保存值，该值的准确精度是极其重要的值，例如与金钱有关的数据。当声明一个类是这些类型之一时，精度和规模的能被(并且通常是)指定。
@@ -162,12 +196,16 @@ salary DECIMAL(9,2)
 MySQL 服务器通过权限表来控制用户对数据库的访问，权限表存放在 MySQL 数据库里，由 mysql_install_db 脚本初始化。这些权限表分别 user，db，table_priv，columns_priv 和 host。
 
 #### 列的字符串类型可以是什么？
+
 字符串类型是：
 1. SET
-1. BLOB
 1. ENUM
 1. CHAR
+1. VARCHAR
+1. BLOB
 1. TEXT
+
+???
 
 #### MySQL 数据库作发布系统的存储，一天五万条以上的增量，预计运维三年,怎么优化？
 1. 选择合适的表字段数据类型和存储引擎，适当的添加索引。
@@ -176,6 +214,8 @@ MySQL 服务器通过权限表来控制用户对数据库的访问，权限表�
 1. 添加缓存机制，比如 memcached，apc 等。
 1. 不经常改动的页面，生成静态页面。
 1. 书写高效率的SQL。比如 SELECT * FROM TABEL 改为 SELECT field_1, field_2, field_3 FROM TABLE.
+
+???
 
 ## 108道Java面试题:工作10年，面试超过500人想进阿里总结出的!
 

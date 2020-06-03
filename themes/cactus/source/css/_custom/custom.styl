@@ -22,8 +22,20 @@ article .content img, article .content video {
 
 /*概要缩小边框*/
 article .content blockquote {
-    margin: 1rem 0!important;
-    padding: 0.5em 0!important;
+    margin: 1rem 0 !important;
+    padding: 0.5em 0 !important;
+}
+
+/*代码优化*/
+.highlight .code pre {
+  font-size: 14px !important;
+}
+
+.content code{
+  font-family: $font-family-body;
+  border: 0;
+  padding: 0 0;
+  color: #c9c;
 }
 
 /*mermaid限制高度，居中*/
