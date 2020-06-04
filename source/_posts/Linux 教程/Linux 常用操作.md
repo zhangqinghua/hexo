@@ -215,12 +215,11 @@ scp users/test.txt root@127.0.0.1:/usr/local/users
 # 上传文件到服务器指定目录并修改文件名
 scp users/test.txt root@127.0.0.1:/usr/local/users/tests2.txt
 
-# 上传文件夹到服务器指定目录
-scp -r users/ root@127.0.0.1:/usr/local
+# （test 目录存在）上传 users 文件夹到服务器 /usr/local/test 目录
+scp -r users root@127.0.0.1:/usr/local/test
 
-# 上传文件夹到服务器指定目录并修改文件夹名称
-scp -r users/ root@127.0.0.1:/usr/local/test/
-
+# （test 目录不存在）上传 users 文件夹到服务器指 /usr/local/ 目录并修改文件夹名称为 test
+scp -r users root@127.0.0.1:/usr/local/test
 ```
 
 #### 从服务器下载文件
