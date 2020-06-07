@@ -144,3 +144,4 @@ SId	CId	score	SId(1)	CId(1)	score(1)
 06	01	31.0	null    null    null		
 ```
 
+[50道SQL练习题及答案与详细分析](https://www.jianshu.com/p/476b52ee4f1b)
