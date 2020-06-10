@@ -217,3 +217,18 @@ https://catering.hanhuimedia.com/sys/loginPage
 root W0S5bJfc
 
 tQgu6LrPMS3Xgb4
+
+## 书展
+现在的网址是这个：https://api.shenzhenshuzhan.com/pc/#/
+他要 www.shenzhenshuzhan.com 这个也能访问
+
+账号：shenzhenshuzhan
+密码：10086123...
+
+120.24.156.114       
+root/123Lahmy!c
+
+---数据库 ---
+120.24.156.114 
+wcmall 
+wcmall
