@@ -372,9 +372,9 @@ Time: 存储时间部分得数据
 #### SQL语言包括哪几部分？每部分都有哪些操作关键字？
 SQL语言包括数据定义(DDL)、数据操纵(DML),数据控制(DCL)和数据查询（DQL）四个部分。
 
-数据定义：Create Table,Alter Table,Drop Table, Craete/Drop Index等
+数据定义：Create Table,Alter Table,Drop Table, Create/Drop Index等
 
-数据操纵：Select ,insert,update,delete,
+数据操纵：Select ,insert, update, delete,
 
 数据控制：grant,revoke
 
@@ -455,9 +455,6 @@ SQL语言包括数据定义(DDL)、数据操纵(DML),数据控制(DCL)和数据�
 |索引|该字段没有重复值，但可以有一个空值（？）|是提高查询排序的速度|一个表可以有多个唯一索引|
 
 #### 你可以用什么来确保表格里的字段只接受特定范围里的值?
-Check限制，它在数据库表格里被定义，用来限制输入该列的值。
-
-触发器也可以被用来限制数据库表格里的字段能够接受的值，但是这种办法要求触发器在表格里被定义，这可能会在某些情况下影响到性能。
 
 #### 说说对SQL语句优化有哪些方法？（选择几条）
 （1）Where子句中：where表之间的连接必须写在其他Where条件之前，那些可以过滤掉最大数量记录的条件必须写在Where子句的末尾.HAVING最后。
