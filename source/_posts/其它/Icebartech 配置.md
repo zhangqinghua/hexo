@@ -232,3 +232,11 @@ root/123Lahmy!c
 120.24.156.114 
 wcmall 
 wcmall
+
+## 建筑
+后台登录账号密码：测试用户：13164106093 123456
+后台地址：http://www.szzhiyiruanjian.com/#/login
+
+47.112.12.47
+
+重置密码：Aa10086...
