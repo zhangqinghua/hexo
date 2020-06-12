@@ -204,9 +204,3 @@ PS Perm Generation
 ```
 
 `-F` 强制模式。如果指定的 pid 没有响应，请使用 `jmap -dump` 或 `jmap -histo` 选项。此模式下，不支持 live 子选项。
-
-
-
-#### jconsole
-
-#### Visual VM

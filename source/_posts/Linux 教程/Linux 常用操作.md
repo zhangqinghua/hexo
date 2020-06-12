@@ -232,3 +232,14 @@ scp -r www.runoob.com:/home/root/others/ /home/space/music/
 # 如果远程服务器防火墙有为scp命令设置了指定的端口，我们需要使用 -P 参数来设置命令的端口号，命令格式如下：
 scp -P 4588 remote@www.runoob.com:/usr/local/sin.sh /home/administrator
 ```
+
+## 其他
+脚本贴心的帮我们释放了一些内存资源，以便获取更多的资源进行挖矿。
+
+众所周知，Linux 系统会随着长时间的运行，会产生很多缓存，清理方式就是写一个数字到 drop_caches 文件里，这个数字通常为 3。
+
+sync 命令将所有未写的系统缓冲区写到磁盘中，执行之后就可以放心的释放缓存了。
+
+```bash
+sync && echo 3 >/proc/sys/vm/drop_caches 
+```
