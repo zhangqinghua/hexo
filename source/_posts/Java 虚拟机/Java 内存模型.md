@@ -47,10 +47,8 @@ Java 线程之间的通信采用的是过共享内存模型，这里提到的共
 
 从整体来看，这两个步骤实质上是线程 A 在向线程 B 发送消息，而且这个通信过程必须要经过主内存。JMM 通过控制主内存与每个线程的本地内存之间的交互，来为 Java 程序员提供内存可见性保证。
 
-上面也说到了，Java 内存模型只是一个抽象概念，那么它在Java中具体是怎么工作的呢？为了更好的理解上 Java 内存模型工作方式，下面就 JVM 对 Java 内存模型的实现、硬件内存模型及它们之间的桥接做详细介绍。
-
 ## JVM 对 Java 内存模型的实现
-在 JVM 内部，Java 内存模型把内存分成了两部分：线程栈区和堆区，下图展示了Java内存模型在JVM中的逻辑视图：
+在 JVM 内部，Java 内存模型把内存分成了两部分：线程栈区和堆区，下图展示了 Java 内存模型在 JVM 中的逻辑视图：
 
 ![](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTYwOTIxMTgyODM3Njk3?x-oss-process=image/format,png)
 
@@ -82,7 +80,24 @@ JVM 中运行的每个线程都拥有自己的线程栈，线程栈包含了当�
 
 ![](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTYwOTIxMTgyOTQ4NjAx?x-oss-process=image/format,png)
 
-## 硬件内存架构
-不管是什么内存模型，最终还是运行在计算机硬件上的，所以我们有必要了解计算机硬件内存架构，下图就简单描述了当代计算机硬件内存架构：
+#### 共享对象的可见性
+当多个线程同时操作同一个共享对象时，如果没有合理的使用 `volatile` 和 `synchronization` 关键字，一个线程对共享对象的更新有可能导致其它线程不可见。
 
-![](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTYwOTIxMTgzMDEzNTcw?x-oss-process=image/format,png)
+想象一下我们的共享对象存储在主存，一个 CPU 中的线程读取主存数据到 CPU 缓存，然后对共享对象做了更改，但 CPU 缓存中的更改后的对象还没有 flush 到主存，此时线程对共享对象的更改对其它 CPU 中的线程是不可见的。最终就是每个线程最终都会拷贝共享对象，而且拷贝的对象位于不同的 CPU 缓存中。
+
+下图展示了上面描述的过程。左边 CPU 中运行的线程从主存中拷贝共享对象 obj 到它的 CPU 缓存，把对象 obj 的 count 变量改为 2。但这个变更对运行在右边 CPU 中的线程不可见，因为这个更改还没有 flush 到主存中：
+
+![](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTYwOTIxMTgzMjE4NjUx?x-oss-process=image/format,png)
+
+要解决共享对象可见性这个问题，我们可以使用 Java `volatile` 关键字。Java `volatile` 关键字可以保证变量会直接从主存读取，而对变量的更新也会直接写到主存。`volatile` 原理是基于 CPU 内存屏障指令实现的，后面会讲到。
+
+#### 竞争现象
+如果多个线程共享一个对象，如果它们同时修改这个共享对象，这就产生了竞争现象。
+
+如下图所示，线程 A 和线程 B 共享一个对象 obj。假设线程 A 从主存读取 Obj.count 变量到自己的 CPU 缓存，同时，线程 B 也读取了 Obj.count 变量到它的 CPU 缓存，并且这两个线程都对 Obj.count 做了加 1 操作。此时，Obj.count 加 1 操作被执行了两次，不过都在不同的 CPU 缓存中。
+
+如果这两个加 1 操作是串行执行的，那么 Obj.count 变量便会在原始值上加 2，最终主存中的 Obj.count 的值会是 3。然而下图中两个加 1 操作是并行的，不管是线程 A 还是线程 B 先 flush 计算结果到主存，最终主存中的 Obj.count 只会增加 1 次变成 2，尽管一共有两次加 1 操作。
+
+![](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTYwOTIxMTgzMjUxODcw?x-oss-process=image/format,png)
+
+要解决上面的问题我们可以使用 Java `synchronized` 代码块。`synchronized` 代码块可以保证同一个时刻只能有一个线程进入代码竞争区，`synchronized` 代码块也能保证代码块中所有变量都将会从主存中读，当线程退出代码块时，对所有变量的更新将会 flush 到主存，不管这些变量是不是 `volatile` 类型的。

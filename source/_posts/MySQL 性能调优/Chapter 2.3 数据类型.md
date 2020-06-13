@@ -73,3 +73,9 @@ BINARY 和 VARBINARY 类似于 CHAR 和 VARCHAR，不同的是它们包含二进
 BLOB 是一个二进制大对象，可以容纳可变数量的数据。有 4 种 BLOB 类型：TINYBLOB、BLOB、MEDIUMBLOB 和 LONGBLOB。它们区别在于可容纳存储范围不同。
 
 有 4 种 TEXT 类型：TINYTEXT、TEXT、MEDIUMTEXT 和 LONGTEXT。对应的这 4 种 BLOB 类型，可存储的最大长度不同，可根据实际情况选择。
+
+https://blog.csdn.net/haihui_yang/article/details/103229425
+
+所以得出的结论是： 只分配真正需要的空间
+
+PS：以后终于可以理直气壮的跟别人讲：varchar 的长度不宜过长，满足长度要求即可；也不必强行将长度设置成 4 的倍数，这对性能提升是没有效果的。
