@@ -108,11 +108,8 @@ Compiled Failed   Invalid  Time     FailedType  FailedMethod
 # FGCT : 老年代垃圾回收时间
 # GCT :  垃圾回收总消耗时间
 zhangqinghua$ jstat -gc 1262
-S0C    S1C     S0U     S1U   EC       EU        OC         
-26112.0 24064.0 6562.5  0.0   564224.0 76274.5   434176.0   
-
-OU        PC       PU         YGC    YGCT    FGC    FGCT     GCT   
-388518.3  524288.0 42724.7    320    6.417   1      0.398    6.815
+S0C    S1C     S0U     S1U   EC       EU        OC          OU        PC       PU         YGC    YGCT    FGC    FGCT     GCT   
+26112.0 24064.0 6562.5  0.0   564224.0 76274.5   434176.0   388518.3  524288.0 42724.7    320    6.417   1      0.398    6.815
 
 # 这个命令意思就是每隔 2000ms 输出 1262 的 gc 情况，一共输出 20 次
 zhangqinghua$ jstat -gc 1262 2000 20
