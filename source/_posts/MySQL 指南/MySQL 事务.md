@@ -1,8 +1,8 @@
 ---
-title: Chapter 8.1 事务
+title: MySQL 事务
 
 categories:
-- MySQL 性能调优
+- MySQL 指南
 
 date: 2020-04-28 00:00:81
 ---

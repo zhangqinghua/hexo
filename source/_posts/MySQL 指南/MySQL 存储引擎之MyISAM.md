@@ -1,8 +1,8 @@
 ---
-title: Chapter 4.1 MySQL 常用存储引擎之 MyISAM
+title: MySQL 存储引擎之MyISAM
 
 categories:
-- MySQL 性能调优
+- MySQL 指南
 
 date: 2020-04-28 00:00:41
 ---

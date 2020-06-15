@@ -175,6 +175,24 @@ Nginx系源码安装，下载包位于/home/downlaods/nginx-1.8.0，安装位于
 /usr/local/nginx/sbin/nginx -s reload
 ```
 
+## 官网
+120.76.100.114
+root CzjdqsaW
+
+#### 前端
+http://www.icebartech.com/
+
+jenkins: 正式环境 icebar
+
+#### 后台
+http://admin.icebartech.com/admin/loginIndex
+
+/usr/local/tomcat
+
+启动：./usr/local/tomcat/bin/startup.sh
+
+usr/local/nginx/conf/vhost/admin.icebartech.com.conf 
+
 ## 盆栽种植
 微服务项目。
 

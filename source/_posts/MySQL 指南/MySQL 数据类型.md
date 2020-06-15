@@ -1,8 +1,8 @@
 ---
-title: Chapter 2.3 数据类型
+title: MySQL 基础之数据类型
 
 categories:
-- MySQL 性能调优
+- MySQL 指南
 
 date: 2020-04-28 00:00:23
 ---

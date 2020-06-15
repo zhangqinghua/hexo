@@ -1,8 +1,8 @@
 ---
-title: Chapter 2.2 SQL 练习题
+title: MySQL SQL 练习题
 
 categories:
-- MySQL 性能调优
+- MySQL 指南
 
 date: 2020-04-28 00:00:22
 ---

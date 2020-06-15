@@ -1,8 +1,8 @@
 ---
-title: Chapter 4.1 数据库
+title: MySQL 面试题
 
 categories:
-- Interview
+- MySQL 指南
 
 date: 2020-04-28 00:00:41
 ---

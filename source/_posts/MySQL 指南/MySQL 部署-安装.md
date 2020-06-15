@@ -1,13 +1,12 @@
 ---
-title: 1.1 MySQL的安装
+title: MySQL 部署-安装
 
 categories:
-- MySQL教程
+- MySQL 指南
 
-date: 2020-03-08
+date: 2020-04-28 00:00:01
 ---
 
-#### 测试
 ## 使用yum安装MySQL
 ### 卸载旧的MySQL
 ```bash
