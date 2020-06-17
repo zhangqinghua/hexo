@@ -72,50 +72,15 @@ build.command=sudo cnpm install babel-loader --save && sudo cnpm install && sudo
 3. rm /usr/sbin/staragent_sn
 ```
 
-## 项目数据
+## 服务器
+|IP|账号|密码|备注|
+| :- |
+|120.76.156.141|root|bwwIQb2mcGAGPlIL|冰棍官网服务器|
+|8.129.214.203|root|Bg360123456|开发服务器一|
+|120.77.246.50|root|Bo9rDeUA|开发服务器二|
 
-1. 阿里云服务器
-    120.76.156.141
-    root CQypEz5W
-    ftp ice REtaCf
-    redis Yah6lkNoHm1VtoeZChyzinevnPtkrUa6
-    Mysql root 3fBsKHwVuwo1gspj
-
-    120.76.100.114
-    root CzjdqsaW
-    redis ZUravFit3fxQJ0VlzwxW8UEmEmK3LfVE
-    Mysql root o7dP6ftMSOqKKsRP
-
-    120.76.98.47
-    root VsrmIb1s
-    redis z0fMIYf3KbGxm2bAml8Acqe71JeIehC8
-    Mysql root BgQ0EJktyVNdAqWG
-
-    120.76.102.155
-    root kwAPYE6o
-    redis XKKojoTM2hC4jHEqQDVRvvXUX6BthPLY
-    Mysql root BgQ0EJktyVNdAqWG
-    jenkins admin 9TlbyqHS
-
-    120.77.246.50
-    root Bo9rDeUA
-
-1. 手机膜
-    深圳服务器
-    香港服务器
-
-1. 爱美丽
-
-1. 名博
-    https://mingbo.mib2019.com/api/swagger-ui.html
-    https://mingbo.mib2019.com/sys
-
-1. 奥尼
-    服务器1 ssh -22 root@218.17.171.114 aoni.com 
-    服务器2 ssh -23 root@218.17.171.114 aoni.com 
 
 ## 体育中心
-
 git
 体育中心后端                        git@code.aliyun.com:icebartech-java/icebartech-sportscenter.git     
 体育中心PC端                        git@code.aliyun.com:icebartech-web/icebartech-sportscenter-pc.git   
@@ -176,13 +141,25 @@ Nginx系源码安装，下载包位于/home/downlaods/nginx-1.8.0，安装位于
 ```
 
 ## 官网
-120.76.100.114
-root CzjdqsaW
+|120.76.156.141|root|bwwIQb2mcGAGPlIL|冰棍官网服务器|
 
 #### 前端
-http://www.icebartech.com/
+https://www.icebartech.com/
+https://admin.icebartech.com/admin
+
+
+svn://120.76.102.155/icebar/common/icebar-www
+svn://120.76.102.155/icebar/production/WebCode/icebar
 
 jenkins: 正式环境 icebar
+
+后端启动：/data/deploy/Java/tomcat/bin/startup.sh
+
+nginx: /data/vhost/www.ice....
+
+nginx -t
+nginx -s relaod
+
 
 #### 后台
 http://admin.icebartech.com/admin/loginIndex
