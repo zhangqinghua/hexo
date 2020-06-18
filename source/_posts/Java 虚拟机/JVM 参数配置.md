@@ -24,11 +24,20 @@ date: 2020-01-21
 |`-XX:+UseParalledlOldGC`|使用Parallel Old收集器|`java -jar -XX:+UseParalledlOldGC xx.jar`|
 |`-XX:+UseConcMarkSweepGC`|使用并发收集器|`java -jar -XX:+UseConcMarkSweepGC xx.jar`|
 ||
+|并行收集器设置|
+|`-XX:ParallelGCThreads`|设置并行收集器收集时使用的CPU数。并行收集/线程数|`java -jar -XX:ParallelGCThreads=3 xx.jar`|
+|`-XX:MaxGCPauseMillis`|设置并行收集最大暂停时间|`java -jar -XX:MaxGCPauseMillis=100 xx.jar`|
+|`-XX:GCTimeRatio`|设置垃圾回收时间占程序运行时间的百分比.公式为1/(1+n)|`java -jar -XX:GCTimeRatio=18 xx.jar`|
+||
 |垃圾回收统计信息|
 |`-XX:+PrintGC`|每次触发GC的时候打印相关日志|`java -jar -XX:+PrintGC xx.jar`|
 |`-XX:+PrintGCDetails`|启动时控制台打印各个区的详细情况|`java -jar -XX:+PrintGCDetails xx.jar`|
 |`-XX:+PrintGCTimeStamps`|||
 |`-Xloggc:filename`|
+||
+|并发收集器设置|
+|`-XX:+CMSIncrementalMode`|设置为增量模式，适用于单CPU情况|`java -jar -XX:+CMSIncrementalMode xx.jar`|
+|`-XX:ParallelGCThreads`|Parallel回收并行处理的线程数，默认CPU核数|`java -jar -XX:+ParallelGCThreads=3 xx.jar`|
 ||
 |溢出处理|
 |`-XX:+HeapDumpOnOutOfMemoryError`|在内存溢出时导出整个堆信息|`java -jar -XX:HeapDumpOnOutOfMemoryError xx.jar`|
@@ -36,5 +45,7 @@ date: 2020-01-21
 ||
 |栈配置|
 |`-Xss`|指定线程最大的栈空间大小，默认1m|`java -jar -Xss1m xx.jar`|
+
+
 
 https://blog.csdn.net/yswKnight/article/details/79372276
