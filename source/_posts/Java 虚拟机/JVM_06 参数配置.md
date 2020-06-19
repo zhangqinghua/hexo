@@ -1,15 +1,20 @@
 ---
-title: JVM 参数配置
+title: JVM_06 参数配置
 
 categories:
 - Java 虚拟机
 
-date: 2020-01-21
+date: 2020-01-01 00:00:06
 ---
 在虚拟机运行的过程中，如果可以跟踪系统的运行状态，那么对于问题的故障排查会有一定的帮助，为此，在虚拟机提供了一些跟踪系统状态的参数，使用给定的参数执行Java虚拟机，就可以在系统运行时打印相关日志，用于分析实际问题。我们进行虚拟机参数配置，其实就是围绕着堆、栈、方法区、进行配置。
 
 |参数|描述|示例|
 | :- |
+|`-Xverify`|关闭大部分的类验证措施|`java -jar -Xverify:none xx.jar`|
+||
+|栈配置|
+|`-Xss`|指定线程最大的栈空间大小，默认1m|`java -jar -Xss1m xx.jar`|
+||
 |堆配置|
 |`-Xms`|启动时初始堆大小，一般跟下面相等|`java -jar -Xms256m xx.jar`|
 |`-Xmx`|获得的最大堆大小，一般跟上面相等|`java -jar -Xmx1024m xx.jar`|
@@ -42,10 +47,5 @@ date: 2020-01-21
 |溢出处理|
 |`-XX:+HeapDumpOnOutOfMemoryError`|在内存溢出时导出整个堆信息|`java -jar -XX:HeapDumpOnOutOfMemoryError xx.jar`|
 |`-XX:HeapDumpPath`|设置导出堆的存放路径，跟上面一起用|`java -jar -XX:HeapDumpPath=d:/Test03.dump xx.jar`|
-||
-|栈配置|
-|`-Xss`|指定线程最大的栈空间大小，默认1m|`java -jar -Xss1m xx.jar`|
-
-
 
 https://blog.csdn.net/yswKnight/article/details/79372276
