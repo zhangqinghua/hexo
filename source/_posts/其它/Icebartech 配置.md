@@ -76,7 +76,7 @@ build.command=sudo cnpm install babel-loader --save && sudo cnpm install && sudo
 |IP|账号|密码|备注|
 | :- |
 |120.76.156.141|root|bwwIQb2mcGAGPlIL|冰棍官网服务器|
-|8.129.214.203|root|Bg360123456|开发服务器一|
+|8.129.214.203|root|8nLDwEhu@#EYXSmO|开发服务器一|
 |120.77.246.50|root|Bo9rDeUA|开发服务器二|
 |120.79.178.208|root|Bg360123456|洗车佬_DEV_服务器|
 
