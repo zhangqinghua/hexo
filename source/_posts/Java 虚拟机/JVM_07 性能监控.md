@@ -1,13 +1,10 @@
 ---
-title: JVM 监控工具
+title: JVM_07 性能监控
 
 categories:
-- Java Virtual Machine Specification
+- Java 虚拟机
 
-tags:
-- JVM
-
-date: 2020-01-21
+date: 2020-01-01 00:00:07
 ---
 
 ## jps

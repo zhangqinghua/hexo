@@ -1,10 +1,10 @@
 ---
-title: 垃圾回收器
+title: JVM_05 垃圾回收机制
 
 categories:
 - Java 虚拟机
 
-date: 2020-01-21
+date: 2020-01-01 00:00:05
 ---
 
 ## JVM的垃圾回收机制

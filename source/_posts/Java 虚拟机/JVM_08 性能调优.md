@@ -1,13 +1,10 @@
 ---
-title: JVM 性能调优
+title: JVM_08 性能调优
 
 categories:
-- Java Virtual Machine Specification
+- Java 虚拟机
 
-tags:
-- JVM
-
-date: 2020-01-21
+date: 2020-01-01 00:00:08
 ---
 性能调优的目的就是使用较小的内存占用来获得较高的吞吐量或者较低的延迟。
 

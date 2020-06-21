@@ -125,6 +125,9 @@ unix  3      [ ]         STREAM     CONNECTED     175354590 30572/nginx: master
 $ netstat -pan | grep 60819
 tcp        0      0 0.0.0.0:60819           0.0.0.0:*               LISTEN      16586/java          
 tcp        1      0 127.0.0.1:60819         127.0.0.1:47942         CLOSE_WAIT  16586/java 
+
+# 查看是否有未知IP在进行发包
+$ netstat -lntupa
 ```
 
 #### 查看端口开放情况
@@ -243,3 +246,23 @@ sync 命令将所有未写的系统缓冲区写到磁盘中，执行之后就可
 ```bash
 sync && echo 3 >/proc/sys/vm/drop_caches 
 ```
+
+## 修改Linux系统实例默认远程端口
+1. 修改配置
+  将 `/etc/ssh/sshd_config` 下 `Port 22` 改为 `Port 1022`
+1. 重启 sshd 服务。
+  `systemctl restart sshd` 
+1. 开发防火墙
+  可选
+1. 重新登录
+  `ssh -p 1022 root@xxxx`
+
+## 删除文件
+当使用rm删除文件和文件夹的时候提示：rm: 无法删除"bash": 不允许的操作
+
+删除属性：
+chattr -i authorized_keys2
+chattr -a authorized_keys2
+chattr -u authorized_keys2
+
+再次删除该文件，即可正常删除了
