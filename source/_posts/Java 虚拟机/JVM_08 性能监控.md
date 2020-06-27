@@ -1,10 +1,10 @@
 ---
-title: JVM_07 性能监控
+title: JVM_08 性能监控
 
 categories:
 - Java 虚拟机
 
-date: 2020-01-01 00:00:07
+date: 2020-01-01 00:00:08
 ---
 
 ## jps
@@ -406,3 +406,14 @@ Full thread dump Java HotSpot(TM) 64-Bit Server VM (24.71-b01 mixed mode):
 ```
 
 [参考](https://www.cnblogs.com/ityouknow/p/5714703.html)
+
+## 问题
+JVM相关的分析工具有使用过哪些？具体的性能调优步骤吗？
+
+讲一下 OOM 以及遇到这种情况怎么处理的，是否使用过日志分析工具
+
+你熟悉的JVM调优参数，使用过哪些调优工具？
+
+VisualVM:JDK自带JVM可视化工具，能过对内存、gc、cpu、thread、class、变量等等信息进行可视化。
+
+几种常用的内存调试工具：jmap、jstack、jconsole
