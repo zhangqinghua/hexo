@@ -42,69 +42,66 @@ date: 2020-01-01 00:00:03
 
 由于现代虚拟机采用分代收集算法，因此堆从 GC 的角度还可以细分为：新生代、老年代和永久代。
 
-逻辑上方法区也是堆的一部分。
-
 ![](https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1681675119,796495208&fm=26&gp=0.jpg)
 
 #### 新生代
-新创建的对象都会放在新生代（除了大对象外），新生代默认占用 1/3 的堆内存空间。由于虚拟机会频繁创建对象，所以新生代会频繁触发 MinorCG 进行垃圾回收。
+新创建的对象都会放在新生代（除了大对象外），新生代默认占用 1/3 的堆内存空间。由于虚拟机会频繁创建对象，所以新生代会频繁触发 MinorGC 进行垃圾回收。
 
-因为 98% 的对象都是“朝生夕死”，为了高效的利用内存，新生代又可以分为 Eden 区、SurvivorFrom 区和 SurvivorTo 区，如下所述：
+因为 98% 的对象都是“朝生夕死”，为了高效的利用内存，新生代又分为 Eden 区、SurvivorFrom 区和 SurvivorTo 区，如下所述：
 1. Eden 区
-    Java 新创建的对象会首先被存放在 Eden 区，如果新创建的对象属于大对象，则直接将其分配到老年代。在 Eden 区的内存空间不足时会触发 MinorCG，对新生代进行垃圾回收。
+    Java 新创建的对象会首先被存放在 Eden 区，如果新创建的对象属于大对象，则直接将其分配到老年代。在 Eden 区的内存空间不足时会触发 MinorGC，对新生代进行垃圾回收。
 
     大对象一般为 2kb ~ 128kb，可以通过 `-XX:PretenusrSizeThreshold` 进行设置。
 1. SurvivorTo 区
-    保留上一次 MinorCG 时的幸存者。
+    保留上一次 MinorGC 时的幸存者。
 1. SurvivorFrom 区
-    将上一次 MinorCG 时的幸存者作为这一次 MinorCG 的被扫描者。
+    将上一次 MinorGC 时的幸存者作为这一次 MinorGC 的被扫描者。
 
-新生代的 GC 过程成为 MinorGC，采用复制算法实现，具体如下：
+新生代的 GC 过程称为 MinorGC，采用复制算法实现，具体如下：
 1. 把在 Eden 和 SurvivorFrom 区存活的对象复制到 SurvivorTo 区中，同时把这些对象的年龄加 1；如果对象的年龄达到老年代的标准或 SirvivorTo 区的内存空间不够，则直接将其复制到老年代。
 1. 清空 Eden 和 SurvivorFrom 区中的对象。
 1. 将 SurvivorFrom 和 SurvivorTo 区互换，原来的 SurvivorTo 区成为下一次 GC 时的 SurvivorFrom 区。
 
-> 对象老年代的标准默认为 15，可以通过 `-XX:MaxTenuringThreshold` 设置。
+> 达到老年代的标准的次数默认为 15，可以通过 `-XX:MaxTenuringThreshold` 设置。
 
 #### 老年代
-老年代主要存放长生命周期或比较大的对象。老年代的 GC 过程叫作 MajorGC。在老年代，对象比较稳定，MajorGC 不会被频繁触发。在进行 MajorGC 钱，虚拟机会进行一次 MinorGC，在MinorGC 过后仍然出现老年代且当老年代空间不足或无法找到足够大的连续内存空间分配给新创建的大对象时，出触发 MajorGC 进行垃圾回收，释放虚拟机的内存空间。
+老年代主要存放长生命周期或比较大的对象。老年代的 GC 过程叫作 MajorGC。在老年代，对象比较稳定，MajorGC 不会被频繁触发。在进行 MajorGC 是，虚拟机会进行一次 MinorGC，在 MinorGC 过后仍然出现老年代且当老年代空间不足或无法找到足够大的连续内存空间分配给新创建的大对象时，出触发 MajorGC 进行垃圾回收，释放虚拟机的内存空间。
 
 MajorGC 采用标记清除算法，该算法首先会扫描所有对象并标记存活的对象，然后回收未被标记的对象，并释放内存空间。
 
-因为要先扫描老年代的对象再回收，所以 MajorGC 的耗时较长。MajorGC 的标记清除算法容易产生内存碎片。在老年代没有内存空间可分配时，会跑出 OOM 异常。
+因为要先扫描老年代的对象再回收，所以 MajorGC 的耗时较长。MajorGC 的标记清除算法容易产生内存碎片。在老年代没有内存空间可分配时，会抛出 OOM 异常。
 
 ## 方法区
-方法区是所有线程共享。主要用于存储类的信息、常量池、方法数据、方法代码等。方法区逻辑上属于堆的一部分，但是为了与堆进行区分，通常又叫“非堆”。
+方法区是所有线程共享，主要用于存储类的信息、常量池、方法数据、方法代码等。方法区逻辑上属于堆的一部分，但是为了与堆进行区分，通常又叫“非堆”。
 
 方法区在不同的虚拟机中有不同的实现。例如在 Hotspot 中方法区有永久代和元空间两种实现。可以把方法区当成接口，永久代或者元空间当作实现。
 
-#### 特点
-方法区与堆一样，是各个线程共享的内存区域，当一个类没有加载的话，只能有一个线程去调用 ClassLoader，其他线程想要使用这个类的话就必须得等待，我们只需要加载一次。
-
-方法区在 JVM 启动的时候被创建，并且它的实际的物理内存空间中和堆区一样都可以是不连续的。
-
-方法区的大小，跟堆空间一样，可以选择固定大小或者可扩展。方法区的大小决定了系统可以保存多少个类，如果系统定义了太多的类，导致方法区溢出，虚拟机同样会抛出内存溢出错误。
-
-关闭 JVM 就会释放这个区域的内存。
-
 ![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9jZG4uanNkZWxpdnIubmV0L2doLzEzOTI1MTcxMzgvaW1nUmVwb3NpdG9yeUBtYXN0ZXIvaW1hZ2UtMjAyMDA2MDQxMzU3MjQ4OTUucG5n?x-oss-process=image/format,png)
+
+#### 特点
+方法区与堆一样，是各个线程共享的内存区域，当一个类没有加载的话，只能有一个线程去调用 ClassLoader，其他线程想要使用这个类的话就必须得等待。类只需要加载一次。
+
+方法区的大小决定了系统可以保存多少个类，如果系统定义了太多的类，导致方法区溢出，虚拟机同样会抛出内存溢出错误。
 
 #### 内部结构
 方法区存储有已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等。
 
 ![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9jZG4uanNkZWxpdnIubmV0L2doLzEzOTI1MTcxMzgvaW1nUmVwb3NpdG9yeUBtYXN0ZXIvaW1hZ2UtMjAyMDA2MTAxNTA1MDQ3NjcucG5n?x-oss-process=image/format,png)
 
-对每个加载的类型（类、接口、枚举、注解），JVM必须在方法区中存储以下类型信息:
+对每个加载的类型（类、接口、枚举、注解），虚拟机必须在方法区中存储以下类型信息:
 1. 这个类型的完整有效名
     例如 `com.icebartech.Child`
+
 1. 这个类型直接父类的完整有效名。
     例如 `com.icebartech.Parent`, 对于 `interface` 或是 `java.lang.Object` 则没有父类。
+
 1. 这个类型的修饰符
     例如 `public`、`abstract`、`final` 的某个子集。
-1. 这个类型的接接口
+
+1. 这个类型的接口
     直接接口一个有序列表。
 
-域的相关信息包括: 域名称、域类型、域修饰符（`public`、`private`、`protected`、`static`、`final`、`volatile`、`transient` 的某个子集）。JVM 必须在方法区中保存类型的所有域的相关信息以及域的声明顺序。
+域的相关信息包括: 域名称、域类型、域修饰符（`public`、`private`、`protected`、`static`、`final`、`volatile`、`transient` 的某个子集）。xuniji必须在方法区中保存类型的所有域的相关信息以及域的声明顺序。
 
 JVM 必须保存所有方法的以下信息，同域信息一样包括声明顺序:
 1. 方法名称
@@ -117,19 +114,19 @@ JVM 必须保存所有方法的以下信息，同域信息一样包括声明顺�
 
 常量池，可以看做是一张表，虚拟机指令根据这张常量表找到要执行的类名、方法名、参数类型、字面量等类型。
 
-![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9jZG4uanNkZWxpdnIubmV0L2doLzEzOTI1MTcxMzgvaW1nUmVwb3NpdG9yeUBtYXN0ZXIvaW1hZ2UtMjAyMDA2MTExMzA2MzY0MTkucG5n?x-oss-process=image/format,png)
-
 常量池表是 .class 文件的一部分，用于存放编译期生成的各种字面量与符号引用，这部分内容将在类加载后存放到方法区的运行时常量池中。
 
 运行时常量池是方法区的一部分。在加载类和接口到虚拟机后，就会创建对应的运行时常量池。
 
 数量值、字符串值、类引用、方法引用、字段引用。
 
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9jZG4uanNkZWxpdnIubmV0L2doLzEzOTI1MTcxMzgvaW1nUmVwb3NpdG9yeUBtYXN0ZXIvaW1hZ2UtMjAyMDA2MTExMzA2MzY0MTkucG5n?x-oss-process=image/format,png)
+
 #### 为什么需要提供一个常量池呢？
 一个 Java 源文件中的类、接口，编译后产生一个字节码文件。而 Java 中的字节码需要数据支持，通常这种数据会很大以至于不能直接存到字节码里，换另一种方式可以存到常量池，这个字节码包含了指向常量池的引用。在动态链接的时候会用到运行时常量池。
 
 #### Hotspot 中方法区的演进
-在JDK7 及以前，习惯上把方法区，称为永久代。JDK8 开始，使用元空间取代了永久代。
+在 JDK7 及以前，习惯上把方法区称为永久代。JDK8 开始，使用元空间取代了永久代。
 
 本质上，方法区和永久代并不等，仅是对 Hotspot 而言的。《Java 虚拟规范》对如何实现方法区，不做统一要求，例如: BEA JRockit/ IBM J9中不存在永久代的概念。而且从现在看来，当年使用永久代，不是好的 idea。永久代使用的是 Java 虚拟机内存，它会导致 Java 程序更容易 OOM（超过 `-XX:MaxPermSize` 上限）。
 
@@ -176,6 +173,7 @@ Eden、ServivorFrom、ServivorTo
 什么时候回收、复制算法、标志整理、碎片、各种虚拟机的实现
 
 #### 内存溢出
-1. Java 栈什么时候会发生内存溢出，Java 堆呢？
-栈溢出、默认栈大小、1w个栈帧、方法调用太多，或者方法内的局部变量太多、、
-老年代空间不足、对象太多，
+1. 有哪些内存溢出的异常？触发条件是什么
+栈溢出：默认栈大小、1w个栈帧、方法调用太多，或者方法内的局部变量太多、、
+堆溢出：老年代空间不足、对象太多，
+方法区和运行时常量池溢出
