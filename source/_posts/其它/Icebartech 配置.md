@@ -27,11 +27,11 @@ chmod +x  /data/deploy/Java/icebartech-cloudnote/deploy.sh;
 
 1. Web 打包配置
 ```bash
-/data/deploy/Web/icebartech-home/icebartech-home-sys/package.tgz
+/data/deploy/Web/icebartech-bookstore/icebartech-bookstore-sys/package.tgz
 
 set -e;
-mkdir -p /data/deploy/Web/icebartech-home/icebartech-home-sys/dist;
-tar xf /data/deploy/Web/home/home-sys/package.tgz -o -C /data/deploy/Web/home/home-sys/dist;
+mkdir -p /data/deploy/Web/icebartech-bookstore/icebartech-bookstore-sys/dist;
+tar xf /data/deploy/Web/icebartech-bookstore/icebartech-bookstore-sys/package.tgz -o -C /data/deploy/Web/icebartech-bookstore/icebartech-bookstore-sys/dist;
 ```
 
 1. Web 源码配置
@@ -80,7 +80,7 @@ build.command=sudo cnpm install babel-loader --save && sudo cnpm install && sudo
 |120.77.246.50|root|Bo9rDeUA|开发服务器二|
 |120.79.178.208|root|Bg360123456|洗车佬_DEV_服务器|
 |120.76.102.155|root|kwAPYE6o|Jenkins、禅道等服务器|
-
+|120.76.98.47|root|h#PkP#@0Zl^Veh0T|GitLab 服务器|
 ## 体育中心
 git
 体育中心后端                        git@code.aliyun.com:icebartech-java/icebartech-sportscenter.git     
