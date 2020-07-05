@@ -103,7 +103,7 @@ $ echo "" > myfile.iso
 后续添加：https://www.cnblogs.com/zhang-jun-jie/p/9266810.html
 
 ## 端口操作
-#### 查看端口占用情况
+#### 查看本机端口占用情况
 ```bash
 # lsof -i:端口号 用于查看某一端口的占用情况，比如查看8000端口使用情况，lsof -i:8000
 $ lsof -i:8000
@@ -130,15 +130,37 @@ tcp        1      0 127.0.0.1:60819         127.0.0.1:47942         CLOSE_WAIT  
 $ netstat -lntupa
 ```
 
-#### 查看端口开放情况
-略过。。。
+#### 测试远程端口开放状态
+我们可以使用 `nmap` 命令来查看目标服务器的端口开放状态。
 
-#### 远程测试端口情况
 ```bash
-# 使用 telnet 方式测试远程主机端口是否打开
-$ telnet 120.77.246.50 22
+zhangqinghua$ nmap 120.77.246.50
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-07-05 15:10 CST
+Nmap scan report for gsm.icebartch.com (120.77.246.50)
+Host is up (0.0071s latency).
+Not shown: 995 filtered ports
+PORT     STATE  SERVICE
+22/tcp   open   ssh
+80/tcp   open   http
+443/tcp  open   https
+3306/tcp closed mysql
+3690/tcp open   svn
+```
+
+#### 测试远程端口连通性
+在确认了目标服务器的端口开放性之后，我们就可以使用 `telnet` 来测试端口的连通性了。
+
+```bash
+# 连通的情况，出现Escape character
+zhangqinghua$ telnet 120.77.246.50 22
 Trying 120.77.246.50...
-Connected to 120.77.246.50.
+Connected to gsm.icebartch.com.
+Escape character is '^]'.
+SSH-2.0-OpenSSH_7.4
+
+# 不通的情况，一直卡死
+zhangqinghua$ telnet 120.77.246.50 21
+Trying 120.77.246.50...
 ```
 
 ## 文件操作
