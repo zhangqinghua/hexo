@@ -1,5 +1,5 @@
 ---
-title: 常用MySQL
+title: abc
 
 categories:
 - MySQL 指南
