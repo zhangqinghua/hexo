@@ -1,10 +1,10 @@
 ---
-title: MySQL SQL 练习题
+title: 常用MySQL
 
 categories:
 - MySQL 指南
 
-date: 2020-04-28 00:00:22
+date: 2020-04-28 00:00:91
 ---
 网上流传较广的50道SQL训练，奋斗了不知道多久终于写完了。前18道题的难度依次递增，从19题开始的后半部分算是循环练习和额外function的附加练习，难度恢复到普通状态。
 
@@ -79,15 +79,15 @@ insert into SC values('07' , '03' , 98);
 ```sql
 -- left join
 SELECT s.sname, sc.* FROM(
-        select  t1.sid sid, t1.cid t1_cid, t1.score t1_socre, t2.cid t2_cid, t2.score t2_socre from 
+        select  t1.sid sid, t1.cid t1_cid, t1.score t1_socre, t2.cid t2_cid, t2.score t2_socre from
                 (select * from sc where sc.cid = '01') as t1,
                 (select * from sc where sc.cid = '02') as t2
         where t1.sid = t2.sid and t1.score > t2.score
 	) sc LEFT JOIN student s ON s.sid = sc.sid
 
 -- right join
-select s.sname, sc.* from student s right join( 
-        select  t1.sid sid, t1.cid t1_cid, t1.score t1_socre, t2.cid t2_cid, t2.score t2_socre from 
+select s.sname, sc.* from student s right join(
+        select  t1.sid sid, t1.cid t1_cid, t1.score t1_socre, t2.cid t2_cid, t2.score t2_socre from
                 (select * from sc where sc.cid = '01') as t1,
                 (select * from sc where sc.cid = '02') as t2
         where t1.sid = t2.sid and t1.score > t2.score
@@ -101,8 +101,8 @@ sname	sid	t1_cid	t1_socre	t2_cid	t2_socre
 #### 查询同时存在"01"课程和"02"课程的情况
 ```sql
 -- 以Student作为主表
-select * from 
-    (select * from sc where sc.CId = '01') as t1, 
+select * from
+    (select * from sc where sc.CId = '01') as t1,
     (select * from sc where sc.CId = '02') as t2
 where t1.SId = t2.SId;
 
@@ -121,17 +121,17 @@ SId	CId	score	SId(1)	CId(1)	score(1)
 这一道就是明显需要使用 join 的情况了，02可能不存在，即为 `left join` 的右侧或 `right join` 的左侧即可。
 
 ```sql
--- left join 
-select * from 
+-- left join
+select * from
 (select * from sc where sc.CId = '01') as t1
-left join 
+left join
 (select * from sc where sc.CId = '02') as t2
 on t1.SId = t2.SId;
 
--- right join 
-select * from 
+-- right join
+select * from
 (select * from sc where sc.CId = '02') as t2
-right join 
+right join
 (select * from sc where sc.CId = '01') as t1
 on t1.SId = t2.SId;
 
@@ -141,7 +141,7 @@ SId	CId	score	SId(1)	CId(1)	score(1)
 03	01	80.0	03	02	80.0
 04	01	50.0	04	02	30.0
 05	01	76.0	05	02	87.0
-06	01	31.0	null    null    null		
+06	01	31.0	null    null    null
 ```
 
 #### 查询平均成绩大于等于 60 分的同学的学生编号和学生姓名和平均成绩
@@ -149,7 +149,7 @@ SId	CId	score	SId(1)	CId(1)	score(1)
 
 ```sql
 -- having
-select st.sname name, sc.score score from 
+select st.sname name, sc.score score from
     student st,
     (select sid, avg(score) score from sc group by sid having score > 60)sc
 where st.sid = sc.sid
@@ -162,8 +162,8 @@ select Student.SId, Student.Sname, r.ss from Student right join(
 )r on Student.SId = r.SId;
 
 -- left join
-select s.sid,ss,sname 
-from (select sid, AVG(score) as ss from sc GROUP BY sid HAVING AVG(score)> 60)r 
+select s.sid,ss,sname
+from (select sid, AVG(score) as ss from sc GROUP BY sid HAVING AVG(score)> 60)r
 left join (select Student.SId, Student.Sname from Student)s on s.SId = r.SId;
 
 name	score
@@ -195,7 +195,7 @@ sname
 ```sql
 select student.sid, student.sname,r.coursenumber,r.scoresum
 from student,
-(select sc.sid, sum(sc.score) as scoresum, count(sc.cid) as coursenumber from sc 
+(select sc.sid, sum(sc.score) as scoresum, count(sc.cid) as coursenumber from sc
 group by sc.sid)r
 where student.sid = r.sid;
 
@@ -214,15 +214,15 @@ sid	sname	coursenumber	scoresum
 ```sql
 select s.sid, s.sname,r.coursenumber,r.scoresum
 from (
-    (select student.sid,student.sname 
+    (select student.sid,student.sname
     from student
-    )s 
-    left join 
-    (select 
+    )s
+    left join
+    (select
         sc.sid, sum(sc.score) as scoresum, count(sc.cid) as coursenumber
-        from sc 
+        from sc
         group by sc.sid
-    )r 
+    )r
    on s.sid = r.sid
 );
 
@@ -234,8 +234,8 @@ sid	sname	coursenumber	scoresum
 05	周梅	2	163.0
 06	吴兰	2	65.0
 07	郑竹	2	187.0
-09	张三	null    null	
-10	李四	null    null	
+09	张三	null    null
+10	李四	null    null
 ```
 
 #### 查有成绩的学生信息
@@ -319,11 +319,11 @@ sid	sname	ssex
 这个用联合查询也可以，但是逻辑不清楚，我觉得较为清楚的逻辑是这样的：从sc表查询01同学的所有选课cid--从sc表查询所有同学的sid如果其cid在前面的结果中--从student表查询所有学生信息如果sid在前面的结果中
 
 ```sql
-select sid, sname from student 
+select sid, sname from student
 where student.sid in (
-    select sc.sid from sc 
+    select sc.sid from sc
     where sc.cid in(
-        select sc.cid from sc 
+        select sc.cid from sc
         where sc.sid = '01'
     )
 );
@@ -340,10 +340,10 @@ sid	sname
 
 #### 查询和"01"号的同学学习的课程完全相同的其他同学的信息
 ```sql
-select sid from sc 
-where sid<>'01' 
+select sid from sc
+where sid<>'01'
 group by sid
-having group_concat(cid order by cid ) = 
+having group_concat(cid order by cid ) =
     (select group_concat(cid order by cid ) from SC where sid = '01')
 ```
 
@@ -362,7 +362,7 @@ select sid, sname from student
 
 select sid, sname from student
 where student.sid not in(
-    select sc.sid from sc,course,teacher 
+    select sc.sid from sc,course,teacher
     where
         sc.cid = course.cid
         and course.tid = teacher.tid
@@ -383,9 +383,9 @@ sid	sname
 
 ```sql
 select student.sid, student.sname, AVG(sc.score) from student,sc
-where 
+where
     student.sid = sc.sid and sc.score<60
-group by sc.sid 
+group by sc.sid
 having count(*)>1;
 
 sid	sname	AVG(sc.score)
@@ -410,11 +410,11 @@ sid	sname	score
 
 #### 按平均成绩从高到低显示所有学生的所有课程的成绩以及平均成绩
 ```sql
-select *  from sc 
+select *  from sc
 left join (
-    select sid,avg(score) as avscore from sc 
+    select sid,avg(score) as avscore from sc
     group by sid
-    )r 
+    )r
 on sc.sid = r.sid
 order by avscore desc;
 
@@ -437,7 +437,7 @@ sid	cid	score	sid(1)	avscore
 要求输出课程号和选修人数，查询结果按人数降序排列，若人数相同，按课程号升序排列
 
 ```sql
-select 
+select
 sc.CId ,
 max(sc.score)as 最高分,
 min(sc.score)as 最低分,
@@ -446,7 +446,7 @@ count(*)as 选修人数,
 sum(case when sc.score>=60 then 1 else 0 end )/count(*)as 及格率,
 sum(case when sc.score>=70 and sc.score<80 then 1 else 0 end )/count(*)as 中等率,
 sum(case when sc.score>=80 and sc.score<90 then 1 else 0 end )/count(*)as 优良率,
-sum(case when sc.score>=90 then 1 else 0 end )/count(*)as 优秀率 
+sum(case when sc.score>=90 then 1 else 0 end )/count(*)as 优秀率
 from sc
 GROUP BY sc.CId
 ORDER BY count(*)DESC, sc.CId ASC
@@ -464,8 +464,8 @@ CId	最高分	最低分	平均分	选修人数	及格率	中等率	优良率	优
 
 ```sql
 select a.cid, a.sid, a.score, count(b.score)+1 as rank
-from sc as a 
-left join sc as b 
+from sc as a
+left join sc as b
 on a.score<b.score and a.cid = b.cid
 group by a.cid, a.sid,a.score
 order by a.cid, rank ASC;
@@ -529,8 +529,8 @@ cname	cid	[100-85]	[85-70]	[70-60]	[60-0]
 ```sql
 select * from sc
 where (
-select count(*) from sc as a 
-where sc.cid = a.cid and sc.score<a.score 
+select count(*) from sc as a
+where sc.cid = a.cid and sc.score<a.score
 )< 3
 order by cid asc, sc.score desc;
 
@@ -553,7 +553,7 @@ order by cid asc, sc.score desc;
 想要查看完整的表可以
 
 ```sql
-select * from sc a 
+select * from sc a
 left join sc b on a.cid = b.cid and a.score<b.score
 order by a.cid,a.score;
 ```
@@ -564,7 +564,7 @@ order by a.cid,a.score;
 所以下面这个计算中having count 部分其实count()或者任意其他列都可以，这里制定了一个列只是因为比count()运行速度上更快。
 
 ```sql
-select a.sid,a.cid,a.score from sc a 
+select a.sid,a.cid,a.score from sc a
 left join sc b on a.cid = b.cid and a.score<b.score
 group by a.cid, a.sid
 having count(b.cid)<3
@@ -573,7 +573,7 @@ order by a.cid;
 
 #### 查询每门课程被选修的学生数
 ```sql
-select cid, count(sid) from sc 
+select cid, count(sid) from sc
 group by cid;
 
 cid	count(sid)
@@ -596,7 +596,7 @@ having count(sc.cid)=2
 -- 联合查询
 select student.SId,student.Sname
 from sc,student
-where student.SId=sc.SId  
+where student.SId=sc.SId
 GROUP BY sc.SId
 HAVING count(*)=2；
 
@@ -621,7 +621,7 @@ ssex	count(*)
 
 ```sql
 select *
-from student 
+from student
 where student.Sname like '%风%'
 ```
 
@@ -661,7 +661,7 @@ where YEAR(student.Sage)=1990;
 ```sql
 select sc.cid, course.cname, AVG(SC.SCORE) as average from sc, course
 where sc.cid = course.cid
-group by sc.cid 
+group by sc.cid
 order by average desc,cid asc;
 
 cid	cname	average
@@ -750,7 +750,7 @@ cid
 #### 查询课程编号为 01 且课程成绩在 80 分及以上的学生的学号和姓名
 
 ```sql
-select student.sid,student.sname 
+select student.sid,student.sname
 from student,sc
 where cid="01"
 and score>=80
@@ -778,14 +778,14 @@ CId	学生人数
 用having max()理论上也是对的，但是下面那种按分数排序然后取limit 1的更直观可靠
 
 ```sql
-select student.*, sc.score, sc.cid from student, teacher, course,sc 
+select student.*, sc.score, sc.cid from student, teacher, course,sc
 where teacher.tid = course.tid
 and sc.sid = student.sid
 and sc.cid = course.cid
 and teacher.tname = "张三"
 having max(sc.score);
 
-select student.*, sc.score, sc.cid from student, teacher, course,sc 
+select student.*, sc.score, sc.cid from student, teacher, course,sc
 where teacher.tid = course.tid
 and sc.sid = student.sid
 and sc.cid = course.cid
@@ -812,13 +812,13 @@ and cid ="02";
 这道题的思路继续上一题，我们已经查询到了符合限定条件的最高分了，这个时候只用比较这张表，找到全部score等于这个最高分的记录就可，看起来有点繁复。
 
 ```sql
-select student.*, sc.score, sc.cid from student, teacher, course,sc 
+select student.*, sc.score, sc.cid from student, teacher, course,sc
 where teacher.tid = course.tid
 and sc.sid = student.sid
 and sc.cid = course.cid
 and teacher.tname = "张三"
 and sc.score = (
-    select Max(sc.score) 
+    select Max(sc.score)
     from sc,student, teacher, course
     where teacher.tid = course.tid
     and sc.sid = student.sid
@@ -836,7 +836,7 @@ sid	sname	sage	ssex	score	cid
 
 ```sql
 select  a.cid, a.sid,  a.score from sc as a
-inner join 
+inner join
 sc as b
 on a.sid = b.sid
 and a.cid != b.cid
@@ -851,8 +851,8 @@ cid	sid	score
 
 #### 查询每门功成绩最好的前两名
 ```sql
-select a.sid,a.cid,a.score from sc as a 
-left join sc as b 
+select a.sid,a.cid,a.score from sc as a
+left join sc as b
 on a.cid = b.cid and a.score<b.score
 group by a.cid, a.sid
 having count(b.cid)<2
@@ -901,7 +901,7 @@ sid	cc
 
 ```sql
 select student.*
-from sc ,student 
+from sc ,student
 where sc.SId=student.SId
 GROUP BY sc.SId
 HAVING count(*) = (select DISTINCT count(*) from course )
@@ -935,28 +935,28 @@ from student
 
 ```sql
 select *
-from student 
+from student
 where WEEKOFYEAR(student.Sage)=WEEKOFYEAR(CURDATE());
 ```
 
 #### 查询下周过生日的学生
 ```sql
 select *
-from student 
+from student
 where WEEKOFYEAR(student.Sage)=WEEKOFYEAR(CURDATE())+1;
 ```
 
 #### 查询本月过生日的学生
 ```sql
 select *
-from student 
+from student
 where MONTH(student.Sage)=MONTH(CURDATE());
 ```
 
 #### 查询下月过生日的学生
 ```sql
 select *
-from student 
+from student
 where MONTH(student.Sage)=MONTH(CURDATE())+1;
 ```
 
