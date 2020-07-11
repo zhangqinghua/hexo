@@ -475,7 +475,37 @@ Threads fairness:
 tps: 229.90 qps: 4597.61 (r/w/o: 3217.74/919.78/460.09) lat (ms,95%): 179.94 err/s: 0.30 reconn/s: 0.00
 ```
 
-1000w 条数据
+1000w 条数据（只测试了一张表，因为准备数据时机器卡死了）
+
+```bash
+SQL statistics:
+    queries performed:
+        read:                            178374
+        write:                           50785
+        other:                           25413
+        total:                           254572
+    transactions:                        12672  (210.55 per sec.)
+    queries:                             254572 (4229.71 per sec.)
+    ignored errors:                      69     (1.15 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          60.1844s
+    total number of events:              12672
+
+Latency (ms):
+         min:                                   17.12
+         avg:                                  151.73
+         max:                                  617.00
+         95th percentile:                      196.89
+         sum:                              1922761.62
+
+Threads fairness:
+    events (avg/stddev):           396.0000/4.53
+    execution time (avg/stddev):   60.0863/0.04
+
+tps: 207.90 qps: 4184.34 (r/w/o: 2935.26/832.49/416.59) lat (ms,95%): 196.89 err/s: 0.80 reconn/s: 0.00
+```
 
 5000w 条数据
 
