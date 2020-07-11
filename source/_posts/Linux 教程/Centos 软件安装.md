@@ -73,6 +73,12 @@ httpd-manual-2.2.3-31.el5.centos.4
 ## yum 命令
 yum 全称 Yellowdog update Modifier，是 rpm 的前端程序，可解决软件包相关依赖性，可在多个库之间定位软件包。yum repo 存储了众多 rpm 包和它们的相关元数据文件。
 
+#### 更新源
+如果使用安装软件时提示 `No match for argument: screen` 找不到此软件，则可能是没有配置软件包仓库，可以通过安装 EPEL 源解决。
+
+```bash
+[root@vultrguest ~]# yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+```
 #### 查询软件
 ```bash
 # 显示安装包信息
@@ -152,3 +158,5 @@ Removed:
 Complete!
 
 ```
+
+## 常见问题

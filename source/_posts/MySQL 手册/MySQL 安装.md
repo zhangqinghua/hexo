@@ -48,7 +48,6 @@ Error: No matching Packages to list
 
 #### 启动 MySQL 服务
 ```bash
-# 如果启动失败，可以查看 MySQL 日志文件 /var/log/mysql/mysqld.log，一般是内存不足。
 [root@vultrguest ~]# sudo systemctl start mysqld
 ...
 ```
@@ -176,3 +175,16 @@ grant all privileges on aonitask.* to 'aonitask'@'%' with grant option;
 ```
 
 ## Docker 安装
+
+## 常见问题
+1. MySQL 启用失败
+如果启动失败，可以查看 MySQL 日志文件 /var/log/mysql/mysqld.log，一般是内存不足。
+
+MySQL 刚启动就占用了接近 500MB 的内存，所以机器配置最低也需要 1G。
+
+```bash
+[root@vultrguest ~]# free -h
+              total        used        free      shared  buff/cache   available
+Mem:          818Mi       522Mi        68Mi        12Mi       226Mi       157Mi
+Swap:            0B          0B          0B
+```
