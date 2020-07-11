@@ -312,3 +312,26 @@ Host key verification failed.
 解决方法有 2 种：
 1. 删除 `.ssh/known_hosts` 对应的前面记录。
 1. 清除对应的机器的缓存 `ssh-keygen -R 你的远程服务器ip地址`。
+
+## 高延迟SSH部分解决方案
+VPS 在国外，延迟总有那么 200～300ms，一来一回，500ms 是免不了了。可是默认情况下，你每输入一个字符，SSH 客户端（openssh/putty/securecrt）都会发送给服务器，然后服务器将响应返回。
+
+典型 ssh 情况下是执行命令，比如 ls，网络交互是：发送 l 给 svr, svr 返回 l ，显示 l ，发送 s 给 svr，svr 返回 s ，显示 s ，发送回车给 svr，svr执行 ls ，返回 ls 的输出。也就是说，光输入一个 ls 命令就至少需要 1s+ 的时间。但如果是要输入一个很复杂的命令，也许还没输入完，你就崩溃了。
+
+采用 putty 内建的 Local Echo 和 Local Line Editing 支持，可以部分地解决这个问题：默认配置下，登录以后点击左上角的Putty图标，选择change settings=>Terminal，将Local Echo和Local line editing改成force on，就可以允许你在本地编辑一行命令，按下回车，然后命令才被发送到服务器。结果是服务器接收一整条命令，然后显示一整条命令，然后再输出这条命令的执行结果。
+
+首页 登入 RSS 注册 留言 链接 归档 关于
+boblog评论系统回归Linux：非特权用户使用crontab实现开机任务
+FEB
+27
+高延迟SSH部分解决方案  不指定
+felix021 @ 2012-2-27 21:27 [IT » 网络] 评论(1) , 引用(0) , 阅读(12878) | Via 本站原创 大 | 中 | 小  
+vps在国外，延迟总有那么200～300ms，一来一回，500ms是免不了了。可是默认情况下，你每输入一个字符，ssh客户端（openssh/putty/securecrt）都会发送给服务器，然后服务器将响应返回。
+
+典型ssh情况下是执行命令，比如ls，网络交互是：发送 l 给svr, svr返回 l ，显示 l ，发送 s 给svr，svr返回 s ，显示 s ，发送回车给svr，svr执行 ls ，返回 ls 的输出。也就是说，光输入一个ls命令就至少需要1s+的时间。但如果是要输入一个很复杂的命令，也许还没输入完，你就崩溃了。
+
+采用putty(windows版ok，linux版未测试）内建的Local Echo和Local Line Editing支持，可以部分地解决这个问题：默认配置下，登录以后点击左上角的Putty图标，选择change settings=>Terminal，将Local Echo和Local line editing改成force on，就可以允许你在本地编辑一行命令，按下回车，然后命令才被发送到服务器。结果是服务器接收一整条命令，然后显示一整条命令，然后再输出这条命令的执行结果。
+
+相应的代价就是：
+1. 没法使用自动补全和其他bash/readline的快捷键了；
+2. 使用vi这类程序的时候，就没法正常编辑了，这时需要再把这两个选项关闭。。。（为什么没有快捷键………………）
