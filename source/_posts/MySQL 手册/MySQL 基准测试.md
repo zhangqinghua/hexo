@@ -49,7 +49,15 @@ sudo brew install sysbench
 ## 准备数据
 执行以下命令，sysbench 会自动在数据库常见相应的测试数据。`oltp_common.lua` 是要执行的测试脚本。这里使用自带的 lua 测试脚本。
 ```bash
-sysbench oltp_common.lua --time=300 --mysql-host=149.28.231.24 --mysql-port=3306 --mysql-user=sptest --mysql-password=sptest --mysql-db=sptest --table-size=10000 --tables=9 --threads=32 --events=999999999 prepare
+sysbench oltp_common.lua \
+    --mysql-host=216.155.135.22 \
+    --mysql-port=3306 \
+    --mysql-user=sptest \
+    --mysql-password=sptest \
+    --mysql-db=sptest \
+    --table-size=100000 \
+    --tables=9 \
+    prepare
 ```
 
 MySQL 相关参数：
@@ -80,16 +88,22 @@ sysbench 相关参数：
     执行准备数据
 
 ## 执行测试
-执行下面命令开始对数据库进行测试。
+执行下面命令开始对数据库进行测试。`oltp_read_write.lua` 表示混合读写。在一个事务中，默认比例是：select:update_key:update_non_key:delete:insert = 14:1:1:1:1 。这也是为什么，我们测试出来的 TPS 和 QPS 的比例，大概在 1:18~20 左右。相当于说，一个事务中，有 18 个读写操作。`run` 表示执行测试命令。
 
 ```bash
-sysbench oltp_read_write.lua --time=300 --mysql-host=149.28.231.24 --mysql-port=3306 --mysql-user=sptest --mysql-password=sptest --mysql-db=sptest  --table-size=1000 --tables=9 --threads=32 --events=999999999  --report-interval=10  run
+sysbench oltp_read_write.lua \
+	--mysql-host=216.155.135.22 \
+	--mysql-port=3306 \
+	--mysql-user=sptest \
+	--mysql-password=sptest \
+	--mysql-db=sptest  \
+	--threads=32 \
+	--time=60 \
+	--report-interval=10  \
+	run
 ```
 
-run                : 执行测试。
-oltp_read_write.lua: 表示混合读写。
-
-在一个事务中，默认比例是：select:update_key:update_non_key:delete:insert = 14:1:1:1:1 。这也是为什么，我们测试出来的 TPS 和 QPS 的比例，大概在 1:18~20 左右。相当于说，一个事务中，有 18 个读写操作。
+执行结果说明：
 
 ```bash
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
@@ -323,18 +337,147 @@ tps: 151.34 qps: 3048.14 (r/w/o: 2138.99/606.07/303.08) lat (ms,95%): 267.41 err
 tps: 160.19 qps: 3345.46 (r/w/o: 2363.85/652.14/329.47) lat (ms,95%): 707.07 err/s: 2.70 reconn/s: 0.00
 ```
 
-#### 记录大学
-测试不同的表的数据量对并发的影响
+#### 不同版本
 
-1w 条数据
+#### 记录大小
+测试不同的表的数据量对并发的影响。
+
+MySQL 数据：
+1. 机器配置：1核 1024MB
+1. CPU 使用率：0%
+1. Mem 使用率：50%/360MB
+1. 测试线程数：32
+
+1w 数据：
+
+```bash
+SQL statistics:
+    queries performed:
+        read:                            914830
+        write:                           260914
+        other:                           130505
+        total:                           1306249
+    transactions:                        65160  (217.05 per sec.)
+    queries:                             1306249 (4351.21 per sec.)
+    ignored errors:                      185    (0.62 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          300.2017s
+    total number of events:              65160
+
+Latency (ms):
+         min:                                   20.28
+         avg:                                  147.38
+         max:                                 2627.49
+         95th percentile:                      186.54
+         sum:                              9603145.85
+
+Threads fairness:
+    events (avg/stddev):           2036.2500/14.71
+    execution time (avg/stddev):   300.0983/0.05
+
+tps: 207.40 qps: 4156.87 (r/w/o: 2912.25/829.21/415.41) lat (ms,95%): 200.47 err/s: 0.40 reconn/s: 0.00
+```
 
 10w 条数据
+```bash
+SQL statistics:
+    queries performed:
+        read:                            194726
+        write:                           55406
+        other:                           27728
+        total:                           277860
+    transactions:                        13819  (229.45 per sec.)
+    queries:                             277860 (4613.49 per sec.)
+    ignored errors:                      90     (1.49 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          60.2256s
+    total number of events:              13819
+
+Latency (ms):
+         min:                                   14.97
+         avg:                                  139.16
+         max:                                 2190.64
+         95th percentile:                      179.94
+         sum:                              1923116.42
+
+Threads fairness:
+    events (avg/stddev):           431.8438/3.48
+    execution time (avg/stddev):   60.0974/0.04
+
+tps: 235.40 qps: 4748.13 (r/w/o: 3332.62/943.01/472.50) lat (ms,95%): 183.21 err/s: 1.70 reconn/s: 0.00
+```
 
 100w 条数据
 
+```bash
+SQL statistics:
+    queries performed:
+        read:                            210938
+        write:                           60047
+        other:                           30047
+        total:                           301032
+    transactions:                        14980  (249.26 per sec.)
+    queries:                             301032 (5009.10 per sec.)
+    ignored errors:                      87     (1.45 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          60.0949s
+    total number of events:              14980
+
+Latency (ms):
+         min:                                   13.19
+         avg:                                  128.30
+         max:                                  444.92
+         95th percentile:                      164.45
+         sum:                              1921953.92
+
+Threads fairness:
+    events (avg/stddev):           468.1250/3.76
+    execution time (avg/stddev):   60.0611/0.02
+
+tps: 236.21 qps: 4765.82 (r/w/o: 3347.28/944.22/474.31) lat (ms,95%): 170.48 err/s: 1.80 reconn/s: 0.00
+```
+
 500w 条数据
 
+```bash
+SQL statistics:
+    queries performed:
+        read:                            187712
+        write:                           53519
+        other:                           26770
+        total:                           268001
+    transactions:                        13362  (222.05 per sec.)
+    queries:                             268001 (4453.65 per sec.)
+    ignored errors:                      46     (0.76 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          60.1732s
+    total number of events:              13362
+
+Latency (ms):
+         min:                                   19.09
+         avg:                                  143.94
+         max:                                  520.59
+         95th percentile:                      186.54
+         sum:                              1923285.64
+
+Threads fairness:
+    events (avg/stddev):           417.5625/5.21
+    execution time (avg/stddev):   60.1027/0.04
+
+tps: 229.90 qps: 4597.61 (r/w/o: 3217.74/919.78/460.09) lat (ms,95%): 179.94 err/s: 0.30 reconn/s: 0.00
+```
+
 1000w 条数据
+
+5000w 条数据
 
 #### 机器配置
 

@@ -1,8 +1,8 @@
 ---
-title: Docker 常用操作
+title: Docker 命令大全
 
 categories:
-- 其它
+- Docker 笔记
 
 date: 2020-05-30
 ---

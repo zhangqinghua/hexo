@@ -2,7 +2,7 @@
 title: Stream 示例
 
 categories:
-- Java 8 系列
+- Java8 新特性
 
 tags:
 - Java 8

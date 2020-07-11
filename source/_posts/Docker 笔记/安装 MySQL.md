@@ -23,4 +23,4 @@ mysql               latest              be0dbf01a0f3        4 weeks ago         
 
 ## 常见问题
 1. Docker 启动 MySQL 闪退
-内存不足。
+通常是内存不足。MySQL 最低需要 500MB 的内存启动。

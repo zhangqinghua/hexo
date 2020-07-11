@@ -77,7 +77,7 @@ yum 全称 Yellowdog update Modifier，是 rpm 的前端程序，可解决软件
 如果使用安装软件时提示 `No match for argument: screen` 找不到此软件，则可能是没有配置软件包仓库，可以通过安装 EPEL 源解决。
 
 ```bash
-[root@vultrguest ~]# yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+[root@vultrguest ~]# yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 ```
 #### 查询软件
 ```bash
