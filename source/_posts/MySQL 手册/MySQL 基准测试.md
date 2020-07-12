@@ -340,7 +340,7 @@ tps: 160.19 qps: 3345.46 (r/w/o: 2363.85/652.14/329.47) lat (ms,95%): 707.07 err
 #### 不同版本
 
 #### 记录大小
-测试不同的表的数据量对并发的影响。
+测试不同的表的数据量对并发的影响。结论：没有发现有影响，可能是因为表结构太简单了。
 
 MySQL 数据：
 1. 机器配置：1核 1024MB
@@ -507,11 +507,238 @@ Threads fairness:
 tps: 207.90 qps: 4184.34 (r/w/o: 2935.26/832.49/416.59) lat (ms,95%): 196.89 err/s: 0.80 reconn/s: 0.00
 ```
 
-5000w 条数据
+5000w 条数据（原来机器放不进去，升级了配置。1核 2GB，只放了2张表各3000万数据）
+
+```bash
+SQL statistics:
+    queries performed:
+        read:                            982030
+        write:                           251411
+        other:                           129139
+        total:                           1362580
+    transactions:                        58994  (196.55 per sec.)
+    queries:                             1362580 (4539.77 per sec.)
+    ignored errors:                      11151  (37.15 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          300.1406s
+    total number of events:              58994
+
+Latency (ms):
+         min:                                   12.36
+         avg:                                  162.76
+         max:                                 1126.37
+         95th percentile:                      325.98
+         sum:                              9602150.23
+
+Threads fairness:
+    events (avg/stddev):           1843.5625/21.19
+    execution time (avg/stddev):   300.0672/0.04
+
+tps: 178.60 qps: 4189.60 (r/w/o: 3028.60/765.90/395.10) lat (ms,95%): 383.33 err/s: 37.90 reconn/s: 0.00
+```
 
 #### 机器配置
+测试不同的配置对MySQL性能的影响。结论：CPU对性能影响大，但是达到最多只能利用到5核，再高不生效，可能是因为达到磁盘的上限。内存占了1.5G后不再占。
+
+定量参数
+1. 1 毫秒延迟 
+1. 32 并发线程
+1. 100 万数据量
+
+Vultr 1核 1GB 机器测试数据请参考上面的。
+
+Vultr 1核 2GB 机器测试数据：
+1. 测试前CPU使用0%，内存使用24%，剩余1.10GB。
+1. 测试中CPU使用85%，内存使用33%，剩余0.95GB。
+
+```bash
+SQL statistics:
+    queries performed:
+        read:                            184702
+        write:                           52769
+        other:                           26385
+        total:                           263856
+    transactions:                        13192  (219.48 per sec.)
+    queries:                             263856 (4389.85 per sec.)
+    ignored errors:                      1      (0.02 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          60.1039s
+    total number of events:              13192
+
+Latency (ms):
+         min:                                   19.85
+         avg:                                  145.66
+         max:                                  888.30
+         95th percentile:                      227.40
+         sum:                              1921576.18
+
+Threads fairness:
+    events (avg/stddev):           412.2500/4.32
+    execution time (avg/stddev):   60.0493/0.03
+
+tps: 209.37 qps: 4197.11 (r/w/o: 2933.59/844.78/418.74) lat (ms,95%): 204.11 err/s: 0.00 reconn/
+```
+
+Vultr 2核 4GB 机器测试数据：
+1. 测试前CPU使用0%，内存使用11%，剩余2.90GB。
+1. 测试中CPU使用180%，内存使用16%，剩余2.70GB。
+
+```bash
+SQL statistics:
+    queries performed:
+        read:                            424830
+        write:                           121378
+        other:                           60689
+        total:                           606897
+    transactions:                        30344  (504.89 per sec.)
+    queries:                             606897 (10098.06 per sec.)
+    ignored errors:                      1      (0.02 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          60.0983s
+    total number of events:              30344
+
+Latency (ms):
+         min:                                   12.07
+         avg:                                   63.32
+         max:                                  507.75
+         95th percentile:                      132.49
+         sum:                              1921309.62
+
+Threads fairness:
+    events (avg/stddev):           948.2500/19.28
+    execution time (avg/stddev):   60.0409/0.02
+
+541.70 qps: 10844.67 (r/w/o: 7594.55/2166.71/1083.41) lat (ms,95%): 121.08 err/s: 0.00 reconn/s: 0.00
+```
+
+Vultr 4核 8GB 机器测试数据：
+1. 测试前CPU使用0%，内存使用5.7%，剩余6.80GB。
+1. 测试中CPU使用291%，内存使用8.1%，剩余6.60GB。
+
+```bash
+SQL statistics:
+    queries performed:
+        read:                            706692
+        write:                           201904
+        other:                           100953
+        total:                           1009549
+    transactions:                        50475  (839.97 per sec.)
+    queries:                             1009549 (16800.20 per sec.)
+    ignored errors:                      3      (0.05 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          60.0894s
+    total number of events:              50475
+
+Latency (ms):
+         min:                                   13.32
+         avg:                                   38.06
+         max:                                  252.14
+         95th percentile:                       53.85
+         sum:                              1921237.24
+
+Threads fairness:
+    events (avg/stddev):           1577.3438/20.87
+    execution time (avg/stddev):   60.0387/0.03
+
+tps: 890.41 qps: 17809.03 (r/w/o: 12467.56/3560.35/1781.12) lat (ms,95%): 49.21 err/s: 0.10 reconn/s: 0.00
+```
+
+Vultr 6核 16GB 机器测试数据：
+1. 测试前CPU使用0%，内存使用2.6%，剩余14.00GB。
+1. 测试中CPU使用400%，内存使用4.0%，剩余14.00GB。
+
+```bash
+SQL statistics:
+    queries performed:
+        read:                            816844
+        write:                           233381
+        other:                           116691
+        total:                           1166916
+    transactions:                        58345  (970.80 per sec.)
+    queries:                             1166916 (19416.24 per sec.)
+    ignored errors:                      1      (0.02 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          60.0980s
+    total number of events:              58345
+
+Latency (ms):
+         min:                                   10.44
+         avg:                                   32.93
+         max:                                  101.59
+         95th percentile:                       47.47
+         sum:                              1921311.68
+
+Threads fairness:
+    events (avg/stddev):           1823.2812/62.38
+    execution time (avg/stddev):   60.0410/0.03
+
+tps: 1004.72 qps: 20100.10 (r/w/o: 14070.78/4019.78/2009.54) lat (ms,95%): 46.63 err/s: 0.00 reconn/s: 0.00
+```
+
+Vultr 8核 32GB 机器测试数据：
+1. 测试前CPU使用0%，内存使用1.4%，剩余30.00GB。
+1. 测试中CPU使用430%，内存使用2.0%，剩余30.00GB。
+
+```bash
+SQL statistics:
+    queries performed:
+        read:                            848246
+        write:                           242354
+        other:                           121177
+        total:                           1211777
+    transactions:                        60588  (1008.20 per sec.)
+    queries:                             1211777 (20164.37 per sec.)
+    ignored errors:                      1      (0.02 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          60.0925s
+    total number of events:              60588
+
+Latency (ms):
+         min:                                   10.65
+         avg:                                   31.71
+         max:                                  103.03
+         95th percentile:                       47.47
+         sum:                              1921241.97
+
+Threads fairness:
+    events (avg/stddev):           1893.3750/62.98
+    execution time (avg/stddev):   60.0388/0.03
+
+tps: 1100.03 qps: 21998.38 (r/w/o: 15399.41/4398.92/2200.06) lat (ms,95%): 44.98 err/s: 0.00 reconn/s: 0.00
+```
+
+#### 容器测试
+测试 MySQL 安装在容器对性能的影响。
+
+定量参数：
+1. 1 核 2GB 配置
+1. 1 毫秒延迟
+1. 32 并发线程
+1. 100 万数据量
+
+直接安装在机器上的测试结果参考上面。
+
+MySQL Docker 测试结果：
+1. 测试前CPU使用0%，内存使用2.6%，剩余14.00GB。
+1. 测试中CPU使用400%，内存使用4.0%，剩余14.00GB。
+
 
 #### 读写分离
+
+
+
 
 
 
