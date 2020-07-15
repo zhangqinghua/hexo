@@ -540,7 +540,7 @@ tps: 178.60 qps: 4189.60 (r/w/o: 3028.60/765.90/395.10) lat (ms,95%): 383.33 err
 ```
 
 #### 机器配置
-测试不同的配置对MySQL性能的影响。结论：CPU对性能影响大，但是达到最多只能利用到5核，再高不生效，可能是因为达到磁盘的上限。内存占了1.5G后不再占。
+测试不同的配置对MySQL性能的影响。结论：CPU对性能影响大，但是达到最多只能利用到5核，再高不生效，可能是线程数未饱和或者达到磁盘的上限。内存占了1.5G后不再占。
 
 定量参数
 1. 1 毫秒延迟 
@@ -720,7 +720,7 @@ tps: 1100.03 qps: 21998.38 (r/w/o: 15399.41/4398.92/2200.06) lat (ms,95%): 44.98
 ```
 
 #### 容器测试
-测试 MySQL 安装在容器对性能的影响。
+测试 MySQL 安装在容器对性能的影响。结论：没有感觉有耗损或者很小。
 
 定量参数：
 1. 1 核 2GB 配置
@@ -731,15 +731,54 @@ tps: 1100.03 qps: 21998.38 (r/w/o: 15399.41/4398.92/2200.06) lat (ms,95%): 44.98
 直接安装在机器上的测试结果参考上面。
 
 MySQL Docker 测试结果：
-1. 测试前CPU使用0%，内存使用2.6%，剩余14.00GB。
-1. 测试中CPU使用400%，内存使用4.0%，剩余14.00GB。
+1. 测试前CPU使用0%，内存使用20.6%，剩余1.00GB。
+1. 测试中CPU使用75%，内存使用25.1%，剩余0.9514.00GB。
 
+```bash
+SQL statistics:
+    queries performed:
+        read:                            226576
+        write:                           64540
+        other:                           32292
+        total:                           323408
+    transactions:                        16108  (268.29 per sec.)
+    queries:                             323408 (5386.62 per sec.)
+    ignored errors:                      76     (1.27 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          60.0372s
+    total number of events:              16108
+
+Latency (ms):
+         min:                                   12.44
+         avg:                                  119.22
+         max:                                  652.27
+         95th percentile:                      262.64
+         sum:                              1920468.18
+
+Threads fairness:
+    events (avg/stddev):           503.3750/10.23
+    execution time (avg/stddev):   60.0146/0.01
+
+tps: 269.60 qps: 5415.63 (r/w/o: 3793.42/1081.71/540.50) lat (ms,95%): 253.35 err/s: 1.30 reconn/s: 0.00
+```
 
 #### 读写分离
 
+## 常见问题
+#### error 2059: Authentication plugin 'caching_sha2_password'
+```bash
+FATAL: error 2059: Plugin caching_sha2_password could not be loaded: lib64/mariadb/plugin/caching_sha2_password.so: cannot open shared object file: No such file or directory
+```
 
-
-
-
+This is because most of the sysbench binaries are compiled with the MySQL 5.7 client library or MariaDB ones. There is an issue on github where Alexey explains this. So if you want to use sysbench with MySQL 8.0 and avoid the message below,
+error 2059: Authentication plugin 'caching_sha2_password' cannot be loaded: 
+/usr/lib64/mysql/plugin/caching_sha2_password.so: cannot open shared object file: 
+No such file or directory
+you have 3 options:
+1. modify the use to use mysql_native_password as authentication method
+1. compile sysbench linking it to mysql-community-libs-8.0.x (/usr/lib64/mysql/libmysqlclient.so.21)
+1. use the rpm for RHEL7/CentOS7/OL7 available on this post: [sysbench-1.0.15-1.el7.centos.x86_64](https://lefred.be/wp-content/uploads/2018/09/sysbench-1.0.15-1.el7_.centos.x86_64.rpm)
 
 

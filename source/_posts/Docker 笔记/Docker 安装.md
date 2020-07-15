@@ -1,11 +1,13 @@
 ---
-title: 安装
+title: Docker 安装
 
 categories:
 - Docker 笔记
 
 date: 2020-07-08
 ---
+Docker 运行需要占据 50MB 的内存。
+
 ## Centos 人工安装
 #### 卸载旧版本（如果安装过旧版本的话）
 ```bash
