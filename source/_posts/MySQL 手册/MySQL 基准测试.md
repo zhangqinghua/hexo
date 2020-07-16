@@ -152,6 +152,17 @@ Threads fairness: --并发统计
     execution time (avg/stddev):   119.9523/0.00 --总执行时间/标准偏差
 ```
 
+## 清理数据
+```bash
+sysbench oltp_read_write.lua \
+	--mysql-host=216.155.135.22 \
+	--mysql-port=3306 \
+	--mysql-user=sptest \
+	--mysql-password=sptest \
+	--mysql-db=sptest  \
+    --tables=9 \
+	cleanup
+```
 ## 测试结果
 下面是针对 MySQL 进行不同维度的测试结果。
 
@@ -766,19 +777,16 @@ tps: 269.60 qps: 5415.63 (r/w/o: 3793.42/1081.71/540.50) lat (ms,95%): 253.35 er
 
 #### 读写分离
 
+## 其它
+|CPU|Mem|Ping|Binlog|Threads|Table Size|Files Size|CPU Used|Mem Used|TPS|QPS|ERR|Latency|
+| :- |
+|1|2048MB|1ms|on|32|100w|240MB|78%|100MB|259.03|5201.16|1.25|123.52|
+|1|2048MB|1ms|off|32|100w|240MB|78%|100MB|279.17|5590.35|0.43|114.61|
+
+注1：Binlog 不影响读性能，影响写、修、删性能。
+
+
+
 ## 常见问题
-#### error 2059: Authentication plugin 'caching_sha2_password'
-```bash
-FATAL: error 2059: Plugin caching_sha2_password could not be loaded: lib64/mariadb/plugin/caching_sha2_password.so: cannot open shared object file: No such file or directory
-```
-
-This is because most of the sysbench binaries are compiled with the MySQL 5.7 client library or MariaDB ones. There is an issue on github where Alexey explains this. So if you want to use sysbench with MySQL 8.0 and avoid the message below,
-error 2059: Authentication plugin 'caching_sha2_password' cannot be loaded: 
-/usr/lib64/mysql/plugin/caching_sha2_password.so: cannot open shared object file: 
-No such file or directory
-you have 3 options:
-1. modify the use to use mysql_native_password as authentication method
-1. compile sysbench linking it to mysql-community-libs-8.0.x (/usr/lib64/mysql/libmysqlclient.so.21)
-1. use the rpm for RHEL7/CentOS7/OL7 available on this post: [sysbench-1.0.15-1.el7.centos.x86_64](https://lefred.be/wp-content/uploads/2018/09/sysbench-1.0.15-1.el7_.centos.x86_64.rpm)
-
-
+1. error 2059: Authentication plugin 'caching_sha2_password'
+参考章节「MySQL 安装」。
