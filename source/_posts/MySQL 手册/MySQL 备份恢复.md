@@ -310,64 +310,98 @@ mysql> select id, image_key, image_link, title from po_banner;
 
 MySQL 服务器之间的主从同步是基于二进制日志机制，主服务器使用二进制日志来记录数据库的变动情况，从服务器通过读取和执行该日志文件来保持和主服务器的数据一致。
 
+#### 用途
 主从复制可以用于以下场景：
 1. 备份，避免影响业务
 1. 读写分离，提供查询服务
 1. 实时灾备，用于故障切换
 
-下面讲一下如何配置主从复制。
+#### 原理
 
-#### 主库配置
-修改配置文件，需要开启 binlog 日志以及设置 server-id。
+#### 步骤
+1.主库：开启二进制日志和配置一个独立的ID，重启
+
 ```conf
 [mysqld]
-log-bin=mysql-bin
 server-id=1
 ```
 
-给从库创建主从复制账号。
+2.主库：创建一个用来专门复制主服务器数据的账号，记录二进制文件的位置信息
 
 ```sql
-mysql > grant replication slave on sptest.* to 'salve'@'%' identified by 'salve';
+mysql> create user 'repl'@'%' IDENTIFIED WITH mysql_native_password BY '123456';
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> grant replication slave on *.* to 'repl'@'%';
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> show master status;
++---------------+----------+--------------+------------------+-------------------+
+| File          | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |
++---------------+----------+--------------+------------------+-------------------+
+| binlog.000003 |      940 |              |                  |                   |
++---------------+----------+--------------+------------------+-------------------+
+1 row in set (0.01 sec)
 ```
 
+3.主库：暂停写入，备份数据
 
-#### 从库配置
-配置 server-id，注意每个库的 server-id 不能重复。没有必要配置 binlog 日志。
+```bash
+# 主库加上一把锁，阻止对数据库进行任何的写操作
+mysql> flush tables with read lock;
+Query OK, 0 rows affected (0.00 sec)
+
+# 主库备份数据
+[root@vultrguest ~]# docker exec mysql01 mysqldump -uroot -p123456 --all-databases > /data/all.sql;
+mysqldump: [Warning] Using a password on the command line interface can be insecure.
+```
+
+4.从库导入数据
+
+```bash
+root@b142eb1f220c:/# mysql -uroot -p123456 < /var/lib/mysql/all.sql
+mysql: [Warning] Using a password on the command line interface can be insecure.
+```
+
+5.从库：配置一个唯一的ID，重启
 
 ```conf
 [mysqld]
 server-id=2
 ```
 
-然后在 MySQL 配置同步参数：
+6.配置复制账号，二进制文件的位置信息
 
 ```sql
-mysql> CHANGE MASTER TO
--> MASTER_HOST='master_host_name',          
--> MASTER_PORT='master_host_name',       
--> MASTER_USER='replication_user_name',  
--> MASTER_PASSWORD='replication_password',    
--> MASTER_LOG_FILE='recorded_log_file_name', 
+mysql> change master to master_host='139.180.197.68', master_port=3306, master_user='repl', master_password='123456', master_log_file='binlog.000003', master_log_pos=940;
+Query OK, 0 rows affected, 2 warnings (0.02 sec)
 ```
 
-![](https://images2015.cnblogs.com/blog/771870/201603/771870-20160309163146257-1219019147.png)
 
-然后启动一下同步进程：
-
-```sql
-mysql > start slave;
-```
-
-检查同步状态：
+7.从库：开启同步线程
 
 ```sql
-mysql > show slave status \G
+mysql> start slave;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> show slave status \G
+*************************** 1. row ***************************
+               Slave_IO_State: 
+                  Master_Host: 139.180.197.68
+...
 ```
 
 ![](https://images2015.cnblogs.com/blog/771870/201603/771870-20160309163148225-1200721404.png)
 
 上面的两个进程都显示YES则表示配置成功。
+
+8.主库：恢复写入操作
+
+```sql
+mysql> unlock tables;
+```
+
+> 对于主库已有数据，只能手工导入从库。
 
 ## 备份方法对比
 |备份方法|备份速度|恢复速度|便捷性|功能|一般用于|
@@ -378,6 +412,19 @@ mysql > show slave status \G
 |xtrabackup|较快|较快|实现innodb热备、对存储引擎有要求|强大|较大规模的备份|
 
 ## 常见问题
+1. Last_IO_Error: error connecting to master
+  主从复制，从库提示：Last_IO_Error: error connecting to master。
+
+  原因：防火墙未关闭。
+
+1. Slave failed to initialize relay log info structure from the repository
+  MySQL主从复制，启动slave时出现报错。
+
+  原因：保留之前relay_log的信息，所以导致启动slave报错。
+
+  解决：reset salve; change master ...; start slave;
+
+## 面试题
 1. 全量备份和增量备份的区别？
 
 1. 什么情况下需要增量恢复？
@@ -392,3 +439,9 @@ mysql > show slave status \G
 
 1. mysqldump 备份什么时候能派上用场？
 跨机房灾备、迁移数据、增加从库
+
+1. 什么是主从复制？
+
+1. 数据库主从同步数据一致性如何解决？技术方案的优劣势比较？
+
+1. MySQL 主从同步的实现原理？

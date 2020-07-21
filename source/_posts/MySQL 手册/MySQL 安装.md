@@ -138,26 +138,3 @@ mysql               latest              be0dbf01a0f3        4 weeks ago         
 ## 常见问题
 1. MySQL 启用失败
 如果启动失败，可以查看 MySQL 日志文件 `/var/log/mysql/mysqld.log`，一般是内存不足。MySQL 刚启动就占用了接近 500MB 的内存，所以机器配置最低也需要 1G。
-
-
-1. 登录报错 `error 2059: Authentication plugin 'caching_sha2_password' cannot be loaded`
-这是因为 MySQL8.0 版本默认的认证方式是 caching_sha2_password。若想 在MySQL8.0 版本中继续使用旧版本中的认证方式需要在 my.cnf 文件中配置并重启，因为此参数不可动态修改。
-
-```mysql
-mysql> set global default_authentication_plugin='mysql_native_password';
-ERROR 1238 (HY000): Variable 'default_authentication_plugin' is a read only variable
-```
-
-写入my.cnf文件后重启MySQL（测试无效？？？）：
-```bash
-vim my.cnf
-[mysqld]
-default_authentication_plugin=mysql_native_password
-```
-
-另一种解决方法：兼容新老版本的认证方式。
-```mysql
-ALTER USER 'sptest'@'%' IDENTIFIED WITH mysql_native_password BY 'sptest';
-
-FLUSH PRIVILEGES;
-```
