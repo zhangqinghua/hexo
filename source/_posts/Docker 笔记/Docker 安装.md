@@ -197,7 +197,7 @@ sudo systemctl restart docker
 ```
 
 ## 常见问题
-#### requires containerd.io >= 1.2.2-3
+1. requires containerd.io >= 1.2.2-3
 CentOS 8.0 安装 docker 报错：Problem: package docker-ce-3:19.03.8-3.el7.x86_64 requires containerd.io >= 1.2.2-3。
 
 这是因为 containerd.io 版本过低，需要更新。
@@ -207,3 +207,8 @@ CentOS 8.0 安装 docker 报错：Problem: package docker-ce-3:19.03.8-3.el7.x86
 [root@localhost ~]# wget https://download.docker.com/linux/centos/7/x86_64/edge/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm
 [root@localhost ~]# yum install -y  containerd.io-1.2.6-3.3.el7.x86_64.rpm
 ```
+
+1. ERROR: Unsupported distribution 'amzn'
+问题：亚马逊云安装Docker提示这个异常。。。
+原因：软件库太老。
+解决：`sudo yum update -y && sudo yum install docker -y`
