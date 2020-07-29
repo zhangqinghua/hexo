@@ -80,5 +80,104 @@ TIMESTAMP类型有专有的自动更新特性，将在后面描述。
 有 4 种 `TEXT` 类型：`TINYTEXT`、`TEXT`、`MEDIUMTEXT` 和 `LONGTEXT`。对应的这 4 种 `BLOB` 类型，可存储的最大长度不同，可根据实际情况选择。
 
 ## 字符集
+字符集是用来定义存储字符串的方式。MySQL 支持 30 多种字符集。
+
+常见字符集：
+
+|字符集|使用场景|最大长度|字符长度|
+| :- |
+|ascii|英文|1字节|英文1字节|
+|utf8|各种语言|3字节|英文1字节、汉字3字节|
+|utf8mb4|各种语言，表情|4字节|英文1字节、汉字4字节|
+
+#### 查看默认字符集
+```sql
+mysql> SHOW VARIABLES LIKE 'character_set_server';
++----------------------+--------+
+| Variable_name        | Value  |
++----------------------+--------+
+| character_set_server | gbk    |
++----------------------+--------+
+1 row in set, 1 warning (0.01 sec)
+
+mysql> SHOW VARIABLES LIKE 'collation_server';
++------------------+-------------------+
+| Variable_name    | Value             |
++------------------+-------------------+
+| collation_server | gbk_chinese_ci    |
++------------------+-------------------+
+1 row in set, 1 warning (0.01 sec)
+```
+
+#### 配置默认字符集
+如果没有指定服务器字符集，MySQL 会默认使用 latin1 作为服务器字符集。
+
+在配置文件配置默认字符集：
+
+```cnf
+[mysqld]
+character-set-server=字符集名称
+```
+
+连接 MySQL 服务器时指定字符集：
+
+```bash
+mysql -uroot -p123 --default-character-set=utf8mb4
+```
+
+使用命令修改字符集：
+```sql
+-- use到当前的数据库中,修改字符集
+mysql> use mydb
+
+mysql> alter database mydb character set utf-8;
+```
+
+创建数据库时指定字符集：
+
+```sql
+CREATE DATABASE `tb_students_info` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+```
+
+修改数据库时指定字符集：
+
+```sql
+ALTER DATABASE `tb_students_info` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+```
+
+新增表时指定字符集：
+
+```sql
+CREATE TABLE `tb_students_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(10) DEFAULT NULL,
+  `age` int(11) DEFAULT NULL,
+  `sex` char(1) DEFAULT NULL,
+  `height` float DEFAULT NULL,
+  `course_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8
+```
+
+修改表时指定字符集：
+```sql
+ALTER TABLE `tb_students_info` TO CHARACTER SET utf8mb4;
+```
 
 ## 校对规则
+校对规则定义了比较字符串的方式。字符集和校对规则是一对多的关系, MySQL 支持 70 多种校对规则。
+
+如果只指定了字符集，没有指定校对规则，MySQL 会使用该字符集对应的默认校对规则。如果要使用字符集的非默认校对规则，需要在指定字符集的同时指定校对规则。
+
+#### 配置校对规则
+创建数据库时指定字符集：
+
+```sql
+CREATE DATABASE `sptest` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+```
+
+修改数据库时指定字符集：
+
+```sql
+ALTER DATABASE `sptest` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+```
