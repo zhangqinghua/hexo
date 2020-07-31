@@ -239,7 +239,23 @@ mysql> explain select * from servers;
 
 ## 数据对比
 
-## test
+## 性能优化
+#### SQL层面
+1. 单条查询最后添加 `LIMIT 1`，停止全表扫描。
+1. 
+#### 硬件层面
+1. 使用 IP 而不是域名做数据库路径。避免 DNS 解析问题
+1. 机械硬盘、固态硬盘、内存硬盘。
+
+#### 配置层面
+
+#### 架构层面
+
+
+
+
+
+
 https://www.cnblogs.com/claireyuancy/p/7258314.html
 
 
