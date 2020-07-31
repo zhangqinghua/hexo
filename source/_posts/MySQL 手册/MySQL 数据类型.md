@@ -197,20 +197,8 @@ CREATE DATABASE `sptest` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 ALTER DATABASE `sptest` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 ```
 
-## 中英文对照表
-|cn|en|cn|en|cn|en|cn|en|
-| :- |
-|**商城系统**|
-|品牌|Brand|厂家|Factory|显示状态|showStatus|专题|Subject|
-|收藏|Collect|用户收藏|UserCollect|
-|优惠卷|Discount|推荐码|referral|
-|费用信息|moneyInfo|
-|收货人信息|receiverInfo|
-|发货|delivery|退货申请|ReturnApply|退货|Return|
-|**企业流程系统**|
-
-#### 字段、类型及其长度
-|字段中午|字段英文|类型|长度|
+## 字段、类型及其长度
+|字段CN|字段EN|类型|长度|
 | :- |
 |**用户信息**|
 |昵称   |nickname   |varchar    |20     |
