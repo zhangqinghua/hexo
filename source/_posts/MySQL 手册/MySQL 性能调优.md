@@ -239,6 +239,9 @@ mysql> explain select * from servers;
 
 ## 数据对比
 
+## test
+https://www.cnblogs.com/claireyuancy/p/7258314.html
+
 
 ## 问题
 1. 优化数据库的方法
