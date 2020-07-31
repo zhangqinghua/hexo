@@ -42,17 +42,17 @@ BIT数据类型保存位字段值，并且支持MyISAM、MEMORY、InnoDB和BDB�
 TIMESTAMP类型有专有的自动更新特性，如下所示：
 
 ```sql
--- 在创建新记录的时候把这个字段设置为当前时间
+-- 在创建新记录的时候把这个字段设置为给定值，以后修改时不刷新
 TIMESTAMP DEFAULT CURRENT_TIMESTAMP  
 
--- 在创建新记录的时候把这个字段设置为当前时间，以后修改时，刷新它
+-- 在创建新记录的时候把这个字段设置为给定值，以后修改时刷新它
 TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  
-
--- 在创建新记录的时候把这个字段设置为0，以后修改时刷新它 
-TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
 
 -- 在创建新记录的时候把这个字段设置为给定值，以后修改时刷新它
 TIMESTAMP DEFAULT 'yyyy-mm-dd hh:mm:ss' ON UPDATE CURRENT_TIMESTAMP  
+
+-- 在创建新记录的时候把这个字段设置为0，以后修改时刷新它 
+TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
 ```
 
 |类型|大小|范围|格式|用途|
