@@ -1026,7 +1026,19 @@ SELECT CASE WHEN WEEKDAY(NOW())=0 THEN '星期一'
 
 此例跟上例的返回结果一样，只是使用了 CASE 函数的不同写法，WHEN 后面为表达式，当表达式的返回结果为 TRUE 时取 THEN 后面的值，如果都不是，则返回 ELSE 后面的值。
 
+## 特殊函数
+#### 最后插入行的生成序列号
+`LAST_INSERT_ID()` 函数来获取最后插入行的生成序列号。
 
+```sql
+SELECT LAST_INSERT_ID() as id;
++-----------+
+| id        |
++-----------+
+| 23        |
++-----------+
+1 row in set (0.03 sec)
+```
 
 ## 问题
 1. 如何在 Unix 和 MySQL 时间戳之间进行转换

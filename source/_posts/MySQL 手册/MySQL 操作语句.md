@@ -7,6 +7,7 @@ categories:
 date: 2020-07-07 00:00:08
 ---
 
+select 
 
 ## 常见问题
 1. ERROR 1292 (22007): Truncated incorrect DOUBLE value
