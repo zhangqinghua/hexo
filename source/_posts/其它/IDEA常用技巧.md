@@ -49,3 +49,5 @@ IDEA 无法识别同一个 package 里的其他类，将其显示为红色，但
 多半是因为 IDEA 之前发生了错误，某些 setting 出了问题。解决方法如下：
 
 点击菜单中的 “File” -> “Invalidate Caches / Restart”，然后点击对话框中的 “Invalidate and Restart”，清空 cache 并且重启。语法就会正确的高亮了。
+
+#### TextMate Bundles for JavaScript
