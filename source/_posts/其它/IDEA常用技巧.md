@@ -49,3 +49,11 @@ IDEA 无法识别同一个 package 里的其他类，将其显示为红色，但
 多半是因为 IDEA 之前发生了错误，某些 setting 出了问题。解决方法如下：
 
 点击菜单中的 “File” -> “Invalidate Caches / Restart”，然后点击对话框中的 “Invalidate and Restart”，清空 cache 并且重启。语法就会正确的高亮了。
+
+#### 导入包报错：Cannot resolve com.xxx
+我这里的问题是，本地Maven的settings.xml配置了远程仓库，项目里也设置了另外一个远程仓库。下载依赖包找到本地的远程仓库去了。
+
+把本地的settting文件删掉即可。
+
+## 配置Tomcat
+参考：https://blog.csdn.net/zhoukun1314/article/details/88910242
