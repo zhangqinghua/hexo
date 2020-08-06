@@ -4,7 +4,7 @@ title: MySQL 查询语句
 categories:
 - MySQL 手册
 
-date: 2020-07-07 00:00:07
+date: 2020-07-07 00:00:08
 ---
 
 MySQL 查询不区分大小写，下面的查询均有效：

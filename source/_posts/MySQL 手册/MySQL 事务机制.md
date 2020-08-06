@@ -4,7 +4,7 @@ title: MySQL 事务机制
 categories:
 - MySQL 手册
 
-date: 2020-07-07 00:00:04
+date: 2020-07-07 00:00:05
 ---
 
 ## 问题

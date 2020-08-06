@@ -4,7 +4,7 @@ title: MySQL 数据类型
 categories:
 - MySQL 手册
 
-date: 2020-07-07 00:00:11
+date: 2020-07-07 00:00:12
 ---
 
 
@@ -205,3 +205,7 @@ ALTER DATABASE `sptest` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 |姓名   |username   |varchar    |20     |    
 |性别   |sex        |char       |1      |
 |生日   |birthday   |date       |       |
+
+
+1. 把IP地址存成 UNSIGNED INT
+1. 
