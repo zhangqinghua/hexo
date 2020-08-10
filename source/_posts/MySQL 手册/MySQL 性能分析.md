@@ -363,3 +363,106 @@ mysqladmin -uroot -p flush-logs
 数据库管理员也可以手工删除慢查询日志，删除之后需要重新启动 MySQL 服务。
 
 > 注意：通用查询日志和慢查询日志都是使用这个命令，使用时一定要注意，一旦执行这个命令，通用查询日志和慢查询日志都只存在新的日志文件中。如果需要备份旧的慢查询日志文件，必须先将旧的日志改名，然后重启 MySQL 服务或执行 `mysqladmin` 命令。
+
+## explain 优化案例
+#### 表结构
+```sql
+CREATE TABLE `a`
+(
+    `id`          int(11) NOT NULLAUTO_INCREMENT,
+    `seller_id`   bigint(20)                                       DEFAULT NULL,
+    `seller_name` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+    `gmt_create`  varchar(30)                                      DEFAULT NULL,
+    PRIMARY KEY (`id`)
+);
+CREATE TABLE `b`
+(
+    `id`          int(11) NOT NULLAUTO_INCREMENT,
+    `seller_name` varchar(100) DEFAULT NULL,
+    `user_id`     varchar(50)  DEFAULT NULL,
+    `user_name`   varchar(100) DEFAULT NULL,
+    `sales`       bigint(20)   DEFAULT NULL,
+    `gmt_create`  varchar(30)  DEFAULT NULL,
+    PRIMARY KEY (`id`)
+);
+CREATE TABLE `c`
+(
+    `id`         int(11) NOT NULLAUTO_INCREMENT,
+    `user_id`    varchar(50)  DEFAULT NULL,
+    `order_id`   varchar(100) DEFAULT NULL,
+    `state`      bigint(20)   DEFAULT NULL,
+    `gmt_create` varchar(30)  DEFAULT NULL,
+    PRIMARY KEY (`id`)
+);
+```
+
+#### 待优化 SQL
+三张表关联，查询当前用户在当前时间前后10个小时的订单情况，并根据订单创建时间升序排列，具体SQL如下：
+
+```sql
+select a.seller_id,
+       a.seller_name,
+       b.user_name,
+       c.state
+from a,
+     b,
+     c
+where a.seller_name = b.seller_name
+  and b.user_id = c.user_id
+  and c.user_id = 17
+  and a.gmt_create
+    BETWEEN DATE_ADD(NOW(), INTERVAL – 600 MINUTE)
+    AND DATE_ADD(NOW(), INTERVAL 600 MINUTE)
+```
+#### 数据量
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X3BuZy9FbnpBd3ZwVFFKNzY5TTZaaWNvbjRWVGdpY2FMdTNyN0s2R2lhY21zTjgySE1JZFh5aWJWWjFOZmhmeUxJOGlhWUl4SU54UFdxa1Nsalh5UFlxSHJOMVU2MWljUS82NDA_d3hfZm10PXBuZw?x-oss-process=image/format,png)
+
+#### 原执行时间
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X3BuZy9FbnpBd3ZwVFFKNzY5TTZaaWNvbjRWVGdpY2FMdTNyN0s2M0pydlYyMlNWbENuRU1HZm1jSXBxaWNOWGliV2I4elBVbjdLMUVURnIzNWNXdmliQWYzQUlDRjV3LzY0MD93eF9mbXQ9cG5n?x-oss-process=image/format,png)
+
+#### 原实行计划
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X3BuZy9FbnpBd3ZwVFFKNzY5TTZaaWNvbjRWVGdpY2FMdTNyN0s2YnB2ZVlBUGxqaGlhWVpIaWNWeTh1cW1ycWc1T1l1V0FGM2FURDR0Q3hZaWFUQkVpYVpoUGRKcFIxQS82NDA_d3hfZm10PXBuZw?x-oss-process=image/format,png)
+
+#### 初步优化思路
+1. SQL 中 `where` 条件字段类型要跟表结构一致，表中 `user_id` 为 `varchar(50)` 类型，实际 SQL 用的 `int` 类型，存在隐式转换，也未添加索引。将 b 和 c 表 `user_id` 字段改成 `int` 类型。
+1. 因存在 `b` 表和 `c` 表关联，将 `b` 和 `c` 表 `user_id` 创建索引
+1. 因存在 `a` 表和 `b` 表关联，将 `a` 和 `b` 表 `seller_name` 字段创建索引
+1. 利用复合索引消除临时表和排序
+
+#### 初步优化SQL
+```sql
+alter table b modify `user_id` int(10) DEFAULT NULL;
+alter table c modify `user_id` int(10) DEFAULT NULL;
+alter table c add index `idx_user_id`(`user_id`);
+alter table b add index `idx_user_id_sell_name`(`user_id`,`seller_name`);
+alter table a add index `idx_sellname_gmt_sellid`(`gmt_create`,`seller_name`,`seller_id`);
+```
+
+#### 优化后执行时间
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X3BuZy9FbnpBd3ZwVFFKNzY5TTZaaWNvbjRWVGdpY2FMdTNyN0s2empYMm04ZG4yUDZvbXNTZkwxSFg2UFZKVlVjQUlsR1ZzSTB5cWw1ZWJNdTZIaGROV292aWJSQS82NDA_d3hfZm10PXBuZw?x-oss-process=image/format,png)
+
+#### 优化后执行计划
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X3BuZy9FbnpBd3ZwVFFKNzY5TTZaaWNvbjRWVGdpY2FMdTNyN0s2dHRsV3U3cENLQlBmZWtPdXdzbnZPOEZpY3gxRmRFbFRSRU9NWlVzUDY2MmV6eWhudXRiNHltZy82NDA_d3hfZm10PXBuZw?x-oss-process=image/format,png)
+
+#### 查看 warnings 信息
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X3BuZy9FbnpBd3ZwVFFKNzY5TTZaaWNvbjRWVGdpY2FMdTNyN0s2OUk5V29JM1RKRkdrSzJ5cG1YWDdYc2FpY2NzVjhqVDdCUjU5d0JyeTV3a0htRzJ2ZmhMU2Nrdy82NDA_d3hfZm10PXBuZw?x-oss-process=image/format,png)
+
+#### 继续优化 gmt_create
+```sql
+alter table a modify "gmt_create" datetime DEFAULT NULL;
+```
+
+#### 查看执行时间
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X3BuZy9FbnpBd3ZwVFFKNzY5TTZaaWNvbjRWVGdpY2FMdTNyN0s2UUFNcHh4TzI5R0huOEwxbmhYbmJTc2JBOFRHa2ljY1dpYVBsS3ptNWhLb1k3Q1RpYVRWU1o3U0ZnLzY0MD93eF9mbXQ9cG5n?x-oss-process=image/format,png)
+
+#### 查看执行计划
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X3BuZy9FbnpBd3ZwVFFKNzY5TTZaaWNvbjRWVGdpY2FMdTNyN0s2enNxUFlXQWlhc0RySThYZXMzT2xGVmV1eXlpY0hmZ0ZhYXVPNlNpYTBCRVhqekhCTjB6RGQzNmliQS82NDA_d3hfZm10PXBuZw?x-oss-process=image/format,png)
+
+#### 总结
+1. 查看执行计划 `explain`
+1. 如果有告警信息，查看告警信息 `show warnings`
+1. 查看SQL涉及的表结构和索引信息
+1. 根据执行计划，思考可能的优化点
+1. 按照可能的优化点执行表结构变更、增加索引、SQL 改写等操作
+1. 查看优化后的执行时间和执行计划
+1. 如果优化效果不明显，重复第四步操作

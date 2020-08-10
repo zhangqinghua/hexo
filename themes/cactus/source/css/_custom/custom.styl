@@ -21,9 +21,10 @@ ol > li > p {
 /*图片固定宽度*/
 article .content img, article .content video {
     width: 70%!important;
+    float: left;
 }
 
-// 滚动条背景透明
+/*滚动条背景透明*/
 figure::-webkit-scrollbar{
   background-color: rgba(100,1,1,0);
 }
@@ -68,7 +69,13 @@ body table {
   display: none !important;
 }
 
-/* 修改你的模板css文件，添加全局样式 */
+/*h4 标题 粗体*/
+body h4, body .h4 {
+    color: #111;
+    font-weight: bold;
+}
+
+/* 思维导图 修改你的模板css文件，添加全局样式 */
 .mermaid {
   max-height: 200px;
   position: relative;
