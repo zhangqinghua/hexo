@@ -7,6 +7,14 @@ categories:
 date: 2020-07-07 00:00:00
 ---
 ## 优化的目标
+1. QPS
+1. TPS
+1. 吞吐量
+1. 响应时间
+1. 减少 IO 次数 
+    IO 永远是数据库最容易瓶颈的地方，大部分数据库操作中超过90%的时间都是 IO 操作所占用的，减少 IO 次数是SQL 优化中需要第一优先考虑，当然，也是收效最明显的优化手段。
+1. 降低 CPU 计算 
+    除了 IO 瓶颈之外，SQL优化中需要考虑的就是 CPU 运算量的优化了。order by, group by,distinct … 都是消耗 CPU 的大户（这些操作基本上都是 CPU 处理内存中的数据比较运算）。当我们的 IO 优化做到一定阶段之后，降低 CPU 计算也就成为了我们 SQL 优化的重要目标
 
 ## 优化的原则
 数据库优化可以分成 4 个方面来讲：
@@ -47,8 +55,6 @@ date: 2020-07-07 00:00:00
 
 #### 软件层面
 数据结构、SQL、索引是成本最低，且效果最好的优化手段。
-
-![](https://img-blog.csdn.net/2018082916010768?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTM2MjgxNTI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
 
 ## 配置层面
 
@@ -187,6 +193,13 @@ https://www.cnblogs.com/claireyuancy/p/7258314.html
     
     所以当我们可以确认不可能出现重复结果集或者不在乎重复结果集的时候，尽量使用 `union all` 而不是 `union`。
 
+1. 优化 `distinct` 查询
+    `distinct` 用于查询某个字段不重复的记录。
+
+    功能优化：因为 `distinct` 只能返回他的目标字段，而无法返回其他字段。如果我们希望返回其目标字段所在的记录，可以使用 `group by` 代替，例如：`select distinct(name) from biz_user` 替换为 `select id, name from biz_user group by name`。 
+    
+    性能优化：
+
 1. 优化查询缓存
     像 `now()`、 `rand()`、`curdate()` 或是其它的诸如此类的 SQL 函数都不会开启查询缓存，因为这些函数的返回是会不定的易变的。所以，你所需要的就是用一个变量来代替 MySQL 的函数，从而开启缓存。
 
@@ -267,8 +280,7 @@ where高于having，能写在where限定的条件就不要去having限定了。
 1. 搜索引擎如 solr，elasticsearch
 
 ## 问题
-1. 优化数据库的方法
-1. 实践中如何优化 MySQL
+1. 
 1. MySQL 如何优化 DISTINCT
 1. MySQL 数据库作发布系统的存储，一天五万条以上的增量，预计运维三年,怎么优化
 1. 锁的优化策略

@@ -787,7 +787,14 @@ tps: 269.60 qps: 5415.63 (r/w/o: 3793.42/1081.71/540.50) lat (ms,95%): 253.35 er
 
 注1：Binlog 不影响读性能，影响写、修、删性能。
 
+## 附一：MySQL 数据库压力测试报告
+http://blog.itpub.net/29734436/viewspace-2140565/
 
+## 附二：MySQL压测④--压测报告
+https://www.jianshu.com/p/f15d2a35dfd7
+
+## 附三：MySQL 数据量-性能测试报告version1
+http://www.docin.com/p-2023784875.html
 
 ## 常见问题
 1. error 2059: Authentication plugin 'caching_sha2_password'
