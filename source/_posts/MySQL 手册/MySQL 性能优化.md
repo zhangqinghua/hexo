@@ -17,7 +17,7 @@ date: 2020-07-07 00:00:00
 
 其中，数据结构、SQL、索引是成本最低，且效果最好的优化手段。而硬件的优化则成本比较高。
 
-![](https://img-blog.csdn.net/2018082916010768?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTM2MjgxNTI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+![](https://p1htmlkernalweb.mybluemix.net/image/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMzg0OTAxNzMvYXJ0aWNsZS9kZXRhaWxzLzEwNDk5NzUwMQ==_aHR0cHM6Ly9pbWctYmxvZy5jc2RuaW1nLmNuLzIwMjAwMzIwMjAwNDM2NjY3LnBuZz94LW9zcy1wcm9jZXNzPWltYWdlL3dhdGVybWFyayx0eXBlX1ptRnVaM3BvWlc1bmFHVnBkR2ssc2hhZG93XzEwLHRleHRfYUhSMGNITTZMeTlpYkc5bkxtTnpaRzR1Ym1WMEwzRnhYek00TkRrd01UY3osc2l6ZV8xNixjb2xvcl9GRkZGRkYsdF83MA==)
 
 漏斗法则优化法可以归纳为5个层次：
 1. 减少数据访问（减少磁盘访问）
@@ -40,9 +40,9 @@ date: 2020-07-07 00:00:00
 |减少服务器 CPU 开销|1~5|低|
 |利用更多资源|@~10|高|
 
-![](http://hi.csdn.net/attachment/201012/6/0_1291636622rnbL.gif)
+![](http://img.shangdixinxi.com/up/info/202006/20200607132814970915.png)
 
-![](http://hi.csdn.net/attachment/201012/6/0_12916372042dJ3.gif)
+![](https://ucc.alicdn.com/pic/developer-ecology/76f2a3150468463ea197396326949fb0.png)
 
 
 #### 软件层面
