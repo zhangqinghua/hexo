@@ -796,6 +796,9 @@ https://www.jianshu.com/p/f15d2a35dfd7
 ## 附三：MySQL 数据量-性能测试报告version1
 http://www.docin.com/p-2023784875.html
 
+## 附四：MySQL 并发测试中，线程数和数据库连接池的实验
+http://www.520mwx.com/view/28965
+
 ## 常见问题
 1. error 2059: Authentication plugin 'caching_sha2_password'
 参考章节「MySQL 安装」。
