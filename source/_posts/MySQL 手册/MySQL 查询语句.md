@@ -97,3 +97,4 @@ SELECT name FROM person_tbl WHERE name REGEXP '^[aeiou]|ok$';
 1. MySQL 有哪几种 join 方式，底层原理是什么
 1. MySQL limit 分页如何保证可靠性
 1. sql语法（join，union，子查询，having，group by）
+1. 四个表 记录成绩，每个大约十万条记录，如何找到成绩最好的同学
