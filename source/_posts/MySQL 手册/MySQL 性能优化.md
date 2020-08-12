@@ -74,6 +74,17 @@ date: 2020-07-07 00:00:00
     尽可能对每一条运行在数据库中的 SQL 进行 `explain`。
 
 #### SQL 优化原则
+锁优化
+
+索引优化
+
+select 优化
+
+join 优化
+
+where 优化
+
+
 1. 避免查询全部字段
     只查必要的字段。如果需要全部字段，避免使用 `select *`，把所有字段名列出来。
 
@@ -94,6 +105,8 @@ date: 2020-07-07 00:00:00
 
     使用 `limit` 对查询结果的记录进行限定，单条查询最后添加 `limit 1`，停止全表扫描。
 
+1. 锁优化
+    MyISAM：MyISAM 使用表锁，可以考虑转成
 1. 优化子查询
     使用子查询需要在内存中创建临时表来完成这个逻辑上的需要两个步骤的查询工作。
 
@@ -123,11 +136,21 @@ date: 2020-07-07 00:00:00
     所以当我们可以确认不可能出现重复结果集或者不在乎重复结果集的时候，尽量使用 `union all` 而不是 `union`。
 
 1. 优化 `distinct` 查询
-    `distinct` 用于查询某个字段不重复的记录。
+    用途：查询某个字段不重复的记录。
+
+    原因：对最终结果集完成一次排序，这是成本最昂贵的排序之一。
 
     功能优化：因为 `distinct` 只能返回他的目标字段，而无法返回其他字段。如果我们希望返回其目标字段所在的记录，可以使用 `group by` 代替，例如：`select distinct(name) from biz_user` 替换为 `select id, name from biz_user group by name`。 
     
-    性能优化：
+    性能优化：`SELECT DISTINCT e.empno, e.lastname FROM emp e, empproject ep WHERE e.empno=ep.empno` 可以替换成为 `SELECT e.empno, e.lastname from emp e, empproject ep WHERE e.empno=ep.empno GROUP BY e.empno,e.lastname`。
+
+    还可以使用子查询代替：`SELECT e.empno, e.lastname from emp e WHERE EXISTS (select 1 from empproject where e.empno=empno)`。
+
+    还可以使用 `in` 字句查询：`SELECT e.empno, e.lastname from emp e where e.empno in (select empno from empproject)`。
+
+    提升效率比：??
+
+    https://blog.csdn.net/u010745238/article/details/42846897 ??
 
 1. 优化查询缓存
     像 `now()`、 `rand()`、`curdate()` 或是其它的诸如此类的 SQL 函数都不会开启查询缓存，因为这些函数的返回是会不定的易变的。所以，你所需要的就是用一个变量来代替 MySQL 的函数，从而开启缓存。

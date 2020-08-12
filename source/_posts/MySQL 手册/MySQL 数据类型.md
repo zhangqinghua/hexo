@@ -200,12 +200,21 @@ ALTER DATABASE `sptest` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 ## 字段、类型及其长度
 |字段CN|字段EN|类型|长度|
 | :- |
-|**用户信息**|
-|昵称   |nickname   |varchar    |20     |
-|姓名   |username   |varchar    |20     |    
-|性别   |sex        |char       |1      |
-|生日   |birthday   |date       |       |
-
+|**用户信息 userInfo**|
+|昵称     |nickname   |varchar    |20     |
+|姓名     |username   |varchar    |20     |    
+|性别     |sex        |char       |1      |
+|生日     |birthday   |date       |       |
+|**钱包 wallet**|
+|用户Id   |userId     |bigint     |20     |
+|余额     |balance    |decimal    |10,2   |
+|**钱包流水**|
+|操作类型 |optype     |int        |1      |
+|操作数额 |opAmount   |decimal    |10,2   |
+|之前数额 |bfAmount   |decimal    |10,2   |
+|之后数额 |afAmount   |decimal    |10,2   |
+|业务Key  |busKey     |varchar    |256    |
+|业务类型 |busType    |int        |1      |
 
 1. 把IP地址存成 UNSIGNED INT
 1. 
