@@ -4,7 +4,7 @@ title: MySQL 概述
 categories:
 - MySQL 手册
 
-date: 2020-07-07 00:00:14
+date: 2020-07-07 00:00:15
 ---
 MySQL 概述
 MySQL 安装
@@ -53,3 +53,13 @@ MySQL 性能调优
 
 
 
+## 常见问题
+1. 抛出异常 java.sql.SQLException: Incorrect string value: '\xF0\x9F\x92\x94' for column 'name' at row 1
+
+数据库字段、表、数据库、MySQL 的编码需要设置成utf8mb4、数据库连接设置编码
+
+```sql
+show variables like "%char%";
+```
+
+我的问题是，阿里云数据的chareacer_set_server=utf8，修改即可。

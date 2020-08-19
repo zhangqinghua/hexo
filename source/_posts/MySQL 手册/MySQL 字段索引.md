@@ -4,7 +4,7 @@ title: MySQL 字段索引
 categories:
 - MySQL 手册
 
-date: 2020-07-07 00:00:10
+date: 2020-07-07 00:00:11
 ---
 
 ## 超键、主键、外键、候选键
@@ -24,6 +24,39 @@ date: 2020-07-07 00:00:10
 |20060615   |李淑华     |女     |17     |生物   |动物学
 |20060616   |赵静       |男     |21     |化学   |食品化学
 |20060617   |赵静       |女     |20     |生物   |植物学
+
+## 索引操作
+#### 查看索引
+使用 `show keys` 或 `show index` 语句查看索引。
+
+```sql
+show keys from biz_user;
+
+show index from biz_user;
+```
+
+![](https://img-blog.csdnimg.cn/20190330161910167.png)
+
+使用 `show create table` 语句查看索引。
+
+```sql
+show create table biz_user\G;
+```
+
+![](https://img-blog.csdnimg.cn/2019033016221138.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl8zOTU2MTQ3Mw==,size_16,color_FFFFFF,t_70)
+
+#### 创建索引
+
+#### 删除索引
+```sql
+-- 使用drop index命令删除索引
+drop index openId on biz_user;
+
+-- 使用alter table命令删除索引
+alter table biz_user drop index openId;
+```
+
+#### 修改索引
 
 ## 问题
 1. 主键、超键和候选键有什么区别

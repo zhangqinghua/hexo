@@ -4,7 +4,7 @@ title: MySQL 查询语句
 categories:
 - MySQL 手册
 
-date: 2020-07-07 00:00:07
+date: 2020-07-07 00:00:08
 ---
 
 MySQL 查询不区分大小写，下面的查询均有效：
@@ -15,7 +15,38 @@ SeLect version(), current_date;
 seleCt vErSiOn(), current_DATE;
 ```
 
-#### LIKE 子句
+## SELECT 语句
+`SELECT` 语句用于从数据库中选取数据。结果被存储在一个结果表中，称为结果集。
+
+```sql
+SELECT name,country FROM Websites;
+```
+
+下面的 SQL 语句从 "Websites" 表中选取所有列：
+
+```sql
+SELECT * FROM Websites;
+```
+
+## SELECT DISTINCT 语句
+在表中，可能会包含重复值。这并不成问题，不过，有时您也许希望仅仅列出不同的值。
+
+关键词 `DISTINCT` 用于返回唯一不同的值。
+
+```sql
+SELECT DISTINCT Company FROM Orders 
+```
+
+还可以用于多个字段上。
+
+```sql
+SELECT DISTINCT Company, User FROM Orders;
+```
+
+## WHERE 子句
+`WHERE` 子句用于提取那些满足指定条件的记录。
+
+## LIKE 子句
 `LIKE` 操作符通常用于基于模式查询选择数据。以正确的方式使用 `LIKE` 运算符对于增加/减少查询性能至关重要。
 
 MySQL 中提供两个通配符，用于与 `LIKE` 运算符一起使用，它们分别是：百分比符号 `%` 和下划线 `_`。其中 `%` 用于通配符允许匹配任何字符串的零个或多个字符，类似正则表达式中的 `*`。`_` 通配符允许匹配任何单个字符。类似正则表达式中的 `_`。
@@ -86,6 +117,43 @@ SELECT name FROM person_tbl WHERE name REGEXP '^[aeiou]|ok$';
     `a{5}` 表示 5 个 a，n 是一个非负整数。 
     在 `{n, m}`  中，m 和 n 均为非负整数，其中 n <= m。最少匹配 n 次且最多匹配 m 次。
 
+
+## ORDER BY 语句
+`GROUP BY` 语句用于结合合计函数，根据一个或多个列对结果集进行分组。
+
+我们想要使用 `GROUP BY` 语句对客户进行组合，可以使用下列 SQL 语句：
+
+```sql
+SELECT Customer,SUM(OrderPrice) FROM Orders GROUP BY Customer;
+```
+
+我们也可以对一个以上的列应用 `GROUP BY` 语句，就像这样：
+
+```sql
+SELECT Customer,OrderDate,SUM(OrderPrice) FROM Orders GROUP BY Customer,OrderDate;
+```
+
+## HAVING 子句
+
+在 SQL 中增加 `HAVING` 子句原因是，`WHERE` 关键字无法与合计函数一起使用。
+
+例如：我们希望查找订单总金额少于 2000 的客户。
+
+```sql
+SELECT Customer,SUM(OrderPrice) FROM Orders
+GROUP BY Customer
+HAVING SUM(OrderPrice)<2000
+```
+
+现在我们希望查找客户 "Bush" 或 "Adams" 拥有超过 1500 的订单总金额。我们在 SQL 语句中增加了一个普通的 WHERE 子句：
+
+```sql
+SELECT Customer,SUM(OrderPrice) FROM Orders
+WHERE Customer='Bush' OR Customer='Adams'
+GROUP BY Customer
+HAVING SUM(OrderPrice)>1500
+```
+
 ## 问题
 1. SQL 语言包括哪几部分，每部分都有哪些操作关键字
 1. like 声明中的 ％ 和 _ 是什么意思
@@ -97,3 +165,4 @@ SELECT name FROM person_tbl WHERE name REGEXP '^[aeiou]|ok$';
 1. MySQL 有哪几种 join 方式，底层原理是什么
 1. MySQL limit 分页如何保证可靠性
 1. sql语法（join，union，子查询，having，group by）
+1. 四个表 记录成绩，每个大约十万条记录，如何找到成绩最好的同学

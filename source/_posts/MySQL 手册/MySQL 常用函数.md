@@ -4,7 +4,7 @@ title: MySQL 常用函数
 categories:
 - MySQL 手册
 
-date: 2020-07-07 00:00:09
+date: 2020-07-07 00:00:10
 ---
 
 ## 数值型函数

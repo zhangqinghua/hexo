@@ -1,15 +1,32 @@
 ---
-title: MySQL 性能调优
+title: MySQL 性能分析
 
 categories:
 - MySQL 手册
 
-date: 2020-07-07 00:00:00
+date: 2020-07-07 00:00:01
 ---
-## 性能指标
+MySQL 数据库性能遇到瓶颈，如何快速定位问题的原因，是每个 DBA 或系统运维人员应该思考的问题。正确的借助一些性能分析工具，能够帮助 DBA 或系统运维人员进行问题快速的定位。
 
-## 性能分析
-#### show status
+## 性能指标
+下面是 MySQL 数据库，或者说所有数据库的三个关键性能指标：
+1. QPS 每秒处理的查询数
+1. TPS 每秒处理的事务数
+1. IOPS 每秒磁盘进行的I/O操作次数
+
+#### QPS
+
+#### TPS
+Transactions Per Second，即服务器每秒处理的事务数，适用 InnoDB 存储引擎。
+
+TPS 是软件测试结果的测量单位。一个事务是指一个客户机向服务器发送请求然后服务器做出反应的过程。客户机在发送请求时开始计时，收到服务器响应后结束计时，以此来计算使用的时间和完成的事务个数。
+
+一般的，评价系统性能均以每秒钟完成的技术交易的数量来衡量。系统整体处理能力取决于处理能力最低模块的 TPS 值。
+
+
+???
+
+## show status
 `show status` 命令可以查看 MySQL 服务器的状态信息。
 
 ```sql
@@ -78,7 +95,7 @@ show status like 'slow_launch_threads';
 show status like 'slow_queries';
 ```
 
-#### Query Profiler
+## Query Profiler
 Query Profiler 是 MySQL 自带的一种查询诊断分析工具，通过它可以分析出一条SQL语句的性能瓶颈在什么地方。
 
 查询类型包括：
@@ -148,7 +165,7 @@ freeing items	        0.000011	0.000000	0.000000	0
 cleaning up	        0.000003	0.000000	0.000000	0
 ```
 
-#### explain
+## explain
 MySQL 提供了一个 explain 命令用来对 select 语句进行分析，并输出执行的详细信息，以供开发人员针对性优化。
 
 使用：
@@ -237,150 +254,215 @@ mysql> explain select * from servers;
 
 详细介绍：https://segmentfault.com/a/1190000008131735
 
-## 数据对比
+## 慢日志查询
+慢查询日志用来记录在 MySQL 中执行时间超过指定时间的查询语句。通过慢查询日志，可以查找出哪些查询语句的执行效率低，以便进行优化。
 
-## 性能优化
-#### SQL 优化
-1. 
-1. 
+通俗的说，MySQL 慢查询日志是排查问题的 SQL 语句，以及检查当前 MySQL 性能的一个重要功能。如果不是调优需要，一般不建议启动该参数，因为开启慢查询日志会或多或少带来一定的性能影响。
 
-#### 索引优化
+#### 查询慢日志配置
+```sql
+-- 查看是否开启慢查询日志功能
+show variables LIKE 'slow_query%';
++---------------------+---------------------------------------------------------------------+
+| Variable_name       | Value                                                               |
++---------------------+---------------------------------------------------------------------+
+| slow_query_log      | OFF                                                                 |
+| slow_query_log_file | C:\ProgramData\MySQL\MySQL Server 5.7\Data\LAPTOP-UHQ6V8KP-slow.log |
++---------------------+---------------------------------------------------------------------+
+2 rows in set, 1 warning (0.02 sec)
 
+-- 查询超过多少秒才记录
+show variables LIKE 'long_query_time';
++-----------------+-----------+
+| Variable_name   | Value     |
++-----------------+-----------+
+| long_query_time | 10.000000 |
++-----------------+-----------+
+1 row in set, 1 warning (0.01 sec)
+```
 
-#### 硬件层面
-1. 使用 IP 而不是域名做数据库路径。避免 DNS 解析问题
-1. 机械硬盘、固态硬盘、内存硬盘。
+#### 开启慢日志查询
+使用命令开启慢日志查询，只对当前数据库生效，重启MySQL失效。
 
-#### 配置层面
+```sql
+-- 开启慢日志查询
+set global slow_query_log = 1;
 
-#### 架构层面
+set global slow_query_log = ON;
 
-https://www.cnblogs.com/claireyuancy/p/7258314.html
+-- 慢查询界定时间（秒）
+set global long_query_time = 3;
+```
 
+如果需要永久生效，修改 MySQL 配置文件后重启。
 
-## 表结构优化
-#### 数据类型
-1. 数字类型
-    能确定不会使用负数的字段，建议添加 `unsigned` 定义。
+```cnf
+[mysqld]
 
-    合理使用 `tinyint`、`int`、`bigint`。因为三者所占用的存储空间也有很大的差别。
+# 开启慢日志查询
+slow_query_log = 1
 
-    不要使用 `double`，不仅仅只是存储长度的问题，同时还会存在精确性的问题。
-    
-    固定精度的小数，也不建议使用 `decimal`，建议乘以固定倍数转换成整数存储，可以大大节省存储空间，且不会带来任何附加维护成本。
-1. 字符类型
-    非万不得已不要使用 `text` 数据类型，其处理方式决定了他的性能要低于 `char` 或者是 `varchar` 类型的处理。
+# 慢日志文件存放位置
+log-slow-queries=dir\filename
 
-    定长字段，建议使用 `char` 类型，不定长字段尽量使用 `varchar`，且仅仅设定适当的最大长度，而不是非常随意的给一个很大的最大长度限定，因为不同的长度范围，MySQL 也会有不一样的存储处理。
+# 慢查询界定时间（秒）
+long_query_time=n
+```
+#### 关闭慢日志查询
+使用命令关闭慢日志查询，只对当前数据库生效，重启MySQL失效。
+```sql
+-- 关闭慢日志查询
+set global slow_query_log = 0;
+```
 
-    对于状态字段，以尝试使用 `enum` 来存放，因为可以极大的降低存储空间。
-    
-    如果是存放可预先定义的属性数据呢？可以尝试使用 `set` 类型，即使存在多种属性，同样可以游刃有余，同时还可以节省不小的存储空间。
-    
-    尽量避免在数据库中存储二进制数据。可以采用第三方的对象存储服务。
-1. 时间类型
-    不建议通过 `int` 类型类存储一个 Unix 时间戳的值，因为这太不直观，会给维护带来不必要的麻烦，同时还不会带来任何好处。
-    
-    尽量使用 `timestamp` 类型，因为其存储空间只需要 `datetime` 类型的一半。
-    
-    对于只需要精确到某一天的数据类型，建议使用 `date` 类型，因为他的存储空间只需要 3个字节，比 `timestamp` 还少。
-1. 字符编码
-    建议统一使用 utf8mb4 字符编码，兼容绝大多数文字和表情。
+如果需要永久生效，修改 MySQL 配置文件后重启。
+```cnf
+[mysqld]
 
-#### 适当拆分
-将表中大部分访问都不需要用到的字段，和类似于 `text` 或者是很大的 `varchar` 类型的大字段，拆分到另外的独立表中。以减少常用数据所占用的存储空间，每个数据块中可以存储的数据条数可以大大增加，既减少物理 IO 次数，也能大大提高内存中的缓存命中率。
+# 关闭慢日志查询
+slow_query_log = 0
+```
 
-#### 适度冗余
-适当冗余被频繁引用的字段，避免减少联表查询。
+#### 其他操作
+执行一条 SQL 语句。
 
-#### 避免 null 字段
-当字段中存在 `null` 值时会影响索引查询的效率。可以设置为空字符串或 0 代替。
+```sql
+USE test;
+Database changed
 
-## SQL 优化
-#### 优化 SQL 的一般步骤
-1. 通过 `show status` 命令了解各种SQL的执行效率
-1. 定位执行效率较低的 SQL 语句
-1. 通过 `explain` 或 `desc` 分析低效SQL的执行计划
-1. 通过 `show profile` 分析 SQL
-1. 通过 `trace` 分析优化器如何选择执行计划
-1. 确定问题并采取相应的优化措施
+SELECT * FROM tb_student;
++----+--------+
+| id | name   |
++----+--------+
+|  1 | Java   |
+|  2 | MySQL  |
+|  3 | Python |
++----+--------+
+3 rows in set (0.08 sec)
+```
 
-#### 尽量避免查询全部字段
-1. 只查必须的字段
-1. 如果需要全部字段，避免使用 `select *`，把所有字段名列出来
+打开慢日志文件，可以看到：
 
-#### 尽量避免全盘扫描
-1. 在 `where`，`group by`，`order by`，`on` 等从句涉及到的列上建立索引
-1. 避免在 `where` 子句中使用 `!=` 或 `<>` 操作符
-    否则将引擎放弃使用索引而进行全表扫描。
-1. 避免在 `where` 子句中对字段进行 `null` 值判断
-    否则将导致引擎放弃使用索引而进行全表扫描。
-    可以用 0 代替 `null`。
-1. 避免在 `where` 子句中使用 `or` 来连接条件
-    如果一个字段有索引，一个字段没有索引，将导致引擎放弃使用索引而进行全表扫描。
-1. 前导模糊查询将导致全表扫描
-    例如 `name like '%c%'` 改成 `name like '%c%'`。
-1. 慎用 `not in`
-    否则会导致全表扫描。对于连续的数值，能用 `between` 就不要用 `in` 了，尽量使用 `exists` 代替 `in`。
-1. 避免在 `where` 子句中对字段进行表达式与函数或其他表达式运算操作
-    这将导致引擎放弃使用索引而进行全表扫描。
-    例如 `where num / 2 = 100` 改成 `where num = 100 * 2`。
-1. 使用 `limit` 对查询结果的记录进行限定
-    单条查询最后添加 `limit 1`，停止全表扫描。
+```
+# Time: 2020-06-01T01:59:18.368780Z
+# User@Host: root[root] @ localhost [::1]  Id:     3
+# Query_time: 0.006281  Lock_time: 0.000755 Rows_sent: 2  Rows_examined: 1034
+use test;
+SET timestamp=1590976758;
+SHOW VARIABLES LIKE 'slow_query%';
+```
 
-#### 尽量少排序
-排序操作会消耗较多的 CPU 资源，所以减少排序可以在缓存命中率高等 IO 能力足够的场景下会较大影响 SQL 的响应时间。对于MySQL来说，减少排序有多种办法，比如：
-1. 减少参与排序的记录条数
-1. 非必要不对数据进行排序
+清空慢日志记录：
 
-#### 尽量少 join
+```bash
+mysqladmin -uroot -p flush-logs
+```
 
-#### 尽量用 join 代替子查询
-虽然 `join` 性能并不佳，但是和 MySQL 的子查询比起来还是有非常大的性能优势。
+执行该命令后，命令行会提示输入密码。输入正确密码后，将执行删除操作。新的慢查询日志会直接覆盖旧的查询日志，不需要再手动删除。
 
-#### 尽量用 union all 代替 union
-`union` 和 `union all` 的差异主要是前者需要将两个（或者多个）结果集合并后再进行唯一性过滤操作，这就会涉及到排序，增加大量的 CPU 运算，加大资源消耗及延迟。所以当我们可以确认不可能出现重复结果集或者不在乎重复结果集的时候，尽量使用 `union all` 而不是 `union`。
-#### 尽量少 or
-很多时候使用 `union all` 或者是 `union`（必要的时候）的方式来代替 `or` 会得到更好的效果。
+数据库管理员也可以手工删除慢查询日志，删除之后需要重新启动 MySQL 服务。
 
-#### 尽量早过滤
-将过滤性更好的字段放得更靠前。
+> 注意：通用查询日志和慢查询日志都是使用这个命令，使用时一定要注意，一旦执行这个命令，通用查询日志和慢查询日志都只存在新的日志文件中。如果需要备份旧的慢查询日志文件，必须先将旧的日志改名，然后重启 MySQL 服务或执行 `mysqladmin` 命令。
 
-在 SQL 编写中同样可以使用这一原则来优化一些 Join 的 SQL。比如我们在多个表进行分页数据查询的时候，我们最好是能够在一个表上先过滤好数据分好页，然后再用分好页的结果集与另外的表 Join，这样可以尽可能多的减少不必要的 IO 操作，大大节省 IO 操作所消耗的时间。
+## explain 优化案例
+#### 表结构
+```sql
+CREATE TABLE `a`
+(
+    `id`          int(11) NOT NULLAUTO_INCREMENT,
+    `seller_id`   bigint(20)                                       DEFAULT NULL,
+    `seller_name` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+    `gmt_create`  varchar(30)                                      DEFAULT NULL,
+    PRIMARY KEY (`id`)
+);
+CREATE TABLE `b`
+(
+    `id`          int(11) NOT NULLAUTO_INCREMENT,
+    `seller_name` varchar(100) DEFAULT NULL,
+    `user_id`     varchar(50)  DEFAULT NULL,
+    `user_name`   varchar(100) DEFAULT NULL,
+    `sales`       bigint(20)   DEFAULT NULL,
+    `gmt_create`  varchar(30)  DEFAULT NULL,
+    PRIMARY KEY (`id`)
+);
+CREATE TABLE `c`
+(
+    `id`         int(11) NOT NULLAUTO_INCREMENT,
+    `user_id`    varchar(50)  DEFAULT NULL,
+    `order_id`   varchar(100) DEFAULT NULL,
+    `state`      bigint(20)   DEFAULT NULL,
+    `gmt_create` varchar(30)  DEFAULT NULL,
+    PRIMARY KEY (`id`)
+);
+```
 
-#### 避免类型转换
-这里所说的“类型转换”是指 `where` 子句中出现字段的类型和传入的参数类型不一致的时候发生的类型转换。
+#### 待优化 SQL
+三张表关联，查询当前用户在当前时间前后10个小时的订单情况，并根据订单创建时间升序排列，具体SQL如下：
 
-#### 优先优化高并发的 SQL，而不是执行频率低某些大 SQL
-对于破坏性来说，高并发的 SQL 总是会比低频率的来得大，因为高并发的 SQL 一旦出现问题，甚至不会给我们任何喘息的机会就会将系统压跨。而对于一些虽然需要消耗大量 IO 而且响应很慢的 SQL，由于频率低，即使遇到，最多就是让整个系统响应慢一点，但至少可能撑一会儿，让我们有缓冲的机会。
+```sql
+select a.seller_id,
+       a.seller_name,
+       b.user_name,
+       c.state
+from a,
+     b,
+     c
+where a.seller_name = b.seller_name
+  and b.user_id = c.user_id
+  and c.user_id = 17
+  and a.gmt_create
+    BETWEEN DATE_ADD(NOW(), INTERVAL – 600 MINUTE)
+    AND DATE_ADD(NOW(), INTERVAL 600 MINUTE)
+```
+#### 数据量
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X3BuZy9FbnpBd3ZwVFFKNzY5TTZaaWNvbjRWVGdpY2FMdTNyN0s2R2lhY21zTjgySE1JZFh5aWJWWjFOZmhmeUxJOGlhWUl4SU54UFdxa1Nsalh5UFlxSHJOMVU2MWljUS82NDA_d3hfZm10PXBuZw?x-oss-process=image/format,png)
 
-尽可能对每一条运行在数据库中的 SQL 进行 `explain`。
+#### 原执行时间
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X3BuZy9FbnpBd3ZwVFFKNzY5TTZaaWNvbjRWVGdpY2FMdTNyN0s2M0pydlYyMlNWbENuRU1HZm1jSXBxaWNOWGliV2I4elBVbjdLMUVURnIzNWNXdmliQWYzQUlDRjV3LzY0MD93eF9mbXQ9cG5n?x-oss-process=image/format,png)
 
-## 问题
-1. 优化数据库的方法
-1. 实践中如何优化 MySQL
-1. MySQL 如何优化 DISTINCT
-1. MySQL 数据库作发布系统的存储，一天五万条以上的增量，预计运维三年,怎么优化
-1. 锁的优化策略
-1. 什么情况下设置了索引但无法使用
-1. SQL注入漏洞产生的原因和如何防止
-1. 说说对SQL语句优化有哪些方法？（选择几条）
-1. 查询缓慢和解决方式（explain、慢查询日志、show profile等）
-1. SQL优化，常用的索引？
-1. 数据库性能调优如何做
-1. 如何做的 MySQL 优化
-1. MySQL 数据库优化会涉及到哪些？
-1. 从SQL、JVM、架构、数据库四个方面讲讲优化思路，以及如何优先排序？
-1. 四个表 记录成绩，每个大约十万条记录，如何找到成绩最好的同学
-1. MySQL的慢 SQL 优化一般如何来做？除此外还有什么方法优化？
-1. MySQL如何获取慢SQL，以及慢查询的解决方式
-1. 数据库崩溃时事务的恢复机制
-1. 在工作中，SQL语句的优化和注意的事项
-1. 数据库万级变成亿级，你如何来解决。
-1. MySQL数据库引擎？应用场景？查询优化？NoSQL有用或了解吗？
-1. Redis 和数据库如何保证数据一致性
-1. 谈谈MySQL的查询优化方法，重点谈谈优化步骤。
-1. 如何防止sql注入，了解哪些加密算法，rsa过程说下
-1. MySQL的常见优化方式、定为慢查询
-1. 优化（explain，慢查询，show profile）
-1. myisamchk 是用来做什么的
+#### 原实行计划
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X3BuZy9FbnpBd3ZwVFFKNzY5TTZaaWNvbjRWVGdpY2FMdTNyN0s2YnB2ZVlBUGxqaGlhWVpIaWNWeTh1cW1ycWc1T1l1V0FGM2FURDR0Q3hZaWFUQkVpYVpoUGRKcFIxQS82NDA_d3hfZm10PXBuZw?x-oss-process=image/format,png)
+
+#### 初步优化思路
+1. SQL 中 `where` 条件字段类型要跟表结构一致，表中 `user_id` 为 `varchar(50)` 类型，实际 SQL 用的 `int` 类型，存在隐式转换，也未添加索引。将 b 和 c 表 `user_id` 字段改成 `int` 类型。
+1. 因存在 `b` 表和 `c` 表关联，将 `b` 和 `c` 表 `user_id` 创建索引
+1. 因存在 `a` 表和 `b` 表关联，将 `a` 和 `b` 表 `seller_name` 字段创建索引
+1. 利用复合索引消除临时表和排序
+
+#### 初步优化SQL
+```sql
+alter table b modify `user_id` int(10) DEFAULT NULL;
+alter table c modify `user_id` int(10) DEFAULT NULL;
+alter table c add index `idx_user_id`(`user_id`);
+alter table b add index `idx_user_id_sell_name`(`user_id`,`seller_name`);
+alter table a add index `idx_sellname_gmt_sellid`(`gmt_create`,`seller_name`,`seller_id`);
+```
+
+#### 优化后执行时间
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X3BuZy9FbnpBd3ZwVFFKNzY5TTZaaWNvbjRWVGdpY2FMdTNyN0s2empYMm04ZG4yUDZvbXNTZkwxSFg2UFZKVlVjQUlsR1ZzSTB5cWw1ZWJNdTZIaGROV292aWJSQS82NDA_d3hfZm10PXBuZw?x-oss-process=image/format,png)
+
+#### 优化后执行计划
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X3BuZy9FbnpBd3ZwVFFKNzY5TTZaaWNvbjRWVGdpY2FMdTNyN0s2dHRsV3U3cENLQlBmZWtPdXdzbnZPOEZpY3gxRmRFbFRSRU9NWlVzUDY2MmV6eWhudXRiNHltZy82NDA_d3hfZm10PXBuZw?x-oss-process=image/format,png)
+
+#### 查看 warnings 信息
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X3BuZy9FbnpBd3ZwVFFKNzY5TTZaaWNvbjRWVGdpY2FMdTNyN0s2OUk5V29JM1RKRkdrSzJ5cG1YWDdYc2FpY2NzVjhqVDdCUjU5d0JyeTV3a0htRzJ2ZmhMU2Nrdy82NDA_d3hfZm10PXBuZw?x-oss-process=image/format,png)
+
+#### 继续优化 gmt_create
+```sql
+alter table a modify "gmt_create" datetime DEFAULT NULL;
+```
+
+#### 查看执行时间
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X3BuZy9FbnpBd3ZwVFFKNzY5TTZaaWNvbjRWVGdpY2FMdTNyN0s2UUFNcHh4TzI5R0huOEwxbmhYbmJTc2JBOFRHa2ljY1dpYVBsS3ptNWhLb1k3Q1RpYVRWU1o3U0ZnLzY0MD93eF9mbXQ9cG5n?x-oss-process=image/format,png)
+
+#### 查看执行计划
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X3BuZy9FbnpBd3ZwVFFKNzY5TTZaaWNvbjRWVGdpY2FMdTNyN0s2enNxUFlXQWlhc0RySThYZXMzT2xGVmV1eXlpY0hmZ0ZhYXVPNlNpYTBCRVhqekhCTjB6RGQzNmliQS82NDA_d3hfZm10PXBuZw?x-oss-process=image/format,png)
+
+#### 总结
+1. 查看执行计划 `explain`
+1. 如果有告警信息，查看告警信息 `show warnings`
+1. 查看SQL涉及的表结构和索引信息
+1. 根据执行计划，思考可能的优化点
+1. 按照可能的优化点执行表结构变更、增加索引、SQL 改写等操作
+1. 查看优化后的执行时间和执行计划
+1. 如果优化效果不明显，重复第四步操作

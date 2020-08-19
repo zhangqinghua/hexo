@@ -4,7 +4,7 @@ title: MySQL 基准测试
 categories:
 - MySQL 手册
 
-date: 2020-07-07 00:00:01
+date: 2020-07-07 00:00:02
 ---
 基准测试是指通过设计科学的测试方法、测试工具和测试系统，实现对一类测试对象的某项性能指标进行定量的和可对比的测试。
 
@@ -787,7 +787,17 @@ tps: 269.60 qps: 5415.63 (r/w/o: 3793.42/1081.71/540.50) lat (ms,95%): 253.35 er
 
 注1：Binlog 不影响读性能，影响写、修、删性能。
 
+## 附一：MySQL 数据库压力测试报告
+http://blog.itpub.net/29734436/viewspace-2140565/
 
+## 附二：MySQL压测④--压测报告
+https://www.jianshu.com/p/f15d2a35dfd7
+
+## 附三：MySQL 数据量-性能测试报告version1
+http://www.docin.com/p-2023784875.html
+
+## 附四：MySQL 并发测试中，线程数和数据库连接池的实验
+http://www.520mwx.com/view/28965
 
 ## 常见问题
 1. error 2059: Authentication plugin 'caching_sha2_password'
