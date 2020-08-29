@@ -80,3 +80,6 @@ To code.aliyun.com:icebartech-java-core/icebartech-core.git
 ```
 
 ## 回滚操作
+
+## 永久删除文件
+https://www.cnblogs.com/shines77/p/3460274.html
