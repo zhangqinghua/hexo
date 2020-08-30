@@ -3,5 +3,6 @@
     "scm.inputFontFamily": "Source Han Sans HW",
     "debug.console.fontFamily": "Source Han Sans HW",
     "markdown.preview.fontFamily": "Source Han Sans HW",
-    "editor.acceptSuggestionOnEnter": "smart"
+    "editor.acceptSuggestionOnEnter": "smart",
+    "vetur.format.options.tabSize": 4
 }
