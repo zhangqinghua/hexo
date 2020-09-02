@@ -6,9 +6,11 @@ categories:
 
 date: 2020-09-02 00:00:59
 ---
-Nginx 的安装可以访问源码安装、yum 安装、docker 安装。
+Centos 安装 Nginx 主要有 2 种方式，一种是源码包安装，另外一种是 yum 安装。
 
-## 源码安装
+另外我们也可以把 Nginx 安装的 Docker 容器种。
+
+## 源码包安装
 1. 下载源码并解压
 ```shell
 sudo mkdir /home/downloads
@@ -85,7 +87,78 @@ systemctl restart nginx.service　
 systemctl list-units --type=service
 ```
 
+## yum 安装
+#### 添加源
+
+默认情况 Centos7 中无 Nginx 的源，需要通过以下命令添加：
+
+```bash
+sudo rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
+```
+
+#### 安装 Nginx
+
+通过 `yum search nginx` 看看是否已经添加源成功。如果成功则执行下列命令安装 Nginx：
+
+```bash
+sudo yum install -y nginx
+```
+
+#### 启动 Nginx 并设置开机自动运行
+
+```bash
+sudo systemctl start nginx.service
+sudo systemctl enable nginx.service
+```
+
+#### Nginx 的默认路径
+1. 配置路径
+   `/etc/nginx/`
+
+1. PID 目录
+   `/var/run/nginx.pid`
+
+1. 站点目录
+   `/usr/share/nginx/html`
+
+1. 访问日志
+   `/var/log/nginx/access.log`
+
+1. 错误日志
+   `/var/log/nginx/error.log`
+
 ## docker 安装
+1、取最新版的 Nginx 镜像。
+
+```bash
+docker pull nginx:latest
+```
+
+2、查看本地镜像。
+
+执行命令后可以看到我们已经安装了最新版本的 Nginx 镜像。
+
+```bash
+docker images
+```
+
+3、运行容器。
+
+安装完成后，我们可以使用以下命令来运行 nginx 容器：
+
+```bash
+docker run --name nginx-test -p 8080:80 -d nginx
+```
+
+参数说明：
+1. `--name nginx-test`
+   容器名称。
+
+1. `-p 8080:80`
+   端口进行映射，将本地 8080 端口映射到容器内部的 80 端口。
+
+1. `-d nginx`
+   设置容器在在后台一直运行。
 
 ## docker-compose 安装
 1、在 /opt 目录下创建 docker_nginx 目录。
