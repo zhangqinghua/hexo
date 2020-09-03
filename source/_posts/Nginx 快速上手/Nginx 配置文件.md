@@ -9,15 +9,6 @@ mermaid: true
 date: 2020-09-02 00:00:58
 ---
 
-```mermaid
-classDiagram
-class Shape {
-~~interface~~
-List~int~ position
-int a
-}
-
-```
 
 ## 全局配置
 
@@ -26,3 +17,178 @@ int a
 ## server 配置
 
 ## 日志配置
+
+
+
+
+
+
+a
+a
+a
+a
+a
+a
+a
+a
+
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+
+a
+a
+a
+a
+
+
+
+
+
+
+
+
+
+
+a
+a
+a
+a
+a
+a
+a
+a
+
+a
+a
+a
+a
+
+
+
+
+
+a
+a
+a
+a
+a
+a
+a
+a
+
+a
+a
+a
+a
+
+
+
+
+
+
+
+
+
+
+
+a
+a
+a
+a
+a
+a
+a
+a
+
+a
+a
+a
+a
+
+
+
+
+```mermaid
+classDiagram
+
+class Order
+
+<<interface>> Order
+
+class Color{
+    <<enumeration>>
+    RED
+    BLUE
+    GREEN
+    WHITE
+    BLACK
+}
+```
+
+```mermaid
+classDiagram
+class Shape
+<<interface>> Shape
+```
