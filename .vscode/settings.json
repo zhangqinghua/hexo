@@ -4,8 +4,7 @@
     "debug.console.fontFamily": "Source Han Sans HW",
     "markdown.preview.fontFamily": "Source Han Sans HW",
     "editor.acceptSuggestionOnEnter": "smart",
-    "vetur.format.options.tabSize": 4,
-    "editor.tabSize": 3,
+   "vetur.format.options.tabSize": 4,
     "files.autoSave": "afterDelay",
     "editor.detectIndentation": false
 }

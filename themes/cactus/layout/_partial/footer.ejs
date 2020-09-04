@@ -12,14 +12,14 @@
     </nav>
   </div>
 </footer>
-<% if (theme.mermaid.enable) { %>
+<% if (page.mermaid) { %>
 
    <%- js('js/search.js') %>
    <script src='/js/mermaid.js'></script>
    <!-- <script src='https://cdn.jsdelivr.net/npm/mermaid@8.6.0/dist/mermaid.js'></script> -->
 <script>
   if (window.mermaid) {
-    mermaid.initialize({'theme':'forest', 'noteBkgColor':'fff', 'startOnLoad': 'false'});
+    mermaid.initialize({'theme':'light'});
   }
 </script>
 <% } %>
