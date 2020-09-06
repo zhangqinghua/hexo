@@ -1,5 +1,5 @@
 ---
-title: Nginx 配置文件
+title: Nginx 配置详解
 
 categories:
 - Nginx 快速上手
