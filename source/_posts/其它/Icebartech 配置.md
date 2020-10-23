@@ -68,8 +68,9 @@ build.command=sudo cnpm install babel-loader --save && sudo cnpm install && sudo
 /home/staragent/bin/staragentctl status;
 # 卸载
 1. /home/staragent/bin/staragentctl stop;
-2. rm -rf /home/staragent;
-3. rm /usr/sbin/staragent_sn
+2. rm -rf /home/aol2;
+3. rm -rf /home/staragent;
+4. rm /usr/sbin/staragent_sn;
 ```
 
 ## 服务器
@@ -81,6 +82,14 @@ build.command=sudo cnpm install babel-loader --save && sudo cnpm install && sudo
 |120.79.178.208|root|Bg360123456|洗车佬_DEV_服务器|
 |120.76.102.155|root|kwAPYE6o|Jenkins、禅道等服务器|
 |120.76.98.47|root|h#PkP#@0Zl^Veh0T|GitLab 服务器|
+
+## Redis
+port: 6379
+host: r-wz9t6e14pudh0yhzmlpd.redis.rds.aliyuncs.com
+password: icebartech:Bg360123456
+
+## 数据库
+
 ## 体育中心
 git
 体育中心后端                        git@code.aliyun.com:icebartech-java/icebartech-sportscenter.git     

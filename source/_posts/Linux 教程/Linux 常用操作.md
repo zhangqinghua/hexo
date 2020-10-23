@@ -335,3 +335,6 @@ vps在国外，延迟总有那么200～300ms，一来一回，500ms是免不了�
 相应的代价就是：
 1. 没法使用自动补全和其他bash/readline的快捷键了；
 2. 使用vi这类程序的时候，就没法正常编辑了，这时需要再把这两个选项关闭。。。（为什么没有快捷键………………）
+
+## SSH 远程连接报错：ssh_exchange_identification: read: Connection reset by peer
+发现是公司网络问题，使用手机热点网络能连。被阿里云的云盾拦截了：https://help.aliyun.com/knowledge_detail/37914.html
