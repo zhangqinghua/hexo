@@ -67,3 +67,8 @@ plugins -> disable Illuminated Cloud is invalid
 
 
 #### TextMate Bundles for JavaScript
+
+#### Install plugin from disk
+1. Idea Plugin [官网](https://plugins.jetbrains.com/)。
+1. 键入你需要下载的插件名称、下载 jar，无需解压。
+1. 打开settings，选择 `Install plugin from disk`, 选中压缩包。完成！
