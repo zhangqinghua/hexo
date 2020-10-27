@@ -21,6 +21,7 @@
         "hexo-renderer-kramed": "^0.1.4",
         "hexo-renderer-scss": "^1.2.0",
         "hexo-renderer-stylus": "^0.3.3",
-        "hexo-server": "^0.3.1"
+        "hexo-server": "^0.3.1",
+        "node-sass": "^4.14.1"
     }
 }
