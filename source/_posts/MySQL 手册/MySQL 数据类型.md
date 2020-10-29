@@ -4,7 +4,7 @@ title: MySQL 数据类型
 categories:
 - MySQL 手册
 
-date: 2020-07-07 00:00:12
+date: 2020-07-07 00:00:13
 ---
 
 
