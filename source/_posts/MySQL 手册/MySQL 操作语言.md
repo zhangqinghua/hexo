@@ -1,5 +1,5 @@
 ---
-title: MySQL 操作语句
+title: MySQL 操作语言
 
 categories:
 - MySQL 手册

@@ -1,5 +1,5 @@
 ---
-title: MySQL 查询语句
+title: MySQL 查询语言
 
 categories:
 - MySQL 手册
@@ -119,7 +119,7 @@ SELECT name FROM person_tbl WHERE name REGEXP '^[aeiou]|ok$';
 
 
 ## ORDER BY 语句
-`GROUP BY` 语句用于结合合计函数，根据一个或多个列对结果集进行分组。
+`GROUP BY` 的作用是限定分组条件，可以用于结合合计函数，根据一个或多个列对结果集进行分组。
 
 我们想要使用 `GROUP BY` 语句对客户进行组合，可以使用下列 SQL 语句：
 
@@ -134,21 +134,24 @@ SELECT Customer,OrderDate,SUM(OrderPrice) FROM Orders GROUP BY Customer,OrderDat
 ```
 
 ## HAVING 子句
+`HAVING` 用于指定组所对应的的条件，必须和 `GROUP BY` 一起使用。
 
-在 SQL 中增加 `HAVING` 子句原因是，`WHERE` 关键字无法与合计函数一起使用。
+`HAVING` 即可包含聚合函数作用的字段也可包括普通的标量字段，实施上所有的 `WHERE` 都可以用 `HAVING` 代替。
 
 例如：我们希望查找订单总金额少于 2000 的客户。
 
 ```sql
-SELECT Customer,SUM(OrderPrice) FROM Orders
+SELECT Customer, SUM(OrderPrice) 
+FROM Orders
 GROUP BY Customer
-HAVING SUM(OrderPrice)<2000
+HAVING SUM(OrderPrice) < 2000
 ```
 
 现在我们希望查找客户 "Bush" 或 "Adams" 拥有超过 1500 的订单总金额。我们在 SQL 语句中增加了一个普通的 WHERE 子句：
 
 ```sql
-SELECT Customer,SUM(OrderPrice) FROM Orders
+SELECT Customer,SUM(OrderPrice) 
+FROM Orders
 WHERE Customer='Bush' OR Customer='Adams'
 GROUP BY Customer
 HAVING SUM(OrderPrice)>1500

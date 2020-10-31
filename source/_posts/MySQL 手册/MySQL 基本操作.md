@@ -4,7 +4,7 @@ title: MySQL 基本操作
 categories:
 - MySQL 手册
 
-date: 2020-07-07 00:00:13
+date: 2020-07-07 00:00:14
 ---
 ## 修改用户密码
 #### MySQL 5.7 修改用户密码
