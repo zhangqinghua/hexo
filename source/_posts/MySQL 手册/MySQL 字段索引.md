@@ -6,8 +6,153 @@ categories:
 
 date: 2020-07-07 00:00:12
 ---
+索引的建立对于 MySQL 的高效运行是很重要的，索引可以大大提高 MySQL 的检索速度。打个比方，如果合理的设计且使用索引的 MySQL 是一辆兰博基尼的话，那么没有设计和使用索引的 MySQL 就是一个人力三轮车。
 
-## 超键、主键、外键、候选键
+## 索引种类
+1. 普通索引
+   最基本的索引，它没有任何限制。
+1. 唯一索引
+   它与前面的普通索引类似，不同的就是：索引列的值必须唯一，但允许有空值。如果是组合索引，则列值的组合必须唯一。
+1. 主键索引
+   是一种特殊的唯一索引，一个表只能有一个主键，不允许有空值。一般是在建表的时候同时创建主键索引。
+1. 组合索引
+   指多个字段上创建的索引，只有在查询条件中使用了创建索引时的第一个字段，索引才会被使用。使用组合索引时遵循最左前缀集合。
+1. 全文索引
+   主要用来查找文本中的关键字，而不是直接与索引中的值相比较。全文索引跟其它索引大不相同，它更像是一个搜索引擎，而不是简单的 `WHERE` 语句的参数匹配。
+
+## 优点缺点
+优点：
+1. 索引可以大大提高MySQL的检索速度。
+
+缺点：
+1. 建立索引会占用磁盘空间的索引文件。
+1. 降低更新表的速度，如对表进行 `INSERT`、`UPDATE` 和 `DELETE`。因为更新表时，MySQL 不仅要保存数据，还要保存一下索引文件。
+
+## 注意事项
+1. 使用短索引
+   对串列进行索引，如果可能应该指定一个前缀长度。例如，如果有一个 `CHAR(255)` 的列，如果在前 10 个或 20 个字符内，多数值是惟一的，那么就不要对整个列进行索引。短索引不仅可以提高查询速度而且可以节省磁盘空间和 I/O 操作。
+1. 谨慎使用 `LIKE` 查询
+   一般情况下不推荐使用 `LIKE` 操作，如果非使用不可，如何使用也是一个问题。`LIKE "%aaa%"` 不会使用索引而 `LIKE "aaa%"` 可以使用索引。
+1. 列不能包含 `null` 值
+   只要列中包含有 `null` 值都将不会被包含在索引中，复合索引中只要有一列含有 `null` 值，那么这一列对于此复合索引就是无效的。所以我们在数据库设计时不要让字段的默认值为 `null`。
+1. 不要在列上进行运算
+   这将导致索引失效而进行全表扫描，例如：`SELECT * FROM table_name WHERE YEAR(column_name)<2017`。
+1. 多索引查询只有一个生效
+   查询只使用一个索引，因此如果 `WHERE` 子句中已经使用了索引的话，那么 `OEDER BY` 中的列是不会使用索引的。因此数据库默认排序可以符合要求的情况下不要使用排序操作；尽量不要包含多个列的排序，如果需要最好给这些列创建复合索引。参考：[数据库中查询记录时是否每次只能使用一个索引](https://www.jianshu.com/p/34194ea5a4a3)。
+
+
+## 索引操作
+查看索引：
+
+```sql
+-- 使用 SHOW KEYS 查看索引
+SHOW KEYS FROM biz_user;
+-- 使用 SHOW INDEX 语句查看索引
+SHOW INDEX FROM biz_user;
+
+Table	      Non_unique	Key_name	Seq_in_index	Column_name       ...
+biz_goods     0	                PRIMARY	        1	        id                ...
+biz_goods     1	                cate_id_key	1	        cate_id           ...
+
+-- 使用 SHOW CREATE TABLE 语句查看索引
+SHOW CREATE TABLE biz_goods;
+
+CREATE TABLE `biz_goods` (
+  `id` bigint(20) NOT NULL,
+  `cate_id` bigint(20) NOT NULL COMMENT '分类Id',
+  `detail` mediumtext NOT NULL COMMENT '商品详情',
+  PRIMARY KEY (`id`),
+  KEY `cate_id_key` (`cate_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品表';
+```
+
+创建索引：
+
+```sql
+-- 普通索引：直接创建索引
+CREATE INDEX cate_id_key ON `biz_goods`(cate_id);
+
+-- 普通索引：创建表的时候同时创建索引
+CREATE TABLE `biz_goods` (
+  `id` bigint(20) NOT NULL,
+  `cate_id` bigint(20) NOT NULL COMMENT '分类Id',
+  `detail` mediumtext NOT NULL COMMENT '商品详情',
+  PRIMARY KEY (`id`),
+  KEY `cate_id_key` (`cate_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品表';
+
+-- 唯一索引：直接创建索引
+CREATE UNIQUE INDEX cate_id_key ON `biz_goods`(cate_id);
+
+-- 唯一索引：创建表的时候同时创建索引
+CREATE TABLE `biz_goods` (
+  `id` bigint(20) NOT NULL,
+  `cate_id` bigint(20) NOT NULL COMMENT '分类Id',
+  `detail` mediumtext NOT NULL COMMENT '商品详情',
+  PRIMARY KEY (`id`),
+  UNIQUE `cate_id_key` (`cate_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品表';
+
+-- 主键索引：一般是在建表的时候同时创建
+CREATE TABLE `biz_goods` (
+  `id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品表';
+
+-- 全文索引：直接创建索引
+CREATE FULLTEXT INDEX detail_key ON `biz_goods`(detail);
+
+-- 全文索引：创建表的时候同时创建索引
+CREATE TABLE `biz_goods` (
+  `id` bigint(20) NOT NULL,
+  `detail` mediumtext NOT NULL COMMENT '商品详情',
+  PRIMARY KEY (`id`),
+  FULLTEXT (detail)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品表';
+```
+
+修改索引：
+
+```sql
+-- 普通索引：修改表结构的方式添加索引
+ALTER TABLE `biz_goods` ADD INDEX cate_id_key ON (cate_id);
+
+-- 组合索引：直接创建索引
+ALTER TABLE `biz_goods` ADD INDEX cate_id_name_key (cate_id, name);
+
+-- 唯一索引：修改表结构的方式添加索引
+ALTER TABLE `biz_goods` ADD UNIQUE cate_id_key ON (cate_id);
+
+-- 全文索引：修改表结构的方式添加索引
+ALTER TABLE `biz_goods` ADD FULLTEXT detail_key(detail);
+```
+
+删除索引：
+
+```sql
+-- 使用 DROP INDEX 命令删除索引
+DROP INDEX cate_id_key on `biz_goods`;
+
+-- 使用 ALTER TABLE 命令删除索引
+ALTER TABLE `biz_goods` DROP INDEX cate_id_key;
+```
+
+
+## 最左前缀
+在 MySQL 建立联合索引时会遵守最左前缀匹配原则，即最左优先，在检索数据时从联合索引的最左边开始匹配。
+
+
+
+## 索引原理
+实际上，索引也是一张表，该表保存了主键与索引字段，并指向实体表的记录。
+
+
+
+
+
+
+
+## 附：超键、主键、外键、候选键
 **超键**是指在关系中能唯一标识元组的属性集。在下面的数据中，「学号」、「学号，性别」、「学号，年龄」等可以组成一个超键。
 
 **候选键**是不含多余属性的超键为候选键。在下面的数据中，「学号」是一个候选键，而「学号，性别」不是候选键，因为它的性别属性是多余的。
@@ -25,38 +170,15 @@ date: 2020-07-07 00:00:12
 |20060616   |赵静       |男     |21     |化学   |食品化学
 |20060617   |赵静       |女     |20     |生物   |植物学
 
-## 索引操作
-#### 查看索引
-使用 `show keys` 或 `show index` 语句查看索引。
 
-```sql
-show keys from biz_user;
 
-show index from biz_user;
-```
 
-![](https://img-blog.csdnimg.cn/20190330161910167.png)
 
-使用 `show create table` 语句查看索引。
 
-```sql
-show create table biz_user\G;
-```
 
-![](https://img-blog.csdnimg.cn/2019033016221138.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl8zOTU2MTQ3Mw==,size_16,color_FFFFFF,t_70)
 
-#### 创建索引
 
-#### 删除索引
-```sql
--- 使用drop index命令删除索引
-drop index openId on biz_user;
 
--- 使用alter table命令删除索引
-alter table biz_user drop index openId;
-```
-
-#### 修改索引
 
 ## 问题
 1. 主键、超键和候选键有什么区别
