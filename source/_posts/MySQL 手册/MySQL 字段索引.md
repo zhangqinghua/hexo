@@ -164,9 +164,12 @@ ALTER TABLE `biz_goods` DROP INDEX cate_id_key;
 ## 索引原理
 实际上，索引也是一张表，该表保存了主键与索引字段，并指向实体表的记录。
 
+1. B+Tree 建树过程
+1. B+Tree 和 B-Tree 的区别
+1. B+Tree 的优点
+1. 
 
-
-
+![](http://data.biancheng.net/uploads/allimg/171024/2-1G0241402324A.png)
 
 
 
