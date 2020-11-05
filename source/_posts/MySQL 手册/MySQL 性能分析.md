@@ -466,3 +466,116 @@ alter table a modify "gmt_create" datetime DEFAULT NULL;
 1. 按照可能的优化点执行表结构变更、增加索引、SQL 改写等操作
 1. 查看优化后的执行时间和执行计划
 1. 如果优化效果不明显，重复第四步操作
+
+
+## SHOW PROCESSLIST
+显示用户正在运行的线程，需要注意的是，除了 root 用户能看到所有正在运行的线程外，其他用户都只能看到自己正在运行的线程，看不到其它用户正在运行的线程。除非单独个这个用户赋予了 PROCESS 权限。
+
+```sql
+
+SHOW PROCESSLIST;
+
+Id       User        Host                    db                Command  Time  State       Info
+30       aurora      100.104.60.243:36747                      Sleep    1		
+75       aliyun_root 127.0.0.1:40840                           Sleep    1		
+1270     shelflabel  8.129.214.203:47314     shelflabel_test   Sleep    50		
+1284     shelflabel  61.141.65.230:53797     shelflabel_test   Query    0     starting    SHOW PROCESSLIST
+
+-- 杀掉 Id = 1284 这个连接
+KILL 1284;
+```
+
+参数说明：
+1. `Id`：就是这个线程的唯一标识，当我们发现这个线程有问题的时候，可以通过 `kill` 命令，加上这个 `Id` 值将这个线程杀掉。
+1. `User`：就是指启动这个线程的用户。
+1. `Host`：记录了发送请求的客户端的 IP 和 端口号。通过这些信息在排查问题的时候，我们可以定位到是哪个客户端的哪个进程发送的请求。
+1. `DB`：当前执行的命令是在哪一个数据库上。如果没有指定数据库，则该值为 `NULL` 。
+1. `Command`：是指此刻该线程正在执行的命令。
+1. `Time`：表示该线程处于当前状态的时间。
+1. `State`：线程的状态，和 `Command` 对应。
+1. `Info`：一般记录的是线程执行的语句。
+
+`Command` 的值：
+1. Binlog Dump：主节点正在将二进制日志，同步到从节点。
+1. Change User：正在执行一个 change-user 的操作。
+1. Close Stmt：正在关闭一个Prepared Statement 对象
+1. Connect: 一个从节点连上了主节点
+1. Connect Out: 一个从节点正在连主节点
+1. Create DB: 正在执行一个create-database 的操作
+1. Daemon: 服务器内部线程，而不是来自客户端的链接
+1. Debug: 线程正在生成调试信息
+1. Delayed Insert: 该线程是一个延迟插入的处理程序
+1. Drop DB: 正在执行一个 drop-database 的操作
+1. Execute: 正在执行一个 Prepared Statement
+1. Fetch: 正在从Prepared Statement 中获取执行结果
+1. Field List: 正在获取表的列信息
+1. Init DB: 该线程正在选取一个默认的数据库
+1. Kill : 正在执行 kill 语句，杀死指定线程
+1. Long Data: 正在从Prepared Statement 中检索 long data
+1. Ping: 正在处理 server-ping 的请求
+1. Prepare: 该线程正在准备一个 Prepared Statement
+1. ProcessList: 该线程正在生成服务器线程相关信息
+1. Query: 该线程正在执行一个语句
+1. Quit: 该线程正在退出
+1. Refresh：该线程正在刷表，日志或缓存；或者在重置状态变量，或者在复制服务器信息
+1. Register Slave： 正在注册从节点
+1. Reset Stmt: 正在重置 prepared statement
+1. Set Option: 正在设置或重置客户端的 statement-execution 选项
+1. Shutdown: 正在关闭服务器
+1. Sleep: 正在等待客户端向它发送执行语句
+1. Statistics: 该线程正在生成 server-status 信息
+1. Table Dump: 正在发送表的内容到从服务器
+1. Time: Unused
+
+## 索引的性能对比
+|数据（单进程写）|有索引 MyISAM|无索引 MyISAM|有索引 InnoDB|无索引 InnoDB|
+| :- |
+|1 万|6.39s|3.90s|4.99s|4.89s|
+|5 万|26.89s|22.73s|29.80s|22.33s|
+|10 万|49.55s|34.96s|52.40s|33.21s|
+|50 万|189.20s|139.93s|260.78s|200.74s|
+
+
+## 存储引擎的性能对比
+#### 单线程写
+1. 测试单个线程写入指定数量的数据所消耗的时间。
+1. 数据均无索引。
+1. MyISAM 比 InnoDB 快 57%。
+
+|数据量|MyISAM|InnoDB|
+| :- |
+|1 万|6.39s|4.99s|
+|5 万|26.89s|29.80s|
+|10 万|49.55s|53.40s|
+|50 万|189.20s|260.78s|
+
+#### 多线程写
+1. 以每个线程写 1 万条数据为例。
+1. 时间为每个线程完成的时间。
+1. MyISAM 比 InnoDB 慢 170% 左右。
+
+|进程数|MyISAM|InnoDB|
+| :- |
+|20|90.00s|29.66s|
+|50|255.89s|74.52|
+|100|545.38s|201.94s|
+
+
+#### 单进程读
+1. MyISAM 比 InnoDB 快 7% 左右。
+
+|数据量|MyISAM|InnoDB|
+| :- |
+|1 万|67.14|77.15s|
+|5 万|110.58s|104.21s|
+|10 万|136.02s|146.26s|
+
+#### 多进程读
+1. 以每个线程读 5 千条数据为例。
+1. MyISAM 比 InnoDB 慢 10% 左右。
+
+|进程数|MyISAM|InnoDB|
+| :- |
+|20|140.89s|140.37s|
+|50|366.32s|308.76s|
+|100|766.37s|615.60s|

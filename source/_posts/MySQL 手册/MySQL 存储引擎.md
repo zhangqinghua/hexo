@@ -57,6 +57,7 @@ CREATE TABLE mytable (id int, titlechar(20)) ENGINE = INNODB
 ALTER TABLE engineTest ENGINE = INNODB；
 ```
 
+
 ## 存储引擎的选择
 可以根据以下的原则来选择 MySQL 存储引擎：
 1. 如果要提供提交、回滚和恢复的事务安全（ACID 兼容）能力，并要求实现并发控制，InnoDB 是一个很好的选择。
