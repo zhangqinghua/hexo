@@ -27,8 +27,26 @@ Java 集合框架主要包括两种类型的容器，一种是集合（`Collecti
 ![](https://www.runoob.com/wp-content/uploads/2014/01/java-coll.png)
 
 ## Map
+`HashMap.get()` 实现过程：
+
+#### HashMap
+1. 实现原理
+1. get 实现
+1. 如何保证线程安全
+1. 链表，红黑树
+1. Hash 冲突
+
+#### ConcurrentHashMap
+1. HashMap vs ConcurrentHashMap
+1. 如何解决并发问题
+1. 如何保证线程安全、并发度大小
+1. jdk1.8变化
+1. 为什么底层需要红黑树
 
 ## List
+1. ArrayList 原理
+1. LinkedList 原理
+1. ArrayList vs LinkedList
 
 #### Set 和 List 的区别
 1. `Set` 接口实例存储的是无序的，不重复的数据。`List` 接口实例存储的是有序的，可以重复的元素。
