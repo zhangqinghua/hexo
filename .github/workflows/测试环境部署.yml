@@ -13,7 +13,7 @@ on:
 jobs:
   build: # job1 id
     runs-on: ubuntu-latest # 运行环境为最新版 Ubuntu
-    name: 测试环境部署
+    name: 构建项目
     steps:
     - name: 获取源码 # step1 获取源码
       uses: actions/checkout@v1 # 使用 actions/checkout@v1
@@ -30,13 +30,14 @@ jobs:
         registry=https://registry.npm.taobao.org
         npm rebuild node-sass
       
-      
-    # Deploy hexo blog website.
-    - name: 部署到测试回家 # step4
+  deploy:
+    runs-on: ubuntu-latest
+    name: 发布项目
+    steps:
+    - name: 部署 # step4
       id: deploy
       uses: sma11black/hexo-action@v1.0.0
       with:
         deploy_key: ${{ secrets.DEPLOY_KEY }}
         user_name: zhangqinghua
         user_email: the.patron.saint.of.science@gmail.com
-
