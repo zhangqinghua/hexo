@@ -1,9 +1,5 @@
 name: Deploy # workflow name
 
-on:
-  [push] # 触发事件
-
-
 jobs:
   build: # job1 id
     runs-on: ubuntu-latest # 运行环境为最新版 Ubuntu
