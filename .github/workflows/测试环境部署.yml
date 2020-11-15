@@ -33,6 +33,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     name: 发布项目
+    needs: build
     steps:
     - name: 部署 # step4
       id: deploy
@@ -41,4 +42,3 @@ jobs:
         deploy_key: ${{ secrets.DEPLOY_KEY }}
         user_name: zhangqinghua
         user_email: the.patron.saint.of.science@gmail.com
-      needs: build
