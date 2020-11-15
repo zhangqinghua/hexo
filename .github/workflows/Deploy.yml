@@ -1,4 +1,4 @@
-name: Deploy # workflow name
+name: 部署Hexo # workflow name
 
 on:
   workflow_dispatch:
@@ -15,14 +15,14 @@ on:
 jobs:
   build: # job1 id
     runs-on: ubuntu-latest # 运行环境为最新版 Ubuntu
-    name: 部署HEXO博客
+    name: 测试环境部署
     steps:
     - name: 获取源码 # step1 获取源码
       uses: actions/checkout@v1 # 使用 actions/checkout@v1
       with: # 条件
         submodules: true # Checkout private submodules(themes or something else). 当有子模块时切换分支？
 
-    - name: 安装Node依赖
+    - name: 安装依赖
       if: steps.cache.outputs.cache-hit != 'true' # 如果变量 cache-hit 不等于 true
       run: |
         # 安装 node modules 相关依赖
@@ -34,33 +34,10 @@ jobs:
       
       
     # Deploy hexo blog website.
-    - name: 部署 # step4
+    - name: 部署到测试回家 # step4
       id: deploy
       uses: sma11black/hexo-action@v1.0.0
       with:
         deploy_key: ${{ secrets.DEPLOY_KEY }}
         user_name: zhangqinghua
         user_email: the.patron.saint.of.science@gmail.com
-
-    # # Caching dependencies to speed up workflows. (GitHub will remove any cache entries that have not been accessed in over 7 days.) 缓存压缩 node_modules，不用每次下载，使用时解压，可以加快工作流的执行过程，超过 7 天没有使用将删除压缩包。
-    # - name: Cache node modules # step2
-    #   uses: actions/cache@v1
-    #   id: cache
-    #   with:
-    #     path: node_modules
-    #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-node-
-    # - name: Install Dependencies # step3 name
-    #   if: steps.cache.outputs.cache-hit != 'true' # 如果变量 cache-hit 不等于 true
-    #   run: npm install # 安装 node modules 相关依赖
-
-    # # Deploy hexo blog website.
-    # - name: 部署 # step4
-    #   id: deploy
-    #   uses: sma11black/hexo-action@v1.0.0
-    #   with:
-    #     deploy_key: ${{ secrets.DEPLOY_KEY }}
-    #     user_name: zhangqinghua
-    #     user_email: the.patron.saint.of.science@gmail.com
-
