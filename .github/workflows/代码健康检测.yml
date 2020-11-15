@@ -1,5 +1,3 @@
-name: 部署Hexo # workflow name
-
 on:
   workflow_dispatch:
     inputs:
