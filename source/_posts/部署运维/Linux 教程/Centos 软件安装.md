@@ -2,6 +2,7 @@
 title: Centos 软件安装
 
 categories:
+- 部署运维
 - Linux 教程
 
 date: 2020-07-09

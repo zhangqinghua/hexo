@@ -2,7 +2,8 @@
 title: Nginx 配置详解
 
 categories:
-- Nginx 快速上手
+- 部署运维
+- Nginx 教程
 
 mermaid: true
 

@@ -2,7 +2,8 @@
 title: Docker Dockerfile 解析
 
 categories:
-- Docker 笔记
+- 部署运维
+- Docker 教程
 
 date: 2020-05-30
 ---

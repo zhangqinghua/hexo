@@ -2,7 +2,8 @@
 title: Nginx 动静分离
 
 categories:
-- Nginx 快速上手
+- 部署运维
+- Nginx 教程
 
 date: 2020-09-02 00:00:55
 ---

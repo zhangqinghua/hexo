@@ -2,7 +2,8 @@
 title: 安装 MySQL
 
 categories:
-- Docker 笔记
+- 部署运维
+- Docker 教程
 
 date: 2020-07-08
 ---

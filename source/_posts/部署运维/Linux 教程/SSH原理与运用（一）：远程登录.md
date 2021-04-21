@@ -6,7 +6,8 @@ tags:
 - linux
 
 categories:
-- Linux 系列
+- 部署运维
+- Linux 教程
 
 date: 2019-08-29
 ---
