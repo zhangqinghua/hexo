@@ -1,0 +1,42 @@
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Person to greet'
+        required: true
+        default: 'Mona the Octocat'
+      home:
+        description: 'location'
+        required: false
+        default: 'The Octoverse'
+  
+jobs:
+  build: # job1 id
+    runs-on: ubuntu-latest # 运行环境为最新版 Ubuntu
+    name: 测试环境部署
+    steps:
+    - name: 获取源码 # step1 获取源码
+      uses: actions/checkout@v1 # 使用 actions/checkout@v1
+      with: # 条件
+        submodules: true # Checkout private submodules(themes or something else). 当有子模块时切换分支？
+
+    - name: 安装依赖
+      if: steps.cache.outputs.cache-hit != 'true' # 如果变量 cache-hit 不等于 true
+      run: |
+        # 安装 node modules 相关依赖
+        npm install 
+        # 安装 node-sass
+        sass_binary_site=https://npm.taobao.org/mirrors/node-sass/
+        registry=https://registry.npm.taobao.org
+        npm rebuild node-sass
+      
+      
+    # Deploy hexo blog website.
+    - name: 部署到测试回家 # step4
+      id: deploy
+      uses: sma11black/hexo-action@v1.0.0
+      with:
+        deploy_key: ${{ secrets.DEPLOY_KEY }}
+        user_name: zhangqinghua
+        user_email: the.patron.saint.of.science@gmail.com
+

@@ -1,0 +1,158 @@
+/*表格，等长*/
+table {
+  table-layout: fixed;
+}
+
+/*缩小边距（代码框、li等）*/
+ol {
+  margin-block-start: 0;
+  margin-block-end: 0;
+  padding-inline-start: 21px;
+}
+
+ol > li {
+  margin-block-end: 1em;
+}
+
+ol > li > p {
+  margin-block-start: 0em;
+}
+
+/*缩小边距（代码框、li等）*/
+.highlight {
+  margin: 0 -0.5rem !important;
+  padding: 0px 0 !important;
+}
+
+.gutter,.code{
+    padding: 0px 8px 0 !important;
+}
+
+/* 代码追加p尾巴 */
+.highlight {
+   margin-block-end: 1em !important;
+}
+
+/* 表格追加p尾巴 */
+.table-container {
+   margin-block-end: 1em !important;
+}
+
+/* 表格字体大小 */
+body th {
+   font-size: 14px;
+}
+body table {
+   font-size: 14px;
+}
+
+/*图片固定宽度*/
+article .content img, article .content video {
+  width: 102% !important;
+  margin: -9px !important;
+  padding-top: 9px !important;
+  max-width: none !important; 
+}
+
+/*滚动条背景透明*/
+figure::-webkit-scrollbar {
+  background-color: rgba(100, 1, 1, 0);
+}
+
+/*概要缩小边框*/
+article .content blockquote {
+  margin-block-start: 0;
+  margin-inline-start: 0px;
+  margin: 0 0 1rem !important;
+  padding: 0.5em 0 !important;
+}
+
+/*代码优化*/
+.highlight .code pre {
+  font-size: 14px !important;
+}
+
+.content code {
+  font-family: $font-family-body;
+  border: 0;
+  padding: 0 0;
+  color: #d44375;
+}
+
+/*mermaid限制高度，居中*/
+.mermaid {
+  text-align: center;
+}
+/*时序图，字体去掉粗体*/
+.mermaid .messageText {
+  stroke: none !important;
+}
+/*表格沾满行*/
+body table {
+  display: table !important;
+}
+
+/*目录靠左对齐*/
+#toc li {
+  text-align: left !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/*todo 隐藏二级目录*/
+#toc {
+  display: none !important;
+}
+
+/*h4 标题 粗体*/
+body h4, body .h4 {
+  color: #111;
+  font-weight: bold;
+}
+
+/* 思维导图 修改你的模板css文件，添加全局样式 */
+.mermaid {
+  max-height: 200px;
+  position: relative;
+  overflow: hidden;
+
+  &:after {
+    content: 'Loading ...';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #1c1f20;
+    color: #FFF;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.mermaid[data-processed] {
+  max-height: none;
+  overflow: auto;
+
+  &:after {
+    content: none;
+  }
+}
+
+/* 数学公式样式优化*/
+.mjx-chtml {
+  font-size: 100% !important;
+}
+
+/*文章分类，统计，放在右边*/
+.category-list-count {
+  float: right;
+}
+
+/*段落直接空格优化*/
+p {
+   margin-block-start: 0;
+}
