@@ -2,6 +2,7 @@
 title: 并发编程-AQS 机制
 
 categories:
+- 后端开发
 - Java 并发编程
 
 date: 2020-06-13

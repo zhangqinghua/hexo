@@ -2,6 +2,7 @@
 title: Chapter 1.3 基础 Redis 实现分布式锁
 
 categories:
+- 后端开发
 - 分布式
 
 date: 2020-05-18 00:00:13

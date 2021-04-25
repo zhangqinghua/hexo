@@ -2,6 +2,7 @@
 title: 分布式事务 Seata 常见问题
 
 categories:
+- 后端开发
 - 分布式事务
 
 date: 2021-03-16 00:00:12
@@ -47,3 +48,6 @@ date: 2021-03-16 00:00:12
 16:47:19.916  INFO --- [ettyServerNIOWorker_1_2_8] i.s.c.r.n.AbstractNettyRemotingServer    : remove unused channel:[id: 0xd2688132, L:/127.0.0.1:8091 ! R:/127.0.0.1:49375]
 16:47:19.916  INFO --- [ettyServerNIOWorker_1_1_8] i.s.c.r.n.AbstractNettyRemotingServer    : remove unused channel:[id: 0x5b47e626, L:/127.0.0.1:8091 ! R:/127.0.0.1:49374]
 ```
+
+2021-04-22: 发现是没有加上 `@GlobalTransactional` 注解引起的。第一个服务加了 `@GlobalTransactional` 注解，第二个服务没有加，结果第二个服务一直启动不了。
+2021-04-22: 又发现不是这个问题。

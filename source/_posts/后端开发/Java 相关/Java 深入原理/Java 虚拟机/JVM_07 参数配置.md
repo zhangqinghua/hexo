@@ -2,6 +2,7 @@
 title: JVM_07 参数配置
 
 categories:
+- 后端开发
 - Java 虚拟机
 
 date: 2020-01-01 00:00:07

@@ -2,6 +2,7 @@
 title: Chapter 8.2 分布式事务
 
 categories:
+- 后端开发
 - MySQL 性能调优
 
 date: 2020-04-28 00:00:82

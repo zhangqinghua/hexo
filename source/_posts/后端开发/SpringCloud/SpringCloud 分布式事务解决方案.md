@@ -2,6 +2,7 @@
 title: SpringCloud 分布式事务解决方案
 
 categories:
+- 后端开发
 - SpringCloud
 
 date: 2021-03-16

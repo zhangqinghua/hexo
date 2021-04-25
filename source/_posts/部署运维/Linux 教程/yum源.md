@@ -2,6 +2,7 @@
 title: yum 源
 
 categories:
+- 部署运维
 - Linux 教程
 
 date: 2020-07-08
