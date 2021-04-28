@@ -111,3 +111,8 @@ plugins -> disable Illuminated Cloud is invalid
 
 #### 中英文字体无法等宽
 参考：https://www.v2ex.com/t/187956
+
+#### Download Sources报错java.lang.RuntimeException: Cannot reconnect.
+设置 -> Maven -> 钩上 Override.
+
+参考：https://blog.csdn.net/LO_YUN/article/details/110630127?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control&dist_request_id=1619614483617_28112&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control
