@@ -88,3 +88,37 @@ HelloWord
 ```
 
 可以看到，Filebeat 已经监听到了输入事件，并处理后作了输出。
+
+## 配置 Filebeat 读取多个日志文件
+```yml
+filebeat.inputs:
+- type: log
+  enable: true
+  paths:
+    - /Users/zhangqinghua/Documents/log/*.log
+output.console:
+  pretty: true
+  enable: true
+```
+
+## 配置 Filebeat 发送日志到 Elasticsearch
+```yml
+filebeat.inputs:
+- type: log
+  enable: true
+  paths:
+    - /Users/zhangqinghua/Documents/log/*.log
+output.elasticsearch:
+  hosts: ["localhost:9200"]
+```
+
+## 配置 Kibana 显示 Filebeat 收集的日志
+**1. Create index pattern**
+![](https://cdn.jsdelivr.net/gh/zhangqinghua/hexo_image/20210507101710.png)
+
+![](https://cdn.jsdelivr.net/gh/zhangqinghua/hexo_image/20210507101813.png)
+
+![](https://cdn.jsdelivr.net/gh/zhangqinghua/hexo_image/20210507101846.png)
+
+**2. Discover Filter**
+![](https://cdn.jsdelivr.net/gh/zhangqinghua/hexo_image/20210507101937.png)
