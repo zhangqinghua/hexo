@@ -43,7 +43,20 @@ Swap:            0B          0B          0B
 
 ## 内存进程
 #### pidstat 查看进程内存占用
-还可以使用 `pidstat` 用于查看每个进程使用内存的用量分解信息，参考上面。
+`pidstat` 用于查看每个进程使用 CPU 和内存的用量分解信息。
+
+```bash
+# -u 2         每个2秒采样一次
+# -p 1282167   进程Id
+
+[root@iZj6ci1r3ycwolsv7h3gbiZ ~]# pidstat -u 2 -p 1282167 
+Linux 4.18.0-193.28.1.el8_2.x86_64 (iZj6ci1r3ycwolsv7h3gbiZ)    01/22/2021      _x86_64_        (4 CPU)
+
+12:01:53 PM   UID       PID    %usr %system  %guest   %wait    %CPU   CPU  Command
+12:01:55 PM     0   1282167    0.50    0.00    0.00    0.00    0.50     3  java
+12:01:57 PM     0   1282167    0.50    0.00    0.00    0.00    0.50     3  java
+12:01:59 PM     0   1282167    4.50    0.50    0.00    0.00    5.00     3  java
+```
 
 ## 释放内存
 #### sync 释放内存

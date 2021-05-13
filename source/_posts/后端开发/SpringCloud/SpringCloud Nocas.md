@@ -18,7 +18,7 @@ date: 2021-02-17 00:00:01
 
 #### 拉取镜像
 ```bash
-zhangqinghua$ docker pull nacos/nacos-server
+zhangqinghua$ docker pull nacos/nacos-server:1.4.2
 ...
 
 zhangqinghua$ docker images
@@ -28,17 +28,14 @@ nacos/nacos-server           latest              9c0b55a5ab2c        4 weeks ago
 
 #### 启动容器
 ```bash
-zhangqinghua$ docker run -d -p 8848:8848  \
-                         -e MODE=standalone \
-                         -e PREFER_HOST_MODE=hostname \
-                         -e SPRING_DATASOURCE_PLATFORM=mysql \
-                         -e MYSQL_SERVICE_HOST=127.0.0.1 \
-                         -e MYSQL_SERVICE_PORT=3306 \
-                         -e MYSQL_SERVICE_DB_NAME=nacos_config \
-                         -e MYSQL_SERVICE_USER=root \
-                         -e MYSQL_SERVICE_PASSWORD=123456 \
-                         -e MYSQL_DATABASE_NUM=1 \
-                         --restart always --name mynacos nacos/nacos-server
+zhangqinghua$ docker run --name nacos-quick -e MODE=standalone -p 8849:8848 \
+                                            -e SPRING_DATASOURCE_PLATFORM=mysql \
+                                            -e MYSQL_SERVICE_HOST=47.119.139.41 \
+                                            -e MYSQL_SERVICE_PORT=3306 \
+                                            -e MYSQL_SERVICE_DB_NAME=nacos_config \
+                                            -e MYSQL_SERVICE_USER=easybyte \
+                                            -e MYSQL_SERVICE_PASSWORD=easybyte \
+                                            -d nacos/nacos-server:1.4.2
 ```
 
 |配置项|描述|可选参数|默认值|
@@ -85,3 +82,8 @@ zhangqinghua$ docker logs -f mynacos
 启动报错：Referenced from: /private/var/folders/wz/7_0z_zvj7_j8dsrm7cg6yz2w0000gn/T/librocksdbjni6447145289520783579.jnilib (which was built for Mac OS X 10.15)
 原因：MacOS 版本过低。
 解决：升级 MacOS 或使用 Docker。
+
+**[NACOS HTTP-GET] The maximum number of tolerable server reconnection errors has been reached**
+场景：SpringBoot 使用 Nacos 作为配置中心，启动报错。
+原因：`spring.cloud.nacos.config` 必须配置在 `bootstrap.yml` 文件，而项目里放在了 `api-nacos.yml` 文件然后用 `spring.profiles.include` 引入。
+解决：`spring.cloud.nacos.config` 配置在 `bootstrap.yml` 文件。
