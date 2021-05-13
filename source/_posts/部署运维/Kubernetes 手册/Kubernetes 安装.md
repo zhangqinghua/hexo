@@ -100,6 +100,119 @@ izwz9go2hn3kv068o5wpdpz   NotReady   master   13m   v1.17.3
 
 #### 部署 Dashboard Web 页面，可视化查看 Kubernetes 资源
 
+
+#### 安装 KubeSphere
+**1. 安装 Helm**
+```bash
+zhangqinghua$ wget https://get.helm.sh/helm-v2.17.0-linux-amd64.tar.gz
+...
+zhangqinghua$ ll
+-rw-r--r-- 1 root root 25097357 May 13 20:07 helm-v2.17.0-linux-amd64.tar.gz
+
+zhangqinghua$ tar -zxvf helm-v2.17.0-linux-amd64.tar.gz 
+linux-amd64/
+linux-amd64/README.md
+linux-amd64/LICENSE
+linux-amd64/helm
+linux-amd64/tiller
+
+zhangqinghua$ helm version
+Client: &version.Version{SemVer:"v2.17.0", GitCommit:"a690bad98af45b015bd3da1a41f6218b1a451dbe", GitTreeState:"clean"}
+Error: could not find tiller
+```
+
+**2. 安装 tiller**
+先创建角色配置：
+
+```yml
+# vim helm-rbac.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tiller
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tiller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects: 
+- kind: ServiceAccount
+  name: tiller
+  namespace: kube-system
+```
+
+然后执行命令：
+
+```bash
+zhangqinghua$ helm init --service-account=tiller --tiller-image=jessestuart/tiller:v2.16.3 --history-max 300
+Creating /root/.helm 
+Creating /root/.helm/repository 
+Creating /root/.helm/repository/cache 
+Creating /root/.helm/repository/local 
+Creating /root/.helm/plugins 
+Creating /root/.helm/starters 
+Creating /root/.helm/cache/archive 
+Creating /root/.helm/repository/repositories.yaml 
+Adding stable repo with URL: https://charts.helm.sh/stable 
+Adding local repo with URL: http://127.0.0.1:8879/charts 
+$HELM_HOME has been configured at /root/.helm.
+
+Tiller (the Helm server-side component) has been installed into your Kubernetes Cluster.
+
+Please note: by default, Tiller is deployed with an insecure 'allow unauthenticated users' policy.
+To prevent this, run `helm init` with the --tiller-tls-verify flag.
+For more information on securing your installation see: https://v2.helm.sh/docs/securing_installation/
+
+zhangqinghua$ kubectl get pods --all-namespaces
+NAMESPACE     NAME                                              READY   STATUS    RESTARTS   AGE
+default       tomcat6-5f7ccf4cb9-f8269                          1/1     Running   0          3h32m
+kube-system   coredns-7f9c544f75-2hsq2                          1/1     Running   0          3h57m
+kube-system   coredns-7f9c544f75-v8g8z                          1/1     Running   0          3h57m
+kube-system   etcd-izwz9go2hn3kv068o5wpdpz                      1/1     Running   0          3h57m
+kube-system   kube-apiserver-izwz9go2hn3kv068o5wpdpz            1/1     Running   0          3h57m
+kube-system   kube-controller-manager-izwz9go2hn3kv068o5wpdpz   1/1     Running   0          3h57m
+kube-system   kube-flannel-ds-5t4sk                             1/1     Running   0          3h18m
+kube-system   kube-flannel-ds-k9hnj                             1/1     Running   0          3h38m
+kube-system   kube-proxy-4q852                                  1/1     Running   0          3h18m
+kube-system   kube-proxy-6bvww                                  1/1     Running   0          3h57m
+kube-system   kube-scheduler-izwz9go2hn3kv068o5wpdpz            1/1     Running   0          3h57m
+kube-system   tiller-deploy-6ffcfbc8df-c8rbp                    1/1     Running   0          5m40s
+```
+
+整个过程大概需要 10 分钟。
+
+**3. 设置默认存储类型**
+
+确认 Master 节点是否有Taint，如下看到 Master 节点有 Taint。
+
+```bash
+zhangqinghua$ kubectl describe node izwz9go2hn3kv068o5wpdp | grep Taint
+Taints:             node-role.kubernetes.io/master:NoSchedule
+```
+
+如果有 Taint，则需要去掉：
+
+```bash
+zhangqinghua$ kubectl taint nodes izwz9go2hn3kv068o5wpdpz node-role.kubernetes.io/master:NoSchedule-
+node/izwz9go2hn3kv068o5wpdpz untainted
+```
+
+再来查询，可以看到 Taint 没有了：
+
+```bash
+zhangqinghua$ kubectl describe node izwz9go2hn3kv068o5wpdp | grep Taint
+Taints:             <none>
+```
+
+接下来安装 
+
+
+
 #### 最终效果
 
 ## 常见问题
