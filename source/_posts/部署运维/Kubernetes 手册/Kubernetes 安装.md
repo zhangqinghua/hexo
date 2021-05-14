@@ -420,7 +420,10 @@ openebs                        openebs-provisioner-7f86c6bb64-br2pb             
 openebs                        openebs-snapshot-operator-54b9c886bf-j5xp2        2/2     Running             0          77m
 ```
 
+![](https://cdn.jsdelivr.net/gh/zhangqinghua/hexo_image/20210514100526.png)
+
 #### 最终效果
+
 
 ## 常见问题
 **Error: Unable to find a match: kubelet-1.17.3 kubeadm-1.17.3 kubectl-1.17.3**
