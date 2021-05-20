@@ -87,3 +87,6 @@ zhangqinghua$ docker logs -f mynacos
 场景：SpringBoot 使用 Nacos 作为配置中心，启动报错。
 原因：`spring.cloud.nacos.config` 必须配置在 `bootstrap.yml` 文件，而项目里放在了 `api-nacos.yml` 文件然后用 `spring.profiles.include` 引入。
 解决：`spring.cloud.nacos.config` 配置在 `bootstrap.yml` 文件。
+
+**Nacos 域名访问**
+参考：https://my.oschina.net/huawenyao/blog/3235903

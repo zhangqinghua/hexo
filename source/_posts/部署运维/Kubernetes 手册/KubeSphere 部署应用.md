@@ -154,3 +154,23 @@ spec:
       maxSurge: 100%
       maxUnavailable: 100%
 ```
+
+## 常见问题
+#### 给 SpringBoot 应用动态传参
+在部署 SpringBoot 项目时，需要动态的制定启动参数例如：
+
+```bash
+java -jar /app.jar --server.port=80 --spring.cloud.nacos.config.namespace=$NACOS_GROUP
+```
+
+这时候可以在 pod 资源文件配置：
+
+```yml
+spec:
+  template:
+    spec:
+      containers:
+        - name: $APP_NAME
+          image: $APP_NAME:$BUILD_NUMBER
+          command:  ["java", "-jar", "/app.jar", "--server.port=80", "--spring.cloud.nacos.config.namespace=$NACOS_GROUP"]
+```
