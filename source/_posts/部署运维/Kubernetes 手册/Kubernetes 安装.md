@@ -116,6 +116,8 @@ linux-amd64/LICENSE
 linux-amd64/helm
 linux-amd64/tiller
 
+zhangqinghua$ mv linux-amd64/helm /usr/local/bin/helm
+
 zhangqinghua$ helm version
 Client: &version.Version{SemVer:"v2.17.0", GitCommit:"a690bad98af45b015bd3da1a41f6218b1a451dbe", GitTreeState:"clean"}
 Error: could not find tiller
@@ -440,3 +442,25 @@ openebs                        openebs-snapshot-operator-54b9c886bf-j5xp2       
 场景：最小化安装 KubeSphere 时，查看日志得到的报错。
 原因：Helm 版本不对，helm的版本不匹配导致的。当前安装的版本是v2.17.0，重新安装的版本是v2.16.3。
 解决：卸载 Helm 和 Tiller 重新安装：https://blog.csdn.net/qq_30019911/article/details/113747673
+
+**[ERROR Port-10257]: Port 10257 is in use**
+场景：进行 kubectl init 的时候报错。
+原因：端口被占用。
+解决：`kubeadm reset`
+
+**The reset process does not clean your kubeconfig files and you must remove them manually.**
+场景：reset master 节点，报错。
+解决：`kubectl init`
+
+**Error: error initializing: Looks like "https://kubernetes-charts.storage.googleapis.com"**
+场景：安装 Tiller2 失败。
+原因：未知。
+解决：https://blog.csdn.net/weixin_41806245/article/details/98631199
+
+```bash
+zhangqinghua$ helm init --upgrade --tiller-image registry.cn-hangzhou.aliyuncs.com/google_containers/tiller:v2.16.3 --stable-repo-url https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts
+```
+
+**删除namespace时卡在Terminating状态**
+参考：https://blog.csdn.net/weweeeeeeee/article/details/100036417
+参考：https://blog.csdn.net/Tilyp/article/details/89226235
