@@ -39,43 +39,9 @@ ks-console   NodePort   10.96.138.81   <none>        80:30880/TCP   116m
 
 ![](https://cdn.jsdelivr.net/gh/zhangqinghua/hexo_image/20210515161612.png)
 
-## KubeSphere 3.1 启用 DevOps
-#### 进入集群管理
-以 admin 身份登录控制台，点击左上角的平台管理，选择集群管理。
+## 安装可插拔组件
 
-![](https://kubesphere.io/images/docs/zh-cn/enable-pluggable-components/kubesphere-devops-system/clusters-management.png)
-
-#### 选择资源 CRD
-点击自定义资源 CRD，在搜索栏中输入 clusterconfiguration，点击搜索结果查看其详细页面
-![](https://cdn.jsdelivr.net/gh/zhangqinghua/hexo_image/20210515162318.png)
-
-> 自定义资源定义（CRD）允许用户在不增加额外 API 服务器的情况下创建一种新的资源类型，用户可以像使用其他 Kubernetes 原生对象一样使用这些自定义资源。
-
-#### 编辑配置文件
-在资源列表中，点击 ks-installer 右边的三个点，选择编辑配置文件。
-
-![](https://kubesphere.io/images/docs/zh-cn/enable-pluggable-components/kubesphere-devops-system/edit-yaml.PNG)
-
-在该 YAML 文件中，搜寻到 `devops`，将 `enabled` 的 `false` 改为 `true`。完成后，点击右下角的更新，保存配置：
-
-```yml
-devops:
-    enabled: true # Change "false" to "true"
-```
-
-#### 查看安装过程
-您可以使用 Web Kubectl 工具执行以下命令来检查安装过程，整个过程需要半个小时左右：
-
-```bash
-zhangqinghua$ kubectl logs -n kubesphere-system $(kubectl get pod -n kubesphere-system -l app=ks-install -o jsonpath='{.items[0].metadata.name}') -f
-```
-
-> 您可以通过点击控制台右下角的锤子图标找到 Web Kubectl 工具。
-
-#### 验证安装结果
-进入服务组件，检查 DevOps 的状态，可以看到如下类似图片：
-
-![](https://kubesphere.io/images/docs/zh-cn/enable-pluggable-components/kubesphere-devops-system/devops.PNG)
+#### 
 
 ## KubeSphere 3.1 开启应用路由
 本文档介绍了如何在 KubeSphere 上创建、使用和编辑应用路由。
@@ -176,6 +142,9 @@ server {
 }
 ```
 
+## 卸载可插拔组件
+https://kubesphere.io/zh/docs/faq/installation/uninstall-pluggable-components/
+
 ## 卸载 KubeSphere 2.1 / 3.1
 您可以使用 [kubesphere-delete.sh](https://github.com/kubesphere/ks-installer/blob/master/scripts/kubesphere-delete.sh) 将 KubeSphere 从您现有的 Kubernetes 集群中卸载。复制 GitHub 源文件并在本地机器上执行此脚本。
 
@@ -192,6 +161,7 @@ deployment.apps "ks-installer" deleted
 > 1. 卸载意味着 KubeSphere 会从您的 Kubernetes 集群中移除。此操作不可逆并且没有任何备份，请谨慎操作。
 
 > 2. 直接执行此脚本可能会卡死，重启服务器后再试一下即可。等半个小时左右即可。
+
 
 ## 常见问题
 #### KubeSphere 卸载卡死
