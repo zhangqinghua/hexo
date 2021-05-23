@@ -22,10 +22,12 @@ SpringBoot 的 Web 应用一般都添加了 `spring-boot-maven-plugin` 插件，
 这时候我们可以将第三方依赖包独立出来，在程序运行时候再使用它们。
 
 ## 导出所有依赖到外面
+注：微服务中这个方法不行，还得有更多的测试。
+
 使用 Maven 可以很方便的导出项目依赖的 jar 包，直接使用命令就可以进行导出：
 ```bash
 # /lib 是指要导出的目录
-zhangqinghua$ dependency:copy-dependencies -DoutputDirectory=/lib
+zhangqinghua$ mvn dependency:copy-dependencies -DoutputDirectory=/lib
 ```
 ![](https://cdn.jsdelivr.net/gh/zhangqinghua/hexo_image/20210523175956.png)
 
