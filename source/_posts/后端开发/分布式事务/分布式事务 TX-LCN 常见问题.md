@@ -53,5 +53,11 @@ tx-lcn.client.manager-address: 47.119.139.41:31080
 原因：启动类放错地方，且也提示了报错 ** WARNING ** : Your ApplicationContext is unlikely to start due to a @ComponentScan of the default package.
 解决：建个包，把启动类放进去，再启动就 OK 了。
 
+**集群的情况下部分子事务提交失败**
+场景：一个服务起多个副本的情况下，有部分事务没有提交成功。
+原因：Bug。
+解决：弃用或只起一个服务副本。或者 github.com/yizhishang/tx-lcn  重新打包，此人解决了这个问题。
+
 ## TxLCN 
 **TxLCN Client 一直无法连上 TxLCN manager**
+

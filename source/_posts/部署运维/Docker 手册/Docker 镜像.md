@@ -200,3 +200,18 @@ $ sudo docker run --name zentao001 \
 容器启动成功后，`docker logs -f {container}` 查看日志，发现系统报错 `ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: NO)` PHP 程序启动时建立了无密码的默认配置连接所导致，由于之后又使用了用户设置的my.php的数据库配置，因此程序功能正常）。
 
 ![](https://raw.githubusercontent.com/zhangqinghua/hexo_image/master/WX20210422-154252.png)
+
+**docker login 提示 Sorry, try again.**
+场景：调用 docker login 命令提示密码总是报错。
+
+```bash
+zhangqinghua$ sudo docker login --username=tron@1847314153397611 registry.cn-hongkong.aliyuncs.com
+Password:
+Sorry, try again.
+Password:
+Sorry, try again.
+```
+
+原因：这种问题的原因，往往是您使用了sudo命令来运行docker，所以首次输入的密码为root用户密码，二次输入的密码是镜像仓库密码。
+
+解决：先输入 root 密码，再输入 docker 密码。

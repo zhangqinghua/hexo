@@ -199,3 +199,9 @@ hudson.remoting.ProxyException: java.lang.RuntimeException: io.kubernetes.client
 ![](https://cdn.jsdelivr.net/gh/zhangqinghua/hexo_image/20210516220443.png)
 
 解决：修复参数问题。
+
+#### 您需要联系平台管理员或者集群管理员为企业空间授权集群的访问权限
+场景：在开启多集群功能后，企业空间无法查看项目。
+原因：集群可见性。
+解决：开发集群可见行。
+参考：https://kubesphere.com.cn/docs/cluster-administration/cluster-settings/cluster-visibility-and-authorization/
