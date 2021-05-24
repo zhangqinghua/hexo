@@ -459,3 +459,8 @@ hudson.remoting.ProxyException: java.lang.RuntimeException: io.kubernetes.client
 原因：集群可见性。
 解决：开发集群可见行。
 参考：https://kubesphere.com.cn/docs/cluster-administration/cluster-settings/cluster-visibility-and-authorization/
+
+#### 彻底禁用 ES
+场景：在开启日志系统后，ES 也随着安装，但是禁用日志系统后，ES 没有停掉。
+原因：日志系统、事件系统、审计日志均使用到 ES。即使将它们禁用，ES 还是不会自动关闭，需要手工删除。
+解决：将使用到 ES 的组件禁用后，手工执行 `kubectl delete ns xxx`。

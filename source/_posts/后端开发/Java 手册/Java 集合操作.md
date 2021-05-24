@@ -10,9 +10,15 @@ date: 2021-05-07
 
 ## 排序
 #### 简单类型排序
-#### 对象类型排序
-```java
-businessTimes.sort((a, b) -> a.getFinishTime().isAfter(b.getFinishTime()) ? 1 : 0);
+#### 对象类型排序，未实现 Comparable
 
-Collections.sort(businessTimes, (a, b) -> a.getFinishTime().isAfter(b.getFinishTime()) ? 1 : 0);
+```java
+Collections.sort(ds, (a, b) -> a.getFinishTime().isAfter(b.getFinishTime()) ? 1 : -1);
+
+ds.sort((a, b) -> a.getFinishTime().isAfter(b.getFinishTime()) ? 1 : -1);
+```
+
+#### 对象类型排序，已实现 Comparable
+```java
+ds.sort(Comparator.comparing(Store::getDistance));
 ```
