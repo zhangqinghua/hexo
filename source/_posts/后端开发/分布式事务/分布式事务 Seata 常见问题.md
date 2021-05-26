@@ -51,3 +51,25 @@ date: 2021-03-16 00:00:12
 
 2021-04-22: 发现是没有加上 `@GlobalTransactional` 注解引起的。第一个服务加了 `@GlobalTransactional` 注解，第二个服务没有加，结果第二个服务一直启动不了。
 2021-04-22: 又发现不是这个问题。
+
+**no available service found in cluster 'default'**
+？？莫名其妙好了
+
+**Caused by: java.lang.NoSuchMethodError: org/objectweb/asm/MethodVisitor.visitMethodInsn**
+场景：整合 BeetlSQL 报错；
+原因：包冲突，BeetlSQL 和 Seata 同时提供了 asm 包。
+解决：Seata 排除掉 asm 依赖。
+
+```xml
+<dependency>
+   <groupId>io.seata</groupId>
+   <artifactId>seata-all</artifactId>
+   <version>1.4.2</version>
+   <exclusions>
+         <exclusion>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+         </exclusion>
+   </exclusions>
+</dependency>
+```
