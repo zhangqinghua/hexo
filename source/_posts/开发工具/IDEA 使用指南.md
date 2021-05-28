@@ -119,3 +119,9 @@ plugins -> disable Illuminated Cloud is invalid
 设置 -> Maven -> 钩上 Override.
 
 参考：https://blog.csdn.net/LO_YUN/article/details/110630127?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control&dist_request_id=1619614483617_28112&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control
+
+#### SpringBoot 项目启动慢
+场景：同事 win10 启动 SpringBoot 工程只要3秒左右，我的启动要 30 秒。开始以为是 CPU 差距太大，后来才觉得不是这样！
+原因：简单说，就是 SpringBoot 傻傻找不到路由地址，费了很多时间，配置路由地址后，它很快就能找到了。
+解决：配置路由地址。
+参考：https://blog.csdn.net/wyyl1/article/details/84785237
