@@ -9,17 +9,17 @@ date: 2021-03-16 00:00:12
 ---
 
 ## 常见问题
-**can not register RM,err:can not connect to services-server.**
-场景：SpringCloud 引入 seata client 以来后，启动警告。
+#### can not register RM,err:can not connect to services-server.
+场景：SpringCloud 引入 seata client，启动警告。
 原因：没有启动 seata server。
 解决：启动 seata server。
 
-**Could not found property service.disableGlobalTransaction, try to use default value instead.**
-场景：SpringCloud 引入 seata client 以来后，启动警告。
+#### Could not found property service.disableGlobalTransaction, try to use default value instead.
+场景：SpringCloud 引入 seata client，启动警告。
 原因：没有配置或者seata 无法识别 `.yml` 的 `service.disableGlobalTransaction` 属性。
 解决：使用 `.properties` 的配置文件或者另外创建 file.conf 文件写入 "service {disableGlobalTransaction: false}"。
 
-**will connect to 127.0.0.1:8091**
+#### will connect to 127.0.0.1:8091
 场景：SpringCloud 引入 seata client 以来后，第一次启动能连接上本地 seata，第二次启动没法连接上本地 seata。
 原因：？？
 解决：关闭 seata server 命令行，重新打开运行 seata server。
@@ -52,10 +52,10 @@ date: 2021-03-16 00:00:12
 2021-04-22: 发现是没有加上 `@GlobalTransactional` 注解引起的。第一个服务加了 `@GlobalTransactional` 注解，第二个服务没有加，结果第二个服务一直启动不了。
 2021-04-22: 又发现不是这个问题。
 
-**no available service found in cluster 'default'**
+#### no available service found in cluster 'default'
 ？？莫名其妙好了
 
-**Caused by: java.lang.NoSuchMethodError: org/objectweb/asm/MethodVisitor.visitMethodInsn**
+#### Caused by: java.lang.NoSuchMethodError: org/objectweb/asm/MethodVisitor.visitMethodInsn
 场景：整合 BeetlSQL 报错；
 原因：包冲突，BeetlSQL 和 Seata 同时提供了 asm 包。
 解决：Seata 排除掉 asm 依赖。

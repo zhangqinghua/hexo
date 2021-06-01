@@ -386,3 +386,45 @@ zhangqinghua$ kubectl describe node k8s-node1
 原因：没有按照 cni 模块。
 解决：安装 fluent
 参考：https://blog.csdn.net/weixin_40161254/article/details/112203691
+
+**从节点 pod id ping 不通**
+场景：安装集群之后，从节点的 pod ping 不通。
+
+```bash
+zhangqinghua$ kubectl get pods -o wide --all-namespaces
+NAMESPACE                      NAME                                               READY   STATUS    RESTARTS   AGE   IP              NODE          NOMINATED NODE   READINESS GATES
+kube-federation-system         kubefed-admission-webhook-7c55679bdf-nc45s         1/1     Running   0          8d    10.244.1.18     kube-node01   <none>           <none>
+kube-federation-system         kubefed-controller-manager-5db964797d-z42bs        1/1     Running   0          8d    10.244.1.19     kube-node01   <none>           <none>
+kube-system                    coredns-7f9c544f75-5pz9r                           1/1     Running   0          8d    10.244.0.2      kube-master   <none>           <none>
+
+zhangqinghua$ ping 10.244.1.18
+PING 10.244.1.18 (10.244.1.18) 56(84) bytes of data.
+```
+
+原因：Master 节点的防火墙开了，导致从节点连不上。
+解决：关掉 Master 的防火墙。
+
+**kubelet 启动异常：kubelet.go:2263] node "kube-node01" not found**
+场景：从节点启动 kubelet 报错：`May 31 10:44:33 kube-node01 kubelet[1427]: E0531 10:44:33.161795    1427 kubelet.go:2263] node "kube-node01" not found`。
+原因：Master 节点的防火墙开了，导致从节点连不上。
+解决：关掉 Master 的防火墙。
+
+**从节点加入失败： error execution phase preflight: couldn't validate the identity of the API Server: abort connecting to API servers after timeout**
+场景：从节点加入一直没有进度。
+
+```bash
+[root@kube-node01 ~]# kubeadm join 172.25.25.244:6443 --token d3qa8m.9live0v3z817t6km     --discovery-token-ca-cert-hash sha256:fff8c69e23cce925eefa5e00f564c3ff71d68a2ec87086b8853dedc782e26522
+W0531 10:50:58.497804    2566 join.go:346] [preflight] WARNING: JoinControlPane.controlPlane settings will be ignored when control-plane flag is not set.
+[preflight] Running pre-flight checks
+        [WARNING IsDockerSystemdCheck]: detected "cgroupfs" as the Docker cgroup driver. The recommended driver is "systemd". Please follow the guide at https://kubernetes.io/docs/setup/cri/
+        [WARNING FileExisting-tc]: tc not found in system path
+        [WARNING SystemVerification]: this Docker version is not on the list of validated versions: 20.10.6. Latest validated version: 19.03
+        [WARNING Hostname]: hostname "kube-node01" could not be reached
+        [WARNING Hostname]: hostname "kube-node01": lookup kube-node01 on 100.100.2.136:53: no such host
+        [WARNING Service-Kubelet]: kubelet service is not enabled, please run 'systemctl enable kubelet.service'
+error execution phase preflight: couldn't validate the identity of the API Server: abort connecting to API servers after timeout of 5m0s
+To see the stack trace of this error execute with --v=5 or higher
+```
+
+原因：Master 节点的防火墙开了，导致从节点连不上。
+解决：关掉 Master 的防火墙。

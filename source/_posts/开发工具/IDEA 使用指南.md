@@ -68,7 +68,7 @@ path : Editor > Code Sytle > Wrap on typing
 value: 200 
 
 #### 禁止单击拖拽
-file-setting：勾选 Drag-and-drop with Alt pressed only
+Appearance & Behavior > Appearance: 勾选 Drag-and-drop with Alt pressed only
 
 ## 格式化
 #### 等号对齐、参数对齐
