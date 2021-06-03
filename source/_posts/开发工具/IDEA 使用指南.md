@@ -92,7 +92,8 @@ value: disable Enable JavaDoc Formatting
 #### 提示找不到符号，但是类存在
 现象：类存在，Idea编辑器没有提示报错，但是编译时提示找不到符号
 原因：未知
-解决：https://blog.csdn.net/weixin_43789011/article/details/86620573
+解决：Rebuild Modules xxx
+参考：https://blog.csdn.net/weixin_43789011/article/details/86620573
 
 #### Cannot resolve symbol
 IDEA 无法识别同一个 package 里的其他类，将其显示为红色，但是 compile 没有问题。鼠标放上去后显示 “Cannot resolve symbol XXX”，重启 IDEA ，重新 sync gradle，Clean build 都没有用。
