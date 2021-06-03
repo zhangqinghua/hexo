@@ -172,7 +172,6 @@ private static String weixinChannelExt(IcbcmoPay icbcmoPay, String openId) {
    },
    "sign":"c5a7ec6aa5c57eb6b4fa0aa41a2bb26a"
 }
-
 // 微信小程序支付返回
 {
     "retCode": "200", 
