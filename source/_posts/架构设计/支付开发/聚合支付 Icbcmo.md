@@ -156,6 +156,7 @@ private static String weixinChannelExt(IcbcmoPay icbcmoPay, String openId) {
 ## 响应数据
 #### 正常响应
 ```json
+// 微信扫码支付返回
 {
    "retCode":"200",
    "returnObj":
@@ -170,6 +171,29 @@ private static String weixinChannelExt(IcbcmoPay icbcmoPay, String openId) {
       "redirectUrl":"https://mobilepaytest.icbc.com.mo/api/payment/NativePayPage.aspx?orderno=90120000100100000011190711538371&sign=3661b8d0975563e85dcc9df3ce94b065&time=120"
    },
    "sign":"c5a7ec6aa5c57eb6b4fa0aa41a2bb26a"
+}
+
+// 微信小程序支付返回
+{
+    "retCode": "200", 
+    "returnObj": {
+        "merchantId": "011900000000002", 
+        "merchantTid": "00000011", 
+        "channel": "WechatMiniApp", 
+        "merchantOrderId": "10000058160843", 
+        "icbcOrderId": "011WE20210603183143021474642", 
+        "currency": "MOP", 
+        "amount": "5", 
+        "respCode": "00", 
+        "respMsgDetail": "SUCCESS", 
+        "sign": "D1E5B79FF8569EFD5CF1BFF42481817C", 
+        "appId": "wx47d7859ff4ec85c4", 
+        "nonceStr": "BD686FD640BE98EFAAE0091FA301E613", 
+        "signType": "MD5", 
+        "timeStamp": "1622716302", 
+        "package": "prepay_id=wx031831441262294383aa020140228c0000"
+    }, 
+    "sign": "2f553aa3ab9e44c516d8172cd5c720a8"
 }
 ```
 
