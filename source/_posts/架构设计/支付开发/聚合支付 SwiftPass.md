@@ -109,3 +109,44 @@ private static String md5(String queryString) {
 对后台通知交互模式，如果平台收到商户的应答不是纯字符串 success 或超过 5 秒后返回时，平台认为通知失败，平台会通过一定的策略（通知频率为 0/15/15/30/180/1800/1800/1800/1800/3600，单位：秒）间接性重新发起通知，尽可能提高通知的成功率，但平台不保证通知最终能成功。
 
 由于存在重新发送后台通知的情况，因此同样的通知可能会多次发送给商户系统。商户系统必须能够正确处理重复的通知。平台推荐的做法是，当收到通知进行处理时，首先检查对应业务数据的状态，判断该通知是否已经处理过，如果没有处理过再进行处理，如果处理过直接返回纯字符串 success。在对业务数据进行状态检查和处理之前，要采用数据锁进行并发控制，以避免函数重复插入数据造成的数据混乱。
+
+## 参数请求和响应
+#### 支付初始化
+**1. 请求参数**
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<xml>
+    <body>测试支付</body>
+    <charset>UTF-8</charset>
+    <is_raw>1</is_raw>
+    <mch_create_ip>10.244.1.0</mch_create_ip>
+    <mch_id>121560000250</mch_id>
+    <nonce_str>123456</nonce_str>
+    <notify_url>https://www.easybyte-hk.com/api/swift_pass/notify/weixin</notify_url>
+    <out_trade_no>20210603110231978901</out_trade_no>
+    <service>pay.weixin.jspay</service>
+    <sign>61D334A471BDC3445C3D76B97959547E</sign>
+    <sign_type>MD5</sign_type>
+    <sub_appid>wx47ad423fda55c0a2</sub_appid>
+    <sub_openid>okTNA5YBiD-c1zyGwxRivxa-zL6U</sub_openid>
+    <total_fee>2</total_fee>
+</xml>
+```
+
+**2. 正常响应参数**
+```xml
+<xml>
+   <appid><![CDATA[wx57c0d7d518bdade3]]></appid>
+   <charset><![CDATA[UTF-8]]></charset>
+   <mch_id><![CDATA[121560000250]]></mch_id>
+   <nonce_str><![CDATA[123456]]></nonce_str>
+   <pay_info><![CDATA[{"timeStamp":"1622689354171","callback_url":null,"package":"prepay_id=wx0311023408100003cec79fe14241ce0000","paySign":"98D9E238003507D29A24234DC153967E","appId":"wx47ad423fda55c0a2","signType":"MD5","nonceStr":"1622689354171","status":"0"}]]></pay_info>
+   <result_code><![CDATA[0]]></result_code>
+   <sign><![CDATA[020B8E3DA57EB5B6394011A95AFE3A0B]]></sign>
+   <sign_type><![CDATA[MD5]]></sign_type>
+   <status><![CDATA[0]]></status>
+   <token_id><![CDATA[0eef8c0457df77ab37fbbfc875884d385]]></token_id>
+   <version><![CDATA[2.0]]></version>
+</xml>
+```
+

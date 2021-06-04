@@ -154,49 +154,15 @@ private static String weixinChannelExt(IcbcmoPay icbcmoPay, String openId) {
 
 
 ## 响应数据
-#### 正常响应
-```json
-// 微信扫码支付返回
-{
-   "retCode":"200",
-   "returnObj":
-   {
-      "merchantId":"011901200001001",
-      "merchantTid":"11",
-      "channel":"WechatPayPC",
-      "merchantOrderId":"ICBC_AIO_20190711_091944",
-      "icbcOrderId":"011WE20190711091957823988639",
-      "currency":"MOP",
-      "amount":"100",
-      "redirectUrl":"https://mobilepaytest.icbc.com.mo/api/payment/NativePayPage.aspx?orderno=90120000100100000011190711538371&sign=3661b8d0975563e85dcc9df3ce94b065&time=120"
-   },
-   "sign":"c5a7ec6aa5c57eb6b4fa0aa41a2bb26a"
-}
-// 微信小程序支付返回
-{
-    "retCode": "200", 
-    "returnObj": {
-        "merchantId": "011900000000002", 
-        "merchantTid": "00000011", 
-        "channel": "WechatMiniApp", 
-        "merchantOrderId": "10000058160843", 
-        "icbcOrderId": "011WE20210603183143021474642", 
-        "currency": "MOP", 
-        "amount": "5", 
-        "respCode": "00", 
-        "respMsgDetail": "SUCCESS", 
-        "sign": "D1E5B79FF8569EFD5CF1BFF42481817C", 
-        "appId": "wx47d7859ff4ec85c4", 
-        "nonceStr": "BD686FD640BE98EFAAE0091FA301E613", 
-        "signType": "MD5", 
-        "timeStamp": "1622716302", 
-        "package": "prepay_id=wx031831441262294383aa020140228c0000"
-    }, 
-    "sign": "2f553aa3ab9e44c516d8172cd5c720a8"
-}
+#### 發起支付请求
+**1. 请求参数**
+
+```bash
+zhangqinghua$ curl https://app.icbcmo.site/api/v1/order?amount=7&channel=WechatMiniApp&channelExt=%7B%22custom_display_code%22%3A%22%22%2C%22wx_appid%22%3A%22wx47d7859ff4ec85c4%22%2C%22openid%22%3A%22ohGhc5MWsYW_zkB4j0C_zCDx93H0%22%2C%22body%22%3A%22%22%7D&currency=MOP&merchantId=011900000000002&merchantOrderId=20210604155233849229&merchantTid=00000011&notifyUrl=https%3A%2F%2Fwww.baidu.com&returnUrl=pages%2Findex%2Findex&sign=722d3cfeae052f6d02bc1b0fa9af8648&timeout=300
 ```
 
-#### 异常响应
+**2. 响应参数**
+
 ```json
 {
     "code": "9998", 
@@ -247,4 +213,89 @@ private static String weixinChannelExt(IcbcmoPay icbcmoPay, String openId) {
     "sign": "0477f49c3ab4645085c3455afce9c91e"
 }
 
+// 微信扫码支付返回
+{
+   "retCode":"200",
+   "returnObj":
+   {
+      "merchantId":"011901200001001",
+      "merchantTid":"11",
+      "channel":"WechatPayPC",
+      "merchantOrderId":"ICBC_AIO_20190711_091944",
+      "icbcOrderId":"011WE20190711091957823988639",
+      "currency":"MOP",
+      "amount":"100",
+      "redirectUrl":"https://mobilepaytest.icbc.com.mo/api/payment/NativePayPage.aspx?orderno=90120000100100000011190711538371&sign=3661b8d0975563e85dcc9df3ce94b065&time=120"
+   },
+   "sign":"c5a7ec6aa5c57eb6b4fa0aa41a2bb26a"
+}
+
+// 微信小程序支付返回
+{
+    "retCode": "200", 
+    "returnObj": {
+        "merchantId": "011900000000002", 
+        "merchantTid": "00000011", 
+        "channel": "WechatMiniApp", 
+        "merchantOrderId": "10000058160843", 
+        "icbcOrderId": "011WE20210603183143021474642", 
+        "currency": "MOP", 
+        "amount": "5", 
+        "respCode": "00", 
+        "respMsgDetail": "SUCCESS", 
+        "sign": "D1E5B79FF8569EFD5CF1BFF42481817C", 
+        "appId": "wx47d7859ff4ec85c4", 
+        "nonceStr": "BD686FD640BE98EFAAE0091FA301E613", 
+        "signType": "MD5", 
+        "timeStamp": "1622716302", 
+        "package": "prepay_id=wx031831441262294383aa020140228c0000"
+    }, 
+    "sign": "2f553aa3ab9e44c516d8172cd5c720a8"
+}
+```
+
+#### 發起主動查詢
+**1. 请求参数**
+
+```bash
+zhangqinghua$ curl https://app.icbcmo.site/api/v1/query?merchantId=011900000000002&merchantOrderId=20210604155233849229&sign=c5696f38c847aa0b53b9e105f04bf985
+```
+
+**2. 响应参数**
+```json
+{
+    "code": "1091", 
+    "retCode": "500", 
+    "msg": "簽名信息有誤, Signature information is incorrect"
+}
+
+{
+    "code": "1095", 
+    "retCode": "500", 
+    "msg": "查無此訂單，請核實, Check this order, please verify"
+}
+
+// 支付宝支付
+{
+  "retCode": "200",
+  "returnObj": {
+    "merchantId": "011901200001001",
+    "merchantTid": "00000011",
+    "merchantOrderId": "ICBC_AIO_20190710_233100",
+    "icbcOrderId": "011AL20190710233158379876488",
+    "channelTransId": "2019071022001330371041428517",
+    "orderStatus": "Success",
+    "orderStatusDesc": "支付成功",
+    "channel": "AlipayWEB",
+    "orderCurrency": "MOP",
+    "orderAmount": "5",
+    "cashCurrency": "CNY",
+    "cashAmount": "4",
+    "bankType": "",
+    "tradeTime": "2019-07-10 23:32:21",
+    "errorCode": "",
+    "errorMessage": ""
+  },
+  "sign": "4e349f7fa5ec47f5321ab967edc6bc8c"
+}
 ```
