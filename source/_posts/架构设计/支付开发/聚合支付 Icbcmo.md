@@ -298,4 +298,33 @@ zhangqinghua$ curl https://app.icbcmo.site/api/v1/query?merchantId=0119000000000
   },
   "sign": "4e349f7fa5ec47f5321ab967edc6bc8c"
 }
+
+// 微信小程序支付
+{
+    "retCode": "200", 
+    "returnObj": {
+        "merchantId": "011900000000002", 
+        "merchantTid": "00000011", 
+        "merchantOrderId": "20210604183020009295", 
+        "icbcOrderId": "011WE20210604183023047868948", 
+        "channelTransId": "4200001049202106046509286954", 
+        "customer_user_id": "", 
+        "orderStatus": "Success", 
+        "orderStatusDesc": "支付成功", 
+        "channel": "WechatMiniApp", 
+        "orderCurrency": "MOP", 
+        "orderAmount": "6", 
+        "discountAmount": "0", 
+        "cashCurrency": "CNY", 
+        "cashAmount": "4", 
+        "bankType": "OTHERS", 
+        "receipt_amount": "", 
+        "tradeTime": "2021-06-04 18:30:36", 
+        "errorCode": "", 
+        "errorMessage": "", 
+        "cardNo": "", 
+        "cardType": ""
+    }, 
+    "sign": "adcfc30932230164d3815d2eddcf75e7"
+}
 ```
