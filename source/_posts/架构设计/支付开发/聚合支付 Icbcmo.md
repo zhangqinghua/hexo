@@ -161,24 +161,15 @@ private static String weixinChannelExt(IcbcmoPay icbcmoPay, String openId) {
 zhangqinghua$ curl https://app.icbcmo.site/api/v1/order?amount=7&channel=WechatMiniApp&channelExt=%7B%22custom_display_code%22%3A%22%22%2C%22wx_appid%22%3A%22wx47d7859ff4ec85c4%22%2C%22openid%22%3A%22ohGhc5MWsYW_zkB4j0C_zCDx93H0%22%2C%22body%22%3A%22%22%7D&currency=MOP&merchantId=011900000000002&merchantOrderId=20210604155233849229&merchantTid=00000011&notifyUrl=https%3A%2F%2Fwww.baidu.com&returnUrl=pages%2Findex%2Findex&sign=722d3cfeae052f6d02bc1b0fa9af8648&timeout=300
 ```
 
-**2. 响应参数**
+**2. 异常响应**
 
 ```json
-{
-    "code": "9998", 
-    "retCode": "500", 
-    "msg": "channel 請求參數不合法"
-}
-{
-    "code": "1091", 
-    "retCode": "500", 
-    "msg": "簽名信息有誤, Signature information is incorrect"
-}
 {
     "code": "1094", 
     "retCode": "500", 
     "msg": "訂單號重複, Duplicate order number"
 }
+
 {
     "retCode": "200", 
     "returnObj": {
@@ -212,8 +203,11 @@ zhangqinghua$ curl https://app.icbcmo.site/api/v1/order?amount=7&channel=WechatM
     }, 
     "sign": "0477f49c3ab4645085c3455afce9c91e"
 }
+```
 
-// 微信扫码支付返回
+**3. 微信扫码支付响应**
+
+```json
 {
    "retCode":"200",
    "returnObj":
@@ -229,8 +223,11 @@ zhangqinghua$ curl https://app.icbcmo.site/api/v1/order?amount=7&channel=WechatM
    },
    "sign":"c5a7ec6aa5c57eb6b4fa0aa41a2bb26a"
 }
+```
 
-// 微信小程序支付返回
+**4. 微信小程序支付响应**
+
+```json
 {
     "retCode": "200", 
     "returnObj": {
@@ -254,6 +251,26 @@ zhangqinghua$ curl https://app.icbcmo.site/api/v1/order?amount=7&channel=WechatM
 }
 ```
 
+**5. POS 支付返回**
+
+```json
+{
+    "retCode": "200", 
+    "returnObj": {
+        "merchantId": "011901200001005", 
+        "merchantTid": "00000001", 
+        "channel": "ICBCOnlinePosOrder", 
+        "merchantOrderId": "20210607112944860991", 
+        "icbcOrderId": "001IC20210607145051758855978", 
+        "currency": "MOP", 
+        "amount": "6", 
+        "redirectUrl": "https://ebankpfovaopay4.dccnet.com.cn/servletxxxxx"
+    }, 
+    "sign": "7cc6461d3e6f92155f867790c4b40529"
+}
+```
+
+
 #### 發起主動查詢
 **1. 请求参数**
 
@@ -261,21 +278,18 @@ zhangqinghua$ curl https://app.icbcmo.site/api/v1/order?amount=7&channel=WechatM
 zhangqinghua$ curl https://app.icbcmo.site/api/v1/query?merchantId=011900000000002&merchantOrderId=20210604155233849229&sign=c5696f38c847aa0b53b9e105f04bf985
 ```
 
-**2. 响应参数**
+**2. 异常响应**
 ```json
-{
-    "code": "1091", 
-    "retCode": "500", 
-    "msg": "簽名信息有誤, Signature information is incorrect"
-}
-
 {
     "code": "1095", 
     "retCode": "500", 
     "msg": "查無此訂單，請核實, Check this order, please verify"
 }
+```
 
-// 支付宝支付
+**3. 支付宝响应**
+
+```json
 {
   "retCode": "200",
   "returnObj": {
@@ -298,16 +312,19 @@ zhangqinghua$ curl https://app.icbcmo.site/api/v1/query?merchantId=0119000000000
   },
   "sign": "4e349f7fa5ec47f5321ab967edc6bc8c"
 }
+```
 
-// 微信小程序支付
+**4. 微信支付响应**
+
+```json
 {
     "retCode": "200", 
     "returnObj": {
         "merchantId": "011900000000002", 
         "merchantTid": "00000011", 
-        "merchantOrderId": "20210604183020009295", 
-        "icbcOrderId": "011WE20210604183023047868948", 
-        "channelTransId": "4200001049202106046509286954", 
+        "merchantOrderId": "20210607103609472187", 
+        "icbcOrderId": "011WE20210607103617064565574", 
+        "channelTransId": "4200001030202106070520800740", 
         "customer_user_id": "", 
         "orderStatus": "Success", 
         "orderStatusDesc": "支付成功", 
@@ -317,14 +334,34 @@ zhangqinghua$ curl https://app.icbcmo.site/api/v1/query?merchantId=0119000000000
         "discountAmount": "0", 
         "cashCurrency": "CNY", 
         "cashAmount": "4", 
-        "bankType": "OTHERS", 
+        "bankType": "PAB_CREDIT", 
         "receipt_amount": "", 
-        "tradeTime": "2021-06-04 18:30:36", 
+        "tradeTime": "2021-06-07 10:37:18", 
         "errorCode": "", 
         "errorMessage": "", 
         "cardNo": "", 
         "cardType": ""
     }, 
-    "sign": "adcfc30932230164d3815d2eddcf75e7"
+    "sign": "e8080adfff9d1aeaec416948abf299fa"
+}
+```
+
+## 商户异常
+```json
+{
+    "code": "9998", 
+    "retCode": "500", 
+    "msg": "channel 請求參數不合法"
+}
+{
+    "code": "1091", 
+    "retCode": "500", 
+    "msg": "簽名信息有誤, Signature information is incorrect"
+}
+
+{
+    "code": "1125", 
+    "retCode": "500", 
+    "msg": "獲取商戶信息出現異常. query merchant is abnormal"
 }
 ```

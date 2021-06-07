@@ -133,8 +133,21 @@ private static String md5(String queryString) {
 </xml>
 ```
 
-**2. 正常响应参数**
+**2. 响应参数**
 ```xml
+<xml>
+   <charset><![CDATA[UTF-8]]></charset>
+   <err_code><![CDATA[Auth valid fail]]></err_code>
+   <err_msg><![CDATA[Payment amount must not be less than 0.02 HKD]]></err_msg>
+   <mch_id><![CDATA[121560000250]]></mch_id>
+   <nonce_str><![CDATA[123456]]></nonce_str>
+   <result_code><![CDATA[1]]></result_code>
+   <sign><![CDATA[D8B5EF2139EEDCDD75CD1644B68B967F]]></sign>
+   <sign_type><![CDATA[MD5]]></sign_type>
+   <status><![CDATA[0]]></status>
+   <version><![CDATA[2.0]]></version>
+</xml>
+
 <xml>
    <appid><![CDATA[wx57c0d7d518bdade3]]></appid>
    <charset><![CDATA[UTF-8]]></charset>
@@ -149,4 +162,3 @@ private static String md5(String queryString) {
    <version><![CDATA[2.0]]></version>
 </xml>
 ```
-
