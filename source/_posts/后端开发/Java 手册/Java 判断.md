@@ -81,17 +81,17 @@ public static boolean isNumeric5(String str) {
    return NumberUtils.isParsable(str);
 }
 
-// isCreatable不仅可以接受十进制数字字符串，还可以接受八进制，十六进制以及科学计数法表示的数字字符串
+// isCreatable不仅可以接受十进制数字字符串，还可以接受八进制，十六进制以及科学计数法表示的数字字符串 
 public static boolean isNumeric6(String str) {
    return NumberUtils.isCreatable(str);
 }
 
-// isNumeric会认为空字符串为非法数字
+// isNumeric会认为空字符串为非法数字    >>> 只能判断整数
 public static boolean isNumeric7(String str) {
    return StringUtils.isNumeric(str);
 }
 
-// isNumericSpace则认为空字符串也是数字
+// isNumericSpace则认为空字符串也是数字 >>> 只能判断整数
 public static boolean isNumeric8(String str) {
    return StringUtils.isNumericSpace(str);
 }

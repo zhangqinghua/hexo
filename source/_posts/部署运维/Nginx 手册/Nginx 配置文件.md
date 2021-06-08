@@ -8,8 +8,9 @@ categories:
 date: 2021-05-18
 ---
 
-## 配置 http 转 https
-#### 方式一
+#### 配置 http 转 https
+**1. 方式一**
+
 这种方法是 http 转发到 https，但是 http 和 https 不能用同一个配置。
 
 ```conf
@@ -21,7 +22,8 @@ server {
 }
 ```
 
-#### 方式二
+**2. 方式二**
+
 使用同一个端口，http 转 https。
 
 ```conf
@@ -43,4 +45,40 @@ http 和 https 是 tcp 的上层协议，当 nginx 服务器建立 tcp 连接后
 1. http_host：有端口的 server_name ：www.baidu.com
 1. request_uri：server_name 后面的部分 ：/s?ie=utf-8&f=8&rsv_bp=1
 
-## 配置微信文件
+#### 配置微信校验文件
+参考：[Nginx配置静态访问txt文件（微信校验文件）](https://blog.csdn.net/weixin_47159008/article/details/107151485)
+
+```conf
+location /32J7Idp3nE.txt {
+	root /data/nginx/weixin/32J7Idp3nE.txt;
+}
+```
+
+## 反向代理页面
+```conf
+location /alilog {
+	proxy_pass https://g.alicdn.com;
+}
+```
+
+自己的：https://dev.easybyte-hk.com/alilog/mlog/aplus_v2.js
+官方的：https://g.alicdn.com/alilog/mlog/aplus_v2.js
+
+如果代理 https 报错： upstream server temporarily disabled while SSL handshaking to upstream, client: xxx.xxx.xxx.xxx, server: localhost
+
+可以这样子：
+
+```conf
+location /a-path/ {
+    proxy_pass https://a-address/;
+    proxy_set_header Host $proxy_host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_ssl_session_reuse off;
+    proxy_ssl_server_name on;
+    proxy_ssl_name $proxy_host;
+    proxy_ssl_protocols TLSv1.2;
+}
+```
+
+参考：[Nginx 转发 SSL 的坑](https://blog.csdn.net/ryandong/article/details/108005379)

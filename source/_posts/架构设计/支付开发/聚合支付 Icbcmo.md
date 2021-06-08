@@ -346,6 +346,10 @@ zhangqinghua$ curl https://app.icbcmo.site/api/v1/query?merchantId=0119000000000
 }
 ```
 
+**5. POS 支付响应**
+
+
+
 ## 商户异常
 ```json
 {
@@ -364,4 +368,20 @@ zhangqinghua$ curl https://app.icbcmo.site/api/v1/query?merchantId=0119000000000
     "retCode": "500", 
     "msg": "獲取商戶信息出現異常. query merchant is abnormal"
 }
+{
+    "code": "9999", 
+    "retCode": "400", 
+    "msg": "系統後台異常！, System background exception!"
+}
 ```
+
+## 附：簽名測試接口
+参考：https://app.icbcmo.site/gitbook/cn/chap13/chap13.html
+
+該測試接口用於測試下單參數的簽名結果，把所有下單參數（排除 sign 字段）post 到這個接口，即會返回參與簽名的內容（已隱藏signKey）及簽名結果，用於商戶自行校驗簽名方法及排查簽名錯誤原因。
+
+請求URL: /api/v1/test/sign 請求方式: POST
+
+![](https://cdn.jsdelivr.net/gh/zhangqinghua/hexo_image/20210608180002.png)
+
+## 附：
