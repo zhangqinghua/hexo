@@ -97,6 +97,37 @@ scp -r www.runoob.com:/home/root/others/ /home/space/music/
 scp -P 4588 remote@www.runoob.com:/usr/local/sin.sh /home/administrator
 ```
 
+## 压缩文件
+#### 分卷压缩
+参考：[使用 zip 命令压缩文件](https://www.jianshu.com/p/22f5ae2beda4)
+
+**1. 分卷压缩文件**
+
+```bash
+# test001.zip  原始文件
+# 10m          分卷大小
+# -a 3         分卷后缀长度
+# test001.zip. 分卷名称
+zhangqinghua$ zip - test001.zip | split -b 10m -a 3 - test001.zip.
+  adding: test001.zip (stored 0%)
+
+zhangqinghua$ ls -l
+total 24499016
+-rw-r--r--  1 zhangqinghua  staff    46870128  5 25 22:10 test001.zip
+-rw-r--r--  1 zhangqinghua  staff    10485760  6 14 01:20 test001.zip.aaa
+-rw-r--r--  1 zhangqinghua  staff    10485760  6 14 01:20 test001.zip.aab
+-rw-r--r--  1 zhangqinghua  staff    10485760  6 14 01:20 test001.zip.aac
+-rw-r--r--  1 zhangqinghua  staff    10485760  6 14 01:20 test001.zip.aad
+-rw-r--r--  1 zhangqinghua  staff     4927276  6 14 01:20 test001.zip.aae
+```
+
+**2. 解压分卷文件**
+
+```bash
+zhangqinghua$ cat test001.zip.* | tar xzvf -
+x test001.zip
+```
+
 ## 修改权限
 #### 查看权限
 ```bash
