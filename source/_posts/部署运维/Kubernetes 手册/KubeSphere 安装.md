@@ -505,3 +505,128 @@ multicluster:
     clusterRole: host
     proxyPublishAddress: http://139.198.120.120:31347 # 139.198.120.120 是 Host 集群的公网地址
 ```
+
+#### jaeger-query 一直报错 CrashLoopBackOff
+```bash
+zhangqinghua$ kubectl get pods -n istio-system
+NAME                                       READY   STATUS             RESTARTS   AGE
+istio-ingressgateway-78dbc5fbfd-dxpv4      1/1     Running            0          27d
+istiod-1-6-10-7db56f875b-v7qx4             1/1     Running            0          27d
+jaeger-collector-76bf54b467-p4jzl          1/1     Running            0          27d
+jaeger-es-index-cleaner-1621554900-r2hbr   0/1     Completed          0          26d
+jaeger-es-index-cleaner-1621727700-85wdn   0/1     Completed          0          24d
+jaeger-es-index-cleaner-1621814100-w7xm5   0/1     Completed          0          23d
+jaeger-es-index-cleaner-1623801300-76pdj   0/1     Error              0          10h
+jaeger-es-index-cleaner-1623801300-gphqd   0/1     Error              0          10h
+jaeger-es-index-cleaner-1623801300-mglx2   0/1     Error              0          10h
+jaeger-es-index-cleaner-1623801300-nmpl5   0/1     Error              0          10h
+jaeger-es-index-cleaner-1623801300-qvmjn   0/1     Error              0          10h
+jaeger-es-index-cleaner-1623801300-zj99x   0/1     Error              0          10h
+jaeger-operator-7559f9d455-shlrn           1/1     Running            0          27d
+jaeger-query-b478c5655-sjqnb               1/2     CrashLoopBackOff   289        24h
+kiali-5bbfc48f94-9b5td                     1/1     Running            0          27d
+kiali-operator-7d5dc9d766-5v7jd            1/1     Running            0          27d
+
+zhangqinghua$ kubectl describe pod jaeger-query-b478c5655-sjqnb -n istio-system
+Name:         jaeger-query-b478c5655-sjqnb
+Namespace:    istio-system
+Priority:     0
+Node:         easybyte-dev-server/172.27.243.200
+Start Time:   Tue, 15 Jun 2021 18:06:46 +0800
+Labels:       app=jaeger
+              app.kubernetes.io/component=query
+              app.kubernetes.io/instance=jaeger
+              app.kubernetes.io/managed-by=jaeger-operator
+              app.kubernetes.io/name=jaeger-query
+              app.kubernetes.io/part-of=jaeger
+              pod-template-hash=b478c5655
+              sidecar.jaegertracing.io/injected=jaeger
+Annotations:  linkerd.io/inject: disabled
+              prometheus.io/port: 16687
+              prometheus.io/scrape: true
+              sidecar.istio.io/inject: false
+              sidecar.jaegertracing.io/inject: jaeger
+Status:       Running
+IP:           10.244.1.46
+IPs:
+  IP:           10.244.1.46
+Controlled By:  ReplicaSet/jaeger-query-b478c5655
+Containers:
+  jaeger-query:
+    Container ID:  docker://91b9dc663228625ba00f60484a8f2f5218fceaf5ebc0c7f22a206c4cf63c488e
+    Image:         jaegertracing/jaeger-query:1.17
+    Image ID:      docker-pullable://jaegertracing/jaeger-query@sha256:98fe9322ba7473e5aa89f50b47d15c1ff076d3ab323e714dc7fbc5b2e416719d
+    Ports:         16686/TCP, 16687/TCP
+    Host Ports:    0/TCP, 0/TCP
+    Args:
+      --es.index-prefix=logstash
+      --es.server-urls=http://elasticsearch-logging-data.kubesphere-logging-system.svc:9200
+      --query.ui-config=/etc/config/ui.json
+    State:          Waiting
+      Reason:       CrashLoopBackOff
+    Last State:     Terminated
+      Reason:       Error
+      Exit Code:    1
+      Started:      Wed, 16 Jun 2021 18:25:57 +0800
+      Finished:     Wed, 16 Jun 2021 18:26:02 +0800
+    Ready:          False
+    Restart Count:  289
+    Liveness:       http-get http://:16687/ delay=5s timeout=1s period=15s #success=1 #failure=5
+    Readiness:      http-get http://:16687/ delay=1s timeout=1s period=10s #success=1 #failure=3
+    Environment:
+      SPAN_STORAGE_TYPE:    elasticsearch
+      JAEGER_SERVICE_NAME:  jaeger.istio-system
+      JAEGER_PROPAGATION:   jaeger,b3
+    Mounts:
+      /etc/config from jaeger-ui-configuration-volume (ro)
+      /var/run/secrets/kubernetes.io/serviceaccount from jaeger-token-lrb7f (ro)
+  jaeger-agent:
+    Container ID:  docker://457b725faf86c1cf7f58ea9752be11dfac1073fa761f075099d3254c0d3e9780
+    Image:         jaegertracing/jaeger-agent:1.17
+    Image ID:      docker-pullable://jaegertracing/jaeger-agent@sha256:bb9ff8866bb8b5f1e6bdbfb76d36308a049fdf5bd2aa9234cc83d6df5c9dd22a
+    Ports:         5775/UDP, 5778/TCP, 6831/UDP, 6832/UDP, 14271/TCP
+    Host Ports:    0/UDP, 0/TCP, 0/UDP, 0/UDP, 0/TCP
+    Args:
+      --jaeger.tags=cluster=undefined,deployment.name=jaeger-query,pod.namespace=istio-system,pod.name=${POD_NAME:},host.ip=${HOST_IP:},container.name=jaeger-query
+      --reporter.grpc.host-port=dns:///jaeger-collector-headless.istio-system:14250
+      --reporter.type=grpc
+    State:          Running
+      Started:      Tue, 15 Jun 2021 18:07:23 +0800
+    Ready:          True
+    Restart Count:  0
+    Environment:
+      POD_NAME:  jaeger-query-b478c5655-sjqnb (v1:metadata.name)
+      HOST_IP:    (v1:status.hostIP)
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from jaeger-token-lrb7f (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             False 
+  ContainersReady   False 
+  PodScheduled      True 
+Volumes:
+  jaeger-ui-configuration-volume:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      jaeger-ui-configuration
+    Optional:  false
+  jaeger-token-lrb7f:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  jaeger-token-lrb7f
+    Optional:    false
+QoS Class:       BestEffort
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                 node.kubernetes.io/unreachable:NoExecute for 300s
+Events:
+  Type     Reason   Age                     From                          Message
+  ----     ------   ----                    ----                          -------
+  Warning  BackOff  2m40s (x6768 over 24h)  kubelet, easybyte-dev-server  Back-off restarting failed container
+
+zhangqinghua$ kubectl logs -f jaeger-query-b478c5655-sjqnb -n istio-system
+error: a container name must be specified for pod jaeger-query-b478c5655-sjqnb, choose one of: [jaeger-query jaeger-agent]
+```
+
+原因：
+
+解决：
