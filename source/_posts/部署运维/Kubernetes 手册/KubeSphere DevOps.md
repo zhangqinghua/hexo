@@ -16,7 +16,6 @@ date: 2021-05-13 07:00:06
 1. 配置网关路由公网访问；
 
 #### jenkins 配置
-
 ```Jenkinsfile
 pipeline {
 
@@ -193,9 +192,250 @@ spec:
       maxUnavailable: 100%
 ```
 
-## SpringBoot 应用
+## SpringCloud 应用
 
 #### jenkins 配置
+单模块部署：
+
+```Jenkinsfile
+pipeline {
+
+  parameters {
+    choice(name: 'APP_NAME',
+           choices: ['easybyte-log',
+                     'easybyte-pay',
+                     'easybyte-auth',
+                     'easybyte-base',
+                     'easybyte-flow',
+                     'easybyte-cart',
+                     'easybyte-store',
+                     'easybyte-order',
+                     'easybyte-media',
+                     'easybyte-stats',
+                     'easybyte-member',
+                     'easybyte-market',
+                     'easybyte-swagger',
+                     'easybyte-product',
+                     'easybyte-gateway',
+                     'easybyte-merchant',
+                     'easybyte-consumer',
+                     'easybyte-template',
+                     'easybyte-scheduled'],
+                     description: '选择部署的模块')
+  }
+
+  environment {
+    // 项目版本
+    APP_VERSION = sh(script: "echo `date '+%Y%m%d%H%M%S'`", returnStdout: true).trim()
+    // 项目空间
+    APP_NAME_SPACE = 'easybyte-dev'
+    // Nacos 配置分组
+    NACOS_GROUP = '153cda3e-322c-4ff1-8aa0-d1240784dbd2'
+
+    // 代码仓库地址
+    GIT_URL = 'https://code.aliyun.com/easybyte-java/easybyte.git'
+    // 代码版本
+    GIT_BRANCH = 'master'
+    // 代码凭证
+    GIT_CREDENTIAL = 'aliyuncode-credential'
+
+    // 镜像仓库地址
+    DOCKER_REGISTRY = 'registry.cn-shenzhen.aliyuncs.com'
+    // 镜像命名空间
+    DOCKER_NAMESPACE = 'easybyte'
+    // 镜像仓库凭证
+    DOCKER_CREDENTIAL = 'aliyunrepository-credential'
+
+    // 资源清单所在位置
+    DEPLOY_CONFIGS = "Deploy.yml"
+    // 集群的Id
+    DEPLOY_KUBECONFIID = 'kubeconfig-credential'
+  }
+
+  agent {
+    node {
+      label 'maven'
+    }
+  }
+  stages {
+    stage('基本信息') {
+      steps {
+        sh 'echo -e "\n APP_NAME: $APP_NAME \n APP_NAME_SPACE: $APP_NAME_SPACE \n APP_VERSION: $APP_VERSION \n NACOS_GROUP: $NACOS_GROUP \n GIT_URL: $GIT_URL \n GIT_BRANCH: $GIT_BRANCH \n GIT_CREDENTIAL: $GIT_CREDENTIAL \n DOCKER_REGISTRY: $DOCKER_REGISTRY \n DOCKER_NAMESPACE: $DOCKER_NAMESPACE \n DOCKER_CREDENTIAL: $DOCKER_CREDENTIAL \n DEPLOY_CONFIGS: $DEPLOY_CONFIGS \n DEPLOY_KUBECONFIID: $DEPLOY_KUBECONFIID"'
+      }
+    }
+
+    stage('拉取代码') {
+      steps {
+        container('maven') {
+          git(url: "$GIT_URL", credentialsId: "$GIT_CREDENTIAL", branch: "$GIT_BRANCH", changelog: true, poll: false)
+        }
+      }
+    }
+
+    stage('编译项目') {
+      steps {
+        container('maven') {
+          sh 'mvn clean package -DskipTests -pl $APP_NAME -am'
+        }
+      }
+    }
+
+    stage('构建镜像') {
+      steps {
+        container('maven') {
+          sh "docker build -f Dockerfile -t $DOCKER_REGISTRY/$DOCKER_NAMESPACE/$APP_NAME:$APP_VERSION --build-arg APP_NAME=$APP_NAME ."
+        }
+      }
+    }
+
+    stage('上传镜像') {
+      steps {
+        container('maven') {
+          withCredentials([usernamePassword(passwordVariable : 'DOCKER_PASSWORD' ,usernameVariable : 'DOCKER_USERNAME' ,credentialsId : "$DOCKER_CREDENTIAL" ,)]) {
+            sh 'echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u "$DOCKER_USERNAME" --password-stdin'
+            sh 'docker push $DOCKER_REGISTRY/$DOCKER_NAMESPACE/$APP_NAME:$APP_VERSION'
+          }
+        }
+      }
+    }
+
+    stage('部署应用') {
+      steps {
+        // enableConfigSubstitution 是否开启变量替换（即替换Deploy.yml里面的配置）
+        // kubeconfigId             集群的Id
+        // configs                  资源文件所在位置
+        kubernetesDeploy(enableConfigSubstitution: true, deleteResource: false, kubeconfigId: "$DEPLOY_KUBECONFIID", configs: "$DEPLOY_CONFIGS")
+      }
+    }
+  }
+}
+```
+
+全部模块一起部署：
+
+```Jenkinsfile
+def APP_NAMES = ['easybyte-log',
+                 'easybyte-pay',
+                 'easybyte-auth',
+                 'easybyte-base',
+                 'easybyte-flow',
+                 'easybyte-cart',
+                 'easybyte-store',
+                 'easybyte-order',
+                 'easybyte-media',
+                 'easybyte-stats',
+                 'easybyte-member',
+                 'easybyte-market',
+                 'easybyte-swagger',
+                 'easybyte-product',
+                 'easybyte-gateway',
+                 'easybyte-merchant',
+                 'easybyte-consumer',
+                 'easybyte-template',
+                 'easybyte-scheduled'];
+
+pipeline {
+  environment {
+    // 项目版本
+    APP_VERSION = sh(script: "echo `date '+%Y%m%d%H%M%S'`", returnStdout: true).trim()
+    // 项目空间
+    APP_NAME_SPACE = 'easybyte-dev'
+    // Nacos 配置分组
+    NACOS_GROUP = '153cda3e-322c-4ff1-8aa0-d1240784dbd2'
+
+    // 代码仓库地址
+    GIT_URL = 'https://code.aliyun.com/easybyte-java/easybyte.git'
+    // 代码版本
+    GIT_BRANCH = 'master'
+    // 代码凭证
+    GIT_CREDENTIAL = 'aliyuncode-credential'
+
+    // 镜像仓库地址
+    DOCKER_REGISTRY = 'registry.cn-shenzhen.aliyuncs.com'
+    // 镜像命名空间
+    DOCKER_NAMESPACE = 'easybyte'
+    // 镜像仓库凭证
+    DOCKER_CREDENTIAL = 'aliyunrepository-credential'
+
+    // 资源清单所在位置
+    DEPLOY_CONFIGS = "Deploy.yml"
+    // 集群的Id
+    DEPLOY_KUBECONFIID = 'kubeconfig-credential'
+  }
+
+  agent {
+    node {
+      label 'maven'
+    }
+  }
+  stages {
+    stage('基本信息001') {
+      steps {
+        sh 'echo -e "\n APP_NAME: $APP_NAME \n APP_NAME_SPACE: $APP_NAME_SPACE \n APP_VERSION: $APP_VERSION \n NACOS_GROUP: $NACOS_GROUP \n GIT_URL: $GIT_URL \n GIT_BRANCH: $GIT_BRANCH \n GIT_CREDENTIAL: $GIT_CREDENTIAL \n DOCKER_REGISTRY: $DOCKER_REGISTRY \n DOCKER_NAMESPACE: $DOCKER_NAMESPACE \n DOCKER_CREDENTIAL: $DOCKER_CREDENTIAL \n DEPLOY_CONFIGS: $DEPLOY_CONFIGS \n DEPLOY_KUBECONFIID: $DEPLOY_KUBECONFIID"'
+      }
+    }
+
+    stage('拉取代码') {
+      steps {
+        container('maven') {
+          git(url: "$GIT_URL", credentialsId: "$GIT_CREDENTIAL", branch: "$GIT_BRANCH", changelog: true, poll: false)
+        }
+      }
+    }
+
+    stage('编译项目') {
+      steps {
+        container('maven') {
+          sh 'mvn clean package -DskipTests'
+        }
+      }
+    }
+
+    stage('构建镜像') {
+      steps {
+        container('maven') {
+          script {
+            for (String APP_NAME : APP_NAMES) {
+              sh "docker build -f Dockerfile -t $DOCKER_REGISTRY/$DOCKER_NAMESPACE/$APP_NAME:$APP_VERSION --build-arg APP_NAME=$APP_NAME ."
+            }
+          }
+        }
+      }
+    }
+
+    stage('上传镜像') {
+      steps {
+        container('maven') {
+          script {
+            for (String APP_NAME : APP_NAMES) {
+              withCredentials([usernamePassword(passwordVariable : 'DOCKER_PASSWORD' ,usernameVariable : 'DOCKER_USERNAME' ,credentialsId : "$DOCKER_CREDENTIAL" ,)]) {
+                sh 'echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u "$DOCKER_USERNAME" --password-stdin'
+                sh 'docker push $DOCKER_REGISTRY/$DOCKER_NAMESPACE/$APP_NAME:$APP_VERSION'
+              }
+            }
+          }
+        }
+      }
+    }
+
+    stage('部署应用') {
+      steps {
+        container('maven') {
+          script {
+            for (String APP_NAME : APP_NAMES) {
+              // enableConfigSubstitution 是否开启变量替换（即替换Deploy.yml里面的配置）
+              // kubeconfigId             集群的Id
+              // configs                  资源文件所在位置
+              kubernetesDeploy(enableConfigSubstitution: true, deleteResource: false, kubeconfigId: "$DEPLOY_KUBECONFIID", configs: "$DEPLOY_CONFIGS")
+              sleep 20
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
 
 #### Dockerfile
 ```Dockerfile
@@ -344,3 +584,13 @@ kubesphere-system              tower-8647b6f6d4-2crzd                           
 ```
 原因：Kubesphere bug。
 解决：？
+
+参考：[相关Issus](https://github.com/kubesphere/kubesphere/issues?q=is%3Aissue+panic+is%3Aclosed+author%3ALinuxSuRen)
+
+后续：经过多次测试，这种写法是 OK 的（编辑后运行 2 次才生效）
+
+```
+parameters {
+  choice(name: 'APP_NAME', choices: ['a' , 'b' , 'c'], description: '123')
+}
+```
