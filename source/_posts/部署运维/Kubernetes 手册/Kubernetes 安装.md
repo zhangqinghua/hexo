@@ -5,7 +5,7 @@ categories:
 - 部署运维
 - Kubernetes 手册
 
-date: 2021-05-13
+date: 2021-05-13 09:00:10
 ---
 ## 部署内网集群
 ![](https://cdn.jsdelivr.net/gh/zhangqinghua/hexo_image/20210513161436.png)

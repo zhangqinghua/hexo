@@ -5,7 +5,7 @@ categories:
 - 部署运维
 - Kubernetes 手册
 
-date: 2021-05-13
+date: 2021-05-13 09:00:08
 ---
 ## Kubernetes 集群部署一个 Tomcat 服务
 #### 创建 prod
@@ -114,3 +114,6 @@ Events:
 zhangqinghua$ kubectl delete pod tiller-deploy-bc4f597d8-j7rgh --namespace kube-system 
 pod "tiller-deploy-bc4f597d8-j7rgh" deleted
 ```
+
+## 修改 pod 端口范围
+参考：[k8s 修改端口访问范围](https://blog.csdn.net/qq_39378657/article/details/111992316)

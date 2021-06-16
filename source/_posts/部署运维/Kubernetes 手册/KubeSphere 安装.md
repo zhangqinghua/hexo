@@ -5,7 +5,7 @@ categories:
 - 部署运维
 - Kubernetes 手册
 
-date: 2021-05-13
+date: 2021-05-13 07:00:10
 ---
 ## 预先工作
 #### 安装 Helm
@@ -464,3 +464,44 @@ hudson.remoting.ProxyException: java.lang.RuntimeException: io.kubernetes.client
 场景：在开启日志系统后，ES 也随着安装，但是禁用日志系统后，ES 没有停掉。
 原因：日志系统、事件系统、审计日志均使用到 ES。即使将它们禁用，ES 还是不会自动关闭，需要手工删除。
 解决：将使用到 ES 的组件禁用后，手工执行 `kubectl delete ns xxx`。
+
+#### 部署多集群环境，ks-apiserver-xxx 报错
+场景：配置 Host 集群，ks-apiserver-xxx 一直处于 CrashLoopBackOff 状态， 查看日志提示：
+
+```bash
+zhangqinghua$ kubectl logs -f  ks-apiserver-65cdffb5d9-p2bzm -n kubesphere-system
+Error: JWT secret MUST not be empty
+2021/06/15 10:19:03 JWT secret MUST not be empty
+```
+
+原因：ks-installer 配置的 `spec.authentication.jwtSecret: null`。但是这本身是host集群，估计是 bug。
+解决：配置 `spec.authentication.jwtSecret: gfIwilcc0WjNGKJ5DLeksf2JKfcLgTZU` 随便设置值，再删除 ks-installer 让它重新安装即可。
+
+#### Host 集群添加 Member 集群，无法生产 agent.yaml 代理文件。
+场景：Host 集群通过代理方式添加 Member 集群，无法生成 agent.yaml 代理文件，提示：
+
+```
+Not Found
+cannot generate agent deployment yaml for member cluster because tower.kubesphere-system.svc service has no public address, please check tower.kubesphere-system.svc status, or set address mannually in ClusterConfiguration
+```
+
+原因：ks-installer 需要配置 `multicluster.proxyPublishAddress`。 
+
+解决：将 `proxyPublishAddress` 的值添加到 ks-installer 的配置文件中，参考：https://kubesphere.com.cn/docs/multicluster-management/enable-multicluster/agent-connection/。
+
+```bash
+zhangqinghua$ kubectl -n kubesphere-system get svc
+NAME                    TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)           AGE
+ks-apiserver            ClusterIP      10.96.215.133   <none>        80/TCP            30d
+ks-console              NodePort       10.96.138.81    <none>        80:30880/TCP      30d
+ks-controller-manager   ClusterIP      10.96.164.104   <none>        443/TCP           30d
+mc-hongkong             ClusterIP      10.96.0.191     <none>        6443/TCP,80/TCP   2m38s
+minio                   ClusterIP      10.96.121.171   <none>        9000/TCP          30d
+openldap                ClusterIP      None            <none>        389/TCP           30d
+tower                   LoadBalancer   10.96.246.61    <pending>     8080:31347/TCP    76m
+
+zhangqinghua$ kubectl edit cc ks-installer -n kubesphere-system
+multicluster:
+    clusterRole: host
+    proxyPublishAddress: http://139.198.120.120:31347 # 139.198.120.120 是 Host 集群的公网地址
+```

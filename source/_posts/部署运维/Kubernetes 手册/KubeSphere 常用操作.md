@@ -5,7 +5,7 @@ categories:
 - 部署运维
 - Kubernetes 手册
 
-date: 2021-05-13
+date: 2021-05-13 07:00:09
 ---
 ## KubeSphere 3.1 开启应用路由
 本文档介绍了如何在 KubeSphere 上创建、使用和编辑应用路由。
