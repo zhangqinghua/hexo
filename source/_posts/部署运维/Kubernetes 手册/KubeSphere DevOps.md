@@ -369,7 +369,7 @@ pipeline {
     }
   }
   stages {
-    stage('基本信息001') {
+    stage('基本信息') {
       steps {
         sh 'echo -e "\n APP_NAME: $APP_NAME \n APP_NAME_SPACE: $APP_NAME_SPACE \n APP_VERSION: $APP_VERSION \n NACOS_GROUP: $NACOS_GROUP \n GIT_URL: $GIT_URL \n GIT_BRANCH: $GIT_BRANCH \n GIT_CREDENTIAL: $GIT_CREDENTIAL \n DOCKER_REGISTRY: $DOCKER_REGISTRY \n DOCKER_NAMESPACE: $DOCKER_NAMESPACE \n DOCKER_CREDENTIAL: $DOCKER_CREDENTIAL \n DEPLOY_CONFIGS: $DEPLOY_CONFIGS \n DEPLOY_KUBECONFIID: $DEPLOY_KUBECONFIID"'
       }
@@ -406,18 +406,19 @@ pipeline {
     stage('上传镜像') {
       steps {
         container('maven') {
-          script {
-            for (String APP_NAME : APP_NAMES) {
-              withCredentials([usernamePassword(passwordVariable : 'DOCKER_PASSWORD' ,usernameVariable : 'DOCKER_USERNAME' ,credentialsId : "$DOCKER_CREDENTIAL" ,)]) {
-                sh 'echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u "$DOCKER_USERNAME" --password-stdin'
-                sh 'docker push $DOCKER_REGISTRY/$DOCKER_NAMESPACE/$APP_NAME:$APP_VERSION'
+          withCredentials([usernamePassword(passwordVariable : 'DOCKER_PASSWORD' ,usernameVariable : 'DOCKER_USERNAME' ,credentialsId : "$DOCKER_CREDENTIAL" ,)]) {
+            sh 'echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u "$DOCKER_USERNAME" --password-stdin'
+              script {
+                for (String APP_NAME : APP_NAMES) {
+                  sh "docker push $DOCKER_REGISTRY/$DOCKER_NAMESPACE/$APP_NAME:$APP_VERSION"
+                }
               }
-            }
           }
         }
       }
     }
 
+    // 这一步没能测试成功。
     stage('部署应用') {
       steps {
         container('maven') {
