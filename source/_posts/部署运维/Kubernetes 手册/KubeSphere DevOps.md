@@ -314,25 +314,25 @@ pipeline {
 全部模块一起部署：
 
 ```Jenkinsfile
-def APP_NAMES = ['easybyte-log',
-                 'easybyte-pay',
-                 'easybyte-auth',
-                 'easybyte-base',
-                 'easybyte-flow',
-                 'easybyte-cart',
-                 'easybyte-store',
-                 'easybyte-order',
-                 'easybyte-media',
-                 'easybyte-stats',
-                 'easybyte-member',
-                 'easybyte-market',
-                 'easybyte-swagger',
-                 'easybyte-product',
-                 'easybyte-gateway',
-                 'easybyte-merchant',
-                 'easybyte-consumer',
-                 'easybyte-template',
-                 'easybyte-scheduled'];
+def MODULES = ['easybyte-log',
+               'easybyte-pay',
+               'easybyte-auth',
+               'easybyte-base',
+               'easybyte-flow',
+               'easybyte-cart',
+               'easybyte-store',
+               'easybyte-order',
+               'easybyte-media',
+               'easybyte-stats',
+               'easybyte-member',
+               'easybyte-market',
+               'easybyte-swagger',
+               'easybyte-product',
+               'easybyte-gateway',
+               'easybyte-merchant',
+               'easybyte-consumer',
+               'easybyte-template',
+               'easybyte-scheduled'];
 
 pipeline {
   environment {
@@ -395,8 +395,8 @@ pipeline {
       steps {
         container('maven') {
           script {
-            for (String APP_NAME : APP_NAMES) {
-              sh "docker build -f Dockerfile -t $DOCKER_REGISTRY/$DOCKER_NAMESPACE/$APP_NAME:$APP_VERSION --build-arg APP_NAME=$APP_NAME ."
+            for (String MODULE : MODULES) {
+              sh "docker build -f Dockerfile -t $DOCKER_REGISTRY/$DOCKER_NAMESPACE/$MODULE:$APP_VERSION --build-arg APP_NAME=$MODULE ."
             }
           }
         }
@@ -409,8 +409,8 @@ pipeline {
           withCredentials([usernamePassword(passwordVariable : 'DOCKER_PASSWORD' ,usernameVariable : 'DOCKER_USERNAME' ,credentialsId : "$DOCKER_CREDENTIAL" ,)]) {
             sh 'echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u "$DOCKER_USERNAME" --password-stdin'
               script {
-                for (String APP_NAME : APP_NAMES) {
-                  sh "docker push $DOCKER_REGISTRY/$DOCKER_NAMESPACE/$APP_NAME:$APP_VERSION"
+                for (String MODULE : MODULES) {
+                  sh "docker push $DOCKER_REGISTRY/$DOCKER_NAMESPACE/$MODULE:$APP_VERSION"
                 }
               }
           }
@@ -418,12 +418,13 @@ pipeline {
       }
     }
 
-    // 这一步没能测试成功。
     stage('部署应用') {
       steps {
         container('maven') {
           script {
-            for (String APP_NAME : APP_NAMES) {
+            for (String MODULE : MODULES) {
+              // kubernetesDeploy 好像只能识别全局变量 env
+              env.APP_NAME = MODULE
               // enableConfigSubstitution 是否开启变量替换（即替换Deploy.yml里面的配置）
               // kubeconfigId             集群的Id
               // configs                  资源文件所在位置
