@@ -76,3 +76,21 @@ docker.io/library/kibana:7.4.2
 $ docker run --name kibana001 -e ELASTICSEARCH_HOSTS=http://10.100.32.124:9200 -p 5601:5601 -d kibana:7.4.2
 fa6a5d36792226e786489044295bd055508c7b2c5b837b15e510e4d66f62fe34
 ```
+
+## 常见问题
+#### Docker 启动 Elasticsearch 失败
+场景：Docker 启动 Elasticsearch 失败
+
+```bash
+zhangqinghua$ docker logs -f 72968e9147ec8d67386caf8f73f3ba0f2298bcacfafa6c94fc4fd5a2817cb5ef
+...
+"Caused by: java.nio.file.AccessDeniedException: /usr/share/elasticsearch/data/nodes",
+"at sun.nio.fs.UnixException.translateToIOException(UnixException.java:90) ~[?:?]",
+"at sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111) ~[?:?]",
+"at sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:116) ~[?:?]",
+"at sun.nio.fs.UnixFileSystemProvider.createDirectory(UnixFileSystemProvider.java:389) ~[?:?]",
+```
+
+原因：docker挂载elasticserach/data目录没有读写权限导致
+
+解决：chmod 777 受权即可

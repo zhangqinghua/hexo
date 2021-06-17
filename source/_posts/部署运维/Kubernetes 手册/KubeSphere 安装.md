@@ -627,6 +627,18 @@ zhangqinghua$ kubectl logs -f jaeger-query-b478c5655-sjqnb -n istio-system
 error: a container name must be specified for pod jaeger-query-b478c5655-sjqnb, choose one of: [jaeger-query jaeger-agent]
 ```
 
-原因：
+原因：查询命令弄错了，正确的：
 
-解决：
+```bash
+zhangqinghua$ kubectl logs -f jaeger-query-b478c5655-sjqnb jaeger-query -n istio-system
+2021/06/17 01:30:51 maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined
+{"level":"info","ts":1623893451.6409516,"caller":"flags/service.go:115","msg":"Mounting metrics handler on admin server","route":"/metrics"}
+{"level":"info","ts":1623893451.6411955,"caller":"flags/admin.go:115","msg":"Mounting health check on admin server","route":"/"}
+{"level":"info","ts":1623893451.6412811,"caller":"flags/admin.go:121","msg":"Starting admin HTTP server","http-port":16687}
+{"level":"info","ts":1623893451.641299,"caller":"flags/admin.go:107","msg":"Admin server started","http-port":16687,"health-status":"unavailable"}
+{"level":"fatal","ts":1623893456.67678,"caller":"query/main.go:93","msg":"Failed to init storage factory","error":"failed to create primary Elasticsearch client: health check timeout: Head http://elasticsearch-logging-data.kubesphere-logging-system.svc:9200: dial tcp: lookup elasticsearch-logging-data.kubesphere-logging-system.svc on 10.96.0.10:53: no such host: no Elasticsearch node available","stacktrace":"main.main.func1\n\tgithub.com/jaegertracing/jaeger@/cmd/query/main.go:93\ngithub.com/spf13/cobra.(*Command).execute\n\tgithub.com/spf13/cobra@v0.0.3/command.go:762\ngithub.com/spf13/cobra.(*Command).ExecuteC\n\tgithub.com/spf13/cobra@v0.0.3/command.go:852\ngithub.com/spf13/cobra.(*Command).Execute\n\tgithub.com/spf13/cobra@v0.0.3/command.go:800\nmain.main\n\tgithub.com/jaegertracing/jaeger@/cmd/query/main.go:135\nruntime.main\n\truntime/proc.go:203"}
+```
+
+解决：ES 没有安装。
+
+参考：https://kubesphere.com.cn/forum/d/4823-istio-system/8
