@@ -511,11 +511,31 @@ http://202.175.59.29:10443/gwinternet/app-svc/api/v1/refund/initRefund?currency=
     }, 
     "sign": "2ec7ca078ca1c3f5bafdf467ce794c7a"
 }
+
+{
+    "retCode": "200", 
+    "returnObj": {
+        "merchantId": "011900000000002", 
+        "refundStatus": "Fail", 
+        "refundStatusDesc": "申请退款失败，商家单号无法在系统中找到原交易,请联系机构处理"
+    }, 
+    "sign": "722f348b8bfa035c5185bcc6b2589ee5"
+}
 ```
 
 **2. 正常参数**
 
 ```json
+{
+    "retCode": "200", 
+    "returnObj": {
+        "merchantId": "011900000000002", 
+        "refundStatus": "Applied", 
+        "refundStatusDesc": "退款申请成功，请等待系统后台处理"
+    }, 
+    "sign": "3d86ba5224988993293d4417ca9c697b"
+}
+
 {
     "retCode": "200", 
     "returnObj": {
@@ -604,7 +624,67 @@ public void initRefund(Long refundId) {
 ## 退款结果异步通知
 参考：https://app.icbcmo.site/gitbook/cn/chap8/chap8.html
 
-待补充。。。
+#### 异步通知参数
+
+**1. 原始参数**
+
+```
+http://dev.easybyte-hk.com/api/icbcmo/refund/notify&channelRefundId=90000000000200000011704109187879&channelTransId=4200001201202106174554738390&icbcOrderId=011WE20210617175718736113949&icbcRefundOrderId=RF20210617175801207146359&merchantId=011900000000002&merchantOrderId=20210617175715888215&merchantRefundOrderId=20210617175801196939&refundAmount=5&refundCurrency=MOP&refundRealAmount=4&refundRealCurrency=CNY&refundStatus=Success&refundStatusDesc=%E6%88%90%E5%8A%9F&sign=6d65b03c2ddd17622ff2c0a7c083d51b
+```
+
+**2. 解析参数**
+
+```
+channelRefundId=90000000000200000011704109187879, 
+refundRealAmount=4, 
+sign=6d65b03c2ddd17622ff2c0a7c083d51b, 
+refundStatus=Success, 
+merchantOrderId=20210617175715888215, 
+icbcOrderId=011WE20210617175718736113949, 
+icbcRefundOrderId=RF20210617175801207146359, 
+refundRealCurrency=CNY, 
+merchantId=011900000000002, 
+refundStatusDesc=成功, 
+merchantRefundOrderId=20210617175801196939, 
+refundCurrency=MOP, 
+channelTransId=4200001201202106174554738390, 
+refundAmount=5
+```
+
+#### 异步接收方法
+
+```java
+@GetMapping("/refund/notify")
+public void refundNotify(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // 1. 解析回调参数
+    log.info("ICBCMO 原始退款结果异步通知参数：{}{}{}", request.getRequestURL(), "&", request.getQueryString());
+    Enumeration<String> names = request.getParameterNames();
+    Map<String, String> params = new HashMap<>();
+    while (names.hasMoreElements()) {
+        String name = names.nextElement();
+        String value = request.getParameter(name);
+        params.put(name, value);
+    }
+
+    // 2. 处理支付回调 todo 应该异步处理
+    try {
+        log.info("ICBCMO 解析退款结果异步通知参数：{}", params);
+        icbcmoService.syncOrderNotiry(params);
+    } catch (Exception e) {
+        log.error("ICBCMO 处理退款结果异步通知异常：{}", e.getMessage(), e);
+    }
+
+    // 3. 返回success以確認完成通知成功（不管有没有处理成功）
+    @Cleanup
+    PrintWriter printWriter = response.getWriter();
+    printWriter.write("success");
+    printWriter.flush();
+    printWriter.close();
+}
+```
+
+#### 异步处理方法
+
 
 ## 发起退款查询
 参考：https://app.icbcmo.site/gitbook/cn/chap9/chap9.html

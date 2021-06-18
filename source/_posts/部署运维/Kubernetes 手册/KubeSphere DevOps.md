@@ -596,3 +596,12 @@ parameters {
   choice(name: 'APP_NAME', choices: ['a' , 'b' , 'c'], description: '123')
 }
 ```
+
+#### 流水线更新应用，deployment安装失败
+场景：Internal error occurred: failed calling webhook “logsidecar-injector.logging.kubesphere.io”: Post https://logsidecar-injector-admission.kubesphere-logging-system.svc:443/?timeout=30s: service “logsidecar-injector-admission” not found
+
+原因：????
+
+解决：kubectl delete MutatingWebhookConfiguration logsidecar-injector-admission-mutate 删除掉这个3.0.0版本的对象
+
+参考：https://kubesphere.com.cn/forum/d/1978-deployment

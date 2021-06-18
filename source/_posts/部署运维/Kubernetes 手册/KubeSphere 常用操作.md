@@ -128,3 +128,5 @@ tomcat6-5f7ccf4cb9-7xgj7   1/1     Running   0          51m     10.244.1.181   e
 tomcat6-5f7ccf4cb9-n5qhc   1/1     Running   0          5m23s   10.244.0.6     izwz9go2hn3kv068o5wpdpz   <none>           <none>
 tomcat6-5f7ccf4cb9-wn7ml   1/1     Running   0          5m23s   10.244.1.204   easybyte-dev-server       <none>           <none>
 ```
+
+#### 日志收集支持多行日志
