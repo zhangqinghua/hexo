@@ -27,3 +27,140 @@ Netty 对 JDK 自带的 NIO 的 API 进行了封装，解决了上述问题：
 1. Netty 下载地址：https://bintray.com/netty/downloads/netty/
 
 ## Netty 高性能架构设计
+
+## Netty 简单示例
+
+服务端：
+
+```java
+public class NettyServer {
+
+    public static void main(String[] args) throws InterruptedException {
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        try {
+            ServerBootstrap bootstrap = new ServerBootstrap();
+            bootstrap.group(bossGroup, workerGroup)
+                     .channel(NioServerSocketChannel.class)
+                     .option(ChannelOption.SO_BACKLOG, 128)
+                     .childOption(ChannelOption.SO_KEEPALIVE, true)
+                     .childHandler(new ChannelInitializer<SocketChannel>() {
+                         protected void initChannel(SocketChannel sc) throws Exception {
+                             sc.pipeline().addLast(new NettyServerHandler());
+                         }
+                     });
+
+            System.out.println("Server is ready on 6688...");
+            ChannelFuture cf = bootstrap.bind(6688).sync();
+            cf.channel().closeFuture().sync();
+        } catch (Exception e) {
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
+        }
+    }
+}
+
+/**
+ * 我们自定义一个 Handler 需要继承 Netty 规定好的某个 HandlerAdapter（规范）
+ */
+public class NettyServerHandler extends ChannelInboundHandlerAdapter {
+
+    /**
+     * 读取数据
+     *
+     * 这里我们可以读取客户端发送的消息
+     * @param ctx 上下文对象，含有管道 pipeline 通道、channel、地址等信息。
+     * @param msg 客户端发送的数据
+     * @throws Exception 异常
+     */
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        ByteBuf buf = (ByteBuf) msg;
+
+        System.out.println("Server ctx = " + ctx);
+        System.out.println("客户端地址：" + ctx.channel().remoteAddress());
+        System.out.println("客户端发送消息：" + buf.toString(CharsetUtil.UTF_8));
+
+    }
+
+    /**
+     * 数据读取完毕
+     * @param ctx 上下文对象，含有管道 pipeline 通道、channel、地址等信息。
+     * @throws Exception 异常
+     */
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+        // write + flush 将数据写入缓存并刷新。一般来讲，我们对这个发送的数据进行编码
+        ctx.writeAndFlush(Unpooled.copiedBuffer("Hello，客户端～", CharsetUtil.UTF_8));
+    }
+
+    /**
+     * 处理异常，一般是隔壁通道
+     * @param ctx 上下文对象，含有管道 pipeline 通道、channel、地址等信息。
+     * @param cause 异常
+     * @throws Exception 异常
+     */
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        ctx.close();
+    }
+}
+```
+
+客户端：
+
+```java
+public class NettyClient {
+
+    public static void main(String[] args) {
+        EventLoopGroup eventExecutors = new NioEventLoopGroup();
+        try {
+            // 1. 设置相关参数
+            Bootstrap bootstrap = new Bootstrap();
+            bootstrap.group(eventExecutors)
+                     .channel(NioSocketChannel.class)
+                     .handler(new ChannelInitializer<SocketChannel>() {
+                         @Override
+                         protected void initChannel(SocketChannel sc) throws Exception {
+                             sc.pipeline().addLast(new NettyClientHandler());
+                         }
+                     });
+
+            // 2. 启动客户端去连接服务器端
+            System.out.println("Client is ready....");
+            ChannelFuture channelFuture = bootstrap.connect("127.0.0.1", 6688).sync();
+            channelFuture.channel().closeFuture();
+        } catch (Exception e) {
+            eventExecutors.shutdownGracefully();
+        }
+    }
+}
+
+public class NettyClientHandler extends ChannelInboundHandlerAdapter {
+
+    /**
+     * 当通道就绪时就会触发
+     */
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("Client " + ctx);
+        ctx.writeAndFlush(Unpooled.copiedBuffer("Hello, Server", CharsetUtil.UTF_8));
+    }
+
+    /**
+     * 当通道有读取事件时会触发
+     */
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        // 1. 强转成为 Netty 提供的 ByteBuf
+        ByteBuf buf = (ByteBuf) msg;
+
+        // 2. 转换成为字符串
+        String result = buf.toString(CharsetUtil.UTF_8);
+
+        // 3. 业务处理
+        System.out.println("服务器回复的消息：" + result);
+        System.out.println("服务器的地址：" + ctx.channel().remoteAddress());
+    }
+}
+```
