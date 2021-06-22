@@ -117,3 +117,34 @@ pod "tiller-deploy-bc4f597d8-j7rgh" deleted
 
 ## 修改 pod 端口范围
 参考：[k8s 修改端口访问范围](https://blog.csdn.net/qq_39378657/article/details/111992316)
+
+## 删除 Evicted Pod
+Eviction，即驱赶的意思，意思是当节点出现异常时，kubernetes 将有相应的机制驱赶该节点上的 Pod。多见于资源不足时导致的驱赶。
+
+**1. 搜索所有的 Evicted Pod**
+
+```bash
+zhangqinghua$ kubectl get pods --all-namespaces | grep Evicted
+istio-system                   istio-ingressgateway-78dbc5fbfd-kxlw4                             0/1     Evicted     0          14h
+kube-federation-system         kubefed-admission-webhook-7c55679bdf-9qrl7                        0/1     Evicted     0          14h
+kubesphere-devops-system       ks-jenkins-5cbbfbb975-2pc4n                                       0/1     Evicted     0          14h
+kubesphere-devops-system       ks-jenkins-5cbbfbb975-4h5js                                       0/1     Evicted     0          14h
+kubesphere-devops-system       ks-jenkins-5cbbfbb975-bhkpp                                       0/1     Evicted     0          14h
+kubesphere-devops-system       ks-jenkins-5cbbfbb975-bmrjt                                       0/1     Evicted     0          14h
+kubesphere-devops-system       ks-jenkins-5cbbfbb975-jnhqv                                       0/1     Evicted     0          14h
+kubesphere-devops-system       ks-jenkins-5cbbfbb975-jtslf                                       0/1     Evicted     0          14h
+kubesphere-devops-system       ks-jenkins-5cbbfbb975-lh68v                                       0/1     Evicted     0          14h
+kubesphere-devops-system       ks-jenkins-5cbbfbb975-mvnwj                                       0/1     Evicted     0          14h
+kubesphere-devops-system       ks-jenkins-5cbbfbb975-nkndr                                       0/1     Evicted     0          14h
+kubesphere-devops-system       ks-jenkins-5cbbfbb975-nz8jx                                       0/1     Evicted     0          14h
+kubesphere-devops-system       ks-jenkins-5cbbfbb975-r4jjh                                       0/1     Evicted     0          14h
+kubesphere-devops-system       ks-jenkins-5cbbfbb975-sw4xb                                       0/1     Evicted     0          14h
+kubesphere-devops-system       ks-jenkins-5cbbfbb975-vn59h                                       0/1     Evicted     0          14h
+```
+
+**2. 删除所有的 Evicted Pod**
+
+```bash
+# 只能一个个命名空间去删
+zhangqinghua$ kubectl get pods --all-namespaces | grep Evicted | awk '{print $2}' | xargs kubectl delete pod --namespace kube-federation-system
+```

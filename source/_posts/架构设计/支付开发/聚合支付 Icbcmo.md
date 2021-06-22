@@ -164,6 +164,21 @@ channelTransId=HFG000000000000012264583,
 resultMsg=93000128|超七日消费笔数累计 请记录错误代码，及时与我行客户服务部门联系。
 ```
 
+```
+merchantExt={"remark1":"625018******1479|6|2|0","remark2":"????"}, 
+result=Error, 
+amount=7, 
+merchantId=011901200001005, 
+channel=ICBCOnlinePosOrder, 
+sign=4110e3ffb1975ce1c99135383df643ee, 
+currency=MOP, 
+merchantOrderId=20210621114823813766, 
+icbcOrderId=001IC20210621114826045985355, 
+merchantTid=00000001, 
+channelTransId=HFG000000000000012265945, 
+resultMsg=8268|系統錯誤，請聯繫工行 請記錄錯誤代碼，及時與我行客戶服務部門聯繫
+```
+
 **1. 微信支付回调**
 
 原始回调数据：

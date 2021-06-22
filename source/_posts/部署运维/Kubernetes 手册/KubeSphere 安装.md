@@ -465,6 +465,10 @@ hudson.remoting.ProxyException: java.lang.RuntimeException: io.kubernetes.client
 原因：日志系统、事件系统、审计日志均使用到 ES。即使将它们禁用，ES 还是不会自动关闭，需要手工删除。
 解决：将使用到 ES 的组件禁用后，手工执行 `kubectl delete ns xxx`。
 
+参考：https://kubesphere.com.cn/forum/d/4860-logging
+
+参考：https://kubesphere.com.cn/docs/faq/observability/logging/
+
 #### 部署多集群环境，ks-apiserver-xxx 报错
 场景：配置 Host 集群，ks-apiserver-xxx 一直处于 CrashLoopBackOff 状态， 查看日志提示：
 
@@ -642,3 +646,5 @@ zhangqinghua$ kubectl logs -f jaeger-query-b478c5655-sjqnb jaeger-query -n istio
 解决：ES 没有安装。
 
 参考：https://kubesphere.com.cn/forum/d/4823-istio-system/8
+
+参考：https://kubesphere.com.cn/docs/faq/observability/logging/
