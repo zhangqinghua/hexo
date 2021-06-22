@@ -898,3 +898,32 @@ http://www.520mwx.com/view/28965
 原因：MySQL8 的密码方式更改了。
 解决：修改 MySQL8 的密码加密方式，参考章节「MySQL 安装」。
 
+**brew 安装 sysbench 失败，提示 tar: Error opening archive: Failed to open**
+场景：brew 安装 sysbench 失败：
+
+```bash
+zhangqinghua$ brew install sysbench
+==> Downloading https://mirrors.ustc.edu.cn/homebrew-bottles/bottles/mysql-client-8.0.23.mojave.bottle.tar.gz
+
+...
+...
+
+==> Pouring mysql-client-8.0.23.mojave.bottle.tar.gz
+tar: Error opening archive: Failed to open '/Users/zhangqinghua/Library/Caches/Homebrew/downloads/0c828216cf1a2ea8ac2f76b33f5dc315b1578a16bc40d69cce682aa92de7c736--mysql-client-8.0.23.mojave.bottle.tar.gz'
+Error: Failure while executing; `tar --extract --no-same-owner --file /Users/zhangqinghua/Library/Caches/Homebrew/downloads/0c828216cf1a2ea8ac2f76b33f5dc315b1578a16bc40d69cce682aa92de7c736--mysql-client-8.0.23.mojave.bottle.tar.gz --directory /private/tmp/d20210622-79208-1y47sg1` exited with 1. Here's the output:
+tar: Error opening archive: Failed to open '/Users/zhangqinghua/Library/Caches/Homebrew/downloads/0c828216cf1a2ea8ac2f76b33f5dc315b1578a16bc40d69cce682aa92de7c736--mysql-client-8.0.23.mojave.bottle.tar.gz'
+```
+
+但是相关目录下是有这个文件的，只是不同名称：
+
+```bash
+zhangqinghua$ ls -l
+total 188792
+-rw-r--r--  1 zhangqinghua  staff      4461  6 22 15:26 10b75262d7e1e36c8180cbe36adc6d9bd79edc03896b5ea80516b62991e3f392--sysbench-1.0.20.bottle_manifest.json
+-rw-r--r--  1 zhangqinghua  staff  44401100  4  7 21:18 297cebb4af5c679c465456d920559ca3f705660acef744a22bb0fa6a807cb741--mysql-client--8.0.23.mojave.bottle.tar.gz
+-rw-r--r--  1 zhangqinghua  staff      5508  6 22 15:39 2aacccd22d2992abf78ca90e4a3f0a41dcbcba203986305872d686f14541d33e--mysql-client-8.0.23.bottle_manifest.json
+```
+
+原因：Bug？？？
+
+解决：将文件名称改成为 0c828216cf1a2ea8ac2f76b33f5dc315b1578a16bc40d69cce682aa92de7c736--mysql-client-8.0.23.mojave.bottle.tar.gz。
