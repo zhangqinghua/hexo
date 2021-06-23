@@ -7,6 +7,12 @@ categories:
 
 date: 2021-05-13 07:00:06
 ---
+## 限制 DevOps 运行在指定节点
+
+参考：[为依赖项缓存设置 CI 节点](https://kubesphere.com.cn/docs/devops-user-guide/how-to-use/set-ci-node/)
+
+> 经过测试不能指定在 master 节点上。
+
 ## Vue 应用
 大体流程：
 1. 将 Vue 项目编译成为 dist 文件；

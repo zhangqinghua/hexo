@@ -24,6 +24,27 @@ zhangqinghua$ sudo setenforce 0 && sudo sed -i "s/SELINUX=enforcing/SELINUX=disa
 zhangqinghua$ sudo swapoff -a && sudo yes | cp /etc/fstab /etc/fstab_bak && sudo cat /etc/fstab_bak |grep -v swap > /etc/fstab
 ```
 
+#### 卸载 K8s
+参考：[卸载清理K8s环境](https://blog.csdn.net/qq_36246184/article/details/109158027)
+
+#### 卸载 Docker
+
+```bash
+# 查看已经安装的docker安装包,列出入校内容
+zhangqinghua$ rpm -qa|grep docker
+docker.x86_64 2:1.12.6-16.el7.centos @extras
+docker-client.x86_64 2:1.12.6-16.el7.centos @extras
+docker-common.x86_64 2:1.12.6-16.el7.centos @extra
+
+# 分别删除
+zhangqinghua$ yum -y remove docker.x86_64
+zhangqinghua$ yum -y remove docker-client.x86_64
+zhangqinghua$ yum -y remove docker-common.x86_64
+
+# 删除 Docker 镜像
+zhangqinghua$ rm -rf /var/lib/docker
+```
+
 #### 安装 Docker
 需要在 Master 节点和 Node 节点执行以下操作：
 
@@ -37,7 +58,7 @@ zhangqinghua$ sudo dnf install -y \
 https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm
 
 # 安装 Docker（由于kubeadm对Docker的版本是有要求的，需要安装与Kubernetes匹配的版本）
-zhangqinghua$ sudo yum install -y docker-ce-18.09.7 docker-ce-cli-18.09.7 containerd.io
+zhangqinghua$ sudo yum install -y docker-ce-20.10.6 docker-ce-cli-20.10.6 containerd.io
 
 # 设置默认启动
 zhangqinghua$ sudo systemctl enable docker & sudo systemctl start docker
@@ -59,8 +80,8 @@ gpgkey=http://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg
        http://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
 EOF
 
-# 安装 Kubernetes
-zhangqinghua$ sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+# 安装 Kubernetes（这里使用1.17.3版本，要兼容Docker）
+zhangqinghua$ sudo yum install -y kubelet-1.17.3 kubeadm-1.17.3 kubectl-1.17.3 --disableexcludes=kubernete
 
 # 设置默认启动
 zhangqinghua$ sudo systemctl enable --now kubelet
@@ -428,3 +449,6 @@ To see the stack trace of this error execute with --v=5 or higher
 
 原因：Master 节点的防火墙开了，导致从节点连不上。
 解决：关掉 Master 的防火墙。
+
+**yum 安装 Docker 失败：Error: Unable to find a match: docker-ce**
+场景：

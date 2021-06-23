@@ -7,6 +7,34 @@ categories:
 
 date: 2021-05-07
 ---
+## 创建
+#### 创建并初始化 Map
+**1. static 块初始化**
+
+```java
+private static final Map<String, String> myMap;
+static {
+   myMap = new HashMap<String, String>();
+   myMap.put("a", "b");
+   myMap.put("c", "d");
+}
+```
+
+**2. 双括号初始化 （匿名内部类）**
+
+```java
+HashMap<String, String > h = new HashMap<String, String>(){{
+      put("a","b");    
+}};
+```
+
+**3. Guava**
+
+```java
+Map<String, Integer> left = ImmutableMap.of("a", 1, "b", 2, "c", 3);
+```
+
+> ImmutableMap 的值不能为null，否则会报 null value in entry: b=null。
 
 ## 排序
 #### 简单类型排序

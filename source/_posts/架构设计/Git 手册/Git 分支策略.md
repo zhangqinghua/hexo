@@ -45,7 +45,7 @@ Release 分支用来做版本发布的预发布分支，建议命名为 release-
 
 Hotfix 分支是用来做线上的紧急 bug 修复的分支,建议命名为 hotfix-xxx。当线上某个版本出现了问题，将检出对应版本的代码，创建 Hotfix 分支，问题修复后，合并回 master 和 develop ，然后删除自己。这里注意，合并到 master 的时候，也要打上修复后的版本标签。
 
-![](https://pic3.zhimg.com/80/v2-d9cac24cd7dced55b83d543a9cc173ca_720w.jpg)
+![](https://cdn.jsdelivr.net/gh/zhangqinghua/hexo_image/20210623094231.png)
 
 图中画了 Git Flow 的五种分支，master，develop，feature ,release , hoxfixes，其中 master 和 develop 字体被加粗代表主要分支。master 分支每合并一个分支，无论是 hotfix 还是 release ,都会打一个版本标签。通过箭头可以清楚的看到分支的开始和结束走向，例如 feature 分支从 develop 开始，最终合并回 develop ，hoxfixes 从 master 检出创建，最后合并回 develop 和 master，master 也打上了标签。
 
