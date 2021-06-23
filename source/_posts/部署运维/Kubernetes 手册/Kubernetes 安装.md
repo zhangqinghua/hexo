@@ -451,4 +451,18 @@ To see the stack trace of this error execute with --v=5 or higher
 解决：关掉 Master 的防火墙。
 
 **yum 安装 Docker 失败：Error: Unable to find a match: docker-ce**
-场景：
+场景：Centos8 使用 yum 安装 Docker 18.7 失败，提示找不到镜像。
+原因：版本太老，换新的。
+解决：换新一点的版本。
+
+```bash
+zhangqinghua$ yum list docker-ce --showduplicates | sort -r
+Failed to set locale, defaulting to C
+docker-ce.x86_64            3:19.03.4-3.el7                     docker-ce-stable
+docker-ce.x86_64            3:19.03.3-3.el7                     docker-ce-stable
+docker-ce.x86_64            3:19.03.2-3.el7                     docker-ce-stable
+docker-ce.x86_64            3:19.03.1-3.el7                     docker-ce-stable
+docker-ce.x86_64            3:19.03.0-3.el7                     docker-ce-stable
+
+zhangqinghua$ sudo yum install -y docker-ce-19.03.4 ...............
+```
