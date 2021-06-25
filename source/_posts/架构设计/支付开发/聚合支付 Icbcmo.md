@@ -1108,6 +1108,7 @@ zhangqinghua$ curl https://app.icbcmo.site/api/v1/order?amount=7&channel=WechatM
     "retCode": "500", 
     "msg": "獲取商戶信息出現異常. query merchant is abnormal"
 }
+// 商户号错误？？？？
 {
     "code": "9999", 
     "retCode": "400", 

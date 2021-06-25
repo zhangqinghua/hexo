@@ -248,7 +248,14 @@ x509: certificate is valid for 10.96.0.1, 172.18.255.243, not 内网IP
 # 172.25.25.244 为内网IP
 zhangqinghua$ sudo kubeadm init  --apiserver-advertise-address=47.242.9.184 --apiserver-cert-extra-sans=172.25.25.244
 ```
-参考：https://www.cnblogs.com/huhyoung/p/9738126.html
+
+最新：这个能解决。。。。。。
+```bash
+zhangqinghua$ echo export KUBECONFIG=/etc/kubernetes/kubelet.conf >> ~/.bashrc
+zhangqinghua$ source ~/.bashrc
+```
+
+参考：[k8s提示Unable to connect to the server: x509](https://www.cnblogs.com/lfl17718347843/p/14122407.html)
 
 #### 证书修复
 修复验证后，执行 kubectl 命令会报错。

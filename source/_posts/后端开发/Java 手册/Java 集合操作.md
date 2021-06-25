@@ -7,35 +7,6 @@ categories:
 
 date: 2021-05-07
 ---
-## 创建
-#### 创建并初始化 Map
-**1. static 块初始化**
-
-```java
-private static final Map<String, String> myMap;
-static {
-   myMap = new HashMap<String, String>();
-   myMap.put("a", "b");
-   myMap.put("c", "d");
-}
-```
-
-**2. 双括号初始化 （匿名内部类）**
-
-```java
-HashMap<String, String > h = new HashMap<String, String>(){{
-      put("a","b");    
-}};
-```
-
-**3. Guava**
-
-```java
-Map<String, Integer> left = ImmutableMap.of("a", 1, "b", 2, "c", 3);
-```
-
-> ImmutableMap 的值不能为null，否则会报 null value in entry: b=null。
-
 ## 排序
 #### 简单类型排序
 #### 对象类型排序，未实现 Comparable
@@ -161,3 +132,63 @@ public static List removeDuplicationByStream(List<Integer> list) {
 无序 `HashSet`，有序 `TreeSet`。
 
 #### 复杂数据类型
+
+## Map 专题
+#### 创建并初始化 Map
+**1. static 块初始化**
+
+```java
+private static final Map<String, String> myMap;
+static {
+   myMap = new HashMap<String, String>();
+   myMap.put("a", "b");
+   myMap.put("c", "d");
+}
+```
+
+**2. 双括号初始化 （匿名内部类）**
+
+```java
+HashMap<String, String > h = new HashMap<String, String>(){{
+      put("a","b");    
+}};
+```
+
+**3. Guava**
+
+```java
+Map<String, Integer> left = ImmutableMap.of("a", 1, "b", 2, "c", 3);
+```
+
+> ImmutableMap 的值不能为null，否则会报 null value in entry: b=null。
+
+#### 动态指定 Map 泛型
+Map 如果没有指定泛型，则取第一个输入的类型作为泛型。
+
+```java
+public static <T> T parseObject(TypeReference<T> type) {
+   Map map = new TreeMap<>();
+   map.put("123", BigDecimal.valueOf(10));
+   map.put(LocalDate.now(), BigDecimal.valueOf(10));
+
+   return (T) map;
+}
+
+public static void main(String[] args) {
+   TreeMap<LocalDate, BigDecimal> map = parseObject(new TypeReference<TreeMap<LocalDate, BigDecimal>>() {});
+
+   System.out.println(map.get(LocalDate.now()));
+}
+
+===============
+Exception in thread "main" java.lang.ClassCastException: java.lang.String cannot be cast to java.time.chrono.ChronoLocalDate
+	at java.time.LocalDate.compareTo(LocalDate.java:137)
+	at java.util.TreeMap.put(TreeMap.java:568)
+	at com.easybyte.api.sys.feign.RequestFeignProxy.parseObject(RequestFeignProxy.java:279)
+	at com.easybyte.api.sys.feign.RequestFeignProxy.main(RequestFeignProxy.java:285)
+```
+
+#### JSON 转成指定类型的泛型
+```java
+TreeMap<LocalDate, BigDecimal> map = <JSONObject.parseObject(String.valueOf(resultParam.getValue()), new TypeReference<TreeMap<LocalDate, BigDecimal>>() {});
+```

@@ -76,11 +76,26 @@ Switched to branch '3.0'
 ```
 
 ## 合并分支
-#### 在当前分支合并
+将分支 dev 合并到当前分支中，自动进行新的提交：
+
 ```bash
-zhangqinghua$ git merge 3.0
-Already up to date.
+zhangqinghua$ git merge dev
 ```
+
+将分支 dev 合并到当前分支中，但不要自动进行新的提交：
+
+```bash
+zhangqinghua$ git merge --no-commit dev
+```
+
+合并分支fixes和enhancements在当前分支的顶部，使它们合并：
+
+```bash
+zhang
+```
+
+#### 在当前分支合并
+
 
 ## 推送分支
 #### 推送到远程指定分支
