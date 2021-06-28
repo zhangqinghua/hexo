@@ -13,7 +13,7 @@ date: 2021-05-13 07:00:06
 
 > 经过测试不能指定在 master 节点上。
 
-## Vue 应用
+## 构建 Vue 应用流水线
 大体流程：
 1. 将 Vue 项目编译成为 dist 文件；
 1. 将 dist 打包成为 Docker Nginx 镜像；
@@ -198,7 +198,7 @@ spec:
       maxUnavailable: 100%
 ```
 
-## SpringCloud 应用
+## 构建 SpringCloud 应用流水线
 
 #### jenkins 配置
 单模块部署：
@@ -227,7 +227,11 @@ pipeline {
                      'easybyte-consumer',
                      'easybyte-template',
                      'easybyte-scheduled'],
-                     description: '选择部署的模块')
+           description: '选择部署的模块');
+                     
+    choice(name: 'GIT_BRANCH',
+           choices: ['develop', 'release','master'],
+           description: '选择部署的分支')
   }
 
   environment {
@@ -241,7 +245,7 @@ pipeline {
     // 代码仓库地址
     GIT_URL = 'https://code.aliyun.com/easybyte-java/easybyte.git'
     // 代码版本
-    GIT_BRANCH = 'master'
+    // GIT_BRANCH = 'master'
     // 代码凭证
     GIT_CREDENTIAL = 'aliyuncode-credential'
 
@@ -341,6 +345,11 @@ def MODULES = ['easybyte-log',
                'easybyte-scheduled'];
 
 pipeline {
+  parameters {
+    choice(name: 'GIT_BRANCH',
+           choices: ['develop', 'release', 'master'],
+           description: '选择部署的分支')
+  }
   environment {
     // 项目版本
     APP_VERSION = sh(script: "echo `date '+%Y%m%d%H%M%S'`", returnStdout: true).trim()
@@ -352,7 +361,7 @@ pipeline {
     // 代码仓库地址
     GIT_URL = 'https://code.aliyun.com/easybyte-java/easybyte.git'
     // 代码版本
-    GIT_BRANCH = 'master'
+    // GIT_BRANCH = 'master'
     // 代码凭证
     GIT_CREDENTIAL = 'aliyuncode-credential'
 
