@@ -85,6 +85,10 @@ zhangqinghua$ sudo yum install -y kubelet-1.17.3 kubeadm-1.17.3 kubectl-1.17.3 -
 
 # 设置默认启动
 zhangqinghua$ sudo systemctl enable --now kubelet
+
+# 查看开机状态
+zhangqinghua$ systemctl list-unit-files | grep kubelet
+kubelet.service                            enabled 
 ```
 
 #### Master 节点初始化
