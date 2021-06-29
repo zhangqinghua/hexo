@@ -175,8 +175,8 @@ zhangqinghua$ mvn clean deploy
    <repositories>
       <repository>
          <id>maven-repo</id>
-         <!-- 格式是 https://raw.githubusercontent.com/[github 用户名]/[github 仓库名]/[分支名]/repository -->
-         <url>https://raw.githubusercontent.com/rxliuli/maven-repository-example/mvn-repo/repository</url>
+         <!-- 格式是 https://raw.github.com/[github 用户名]/[github 仓库名]/[分支名] -->
+         <url>https://raw.github.com/rxliuli/maven-repository-example/mvn-repo</url>
       </repository>
    </repositories>
 </project>>
