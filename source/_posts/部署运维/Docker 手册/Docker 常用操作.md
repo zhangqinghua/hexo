@@ -7,6 +7,12 @@ categories:
 
 date: 2021-04-22
 ---
+#### 批量删除镜像
+参考：[docker批量删除镜像](https://blog.csdn.net/benben_2015/article/details/90081468)
+
+```bash
+zhangqinghua$ docker rmi -f $(docker images | grep "none" | awk '{print $3}')
+```
 
 #### 修改容器启动配置参数
 有时候，我们创建容器时忘了添加参数 `--restart=always`，当 Docker 重启时，容器未能自动启动。现在要添加该参数怎么办呢，方法有二：
