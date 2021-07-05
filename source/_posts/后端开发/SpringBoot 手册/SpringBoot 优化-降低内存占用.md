@@ -13,3 +13,5 @@ date: 2021-05-23
 参考：[Java微服务内存占用分析](https://blog.csdn.net/lgxzzz/article/details/103220202)
 
 我这边测试是降低20%左右，一个 314MB 的微服务，可以降到 250MB 左右。
+
+> 经过测试，这个 jre 在某些场景下会报错：Caused by: java.lang.NoClassDefFoundError: jdk/nashorn/internal/runtime/Debug
