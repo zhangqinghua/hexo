@@ -15,3 +15,8 @@ date: 2021-05-23
 我这边测试是降低20%左右，一个 314MB 的微服务，可以降到 250MB 左右。
 
 > 经过测试，这个 jre 在某些场景下会报错：Caused by: java.lang.NoClassDefFoundError: jdk/nashorn/internal/runtime/Debug
+
+## SpringBoot 应用内存分析
+#### 企业级应用内存占用
+
+![](https://cdn.jsdelivr.net/gh/zhangqinghua/hexo_image/20210706112445.png)

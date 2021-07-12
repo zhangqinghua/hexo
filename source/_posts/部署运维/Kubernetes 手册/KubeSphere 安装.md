@@ -648,3 +648,11 @@ zhangqinghua$ kubectl logs -f jaeger-query-b478c5655-sjqnb jaeger-query -n istio
 参考：https://kubesphere.com.cn/forum/d/4823-istio-system/8
 
 参考：https://kubesphere.com.cn/docs/faq/observability/logging/
+
+#### 查看安装日志报错
+场景：查看 kubectl logs 提示没有权限。
+
+```bash
+zhangqinghua$ kubectl logs -n kubesphere-system $(kubectl get pod -n kubesphere-system -l app=ks-install -o jsonpath='{.items[0].metadata.name}') -f
+Error from server (Forbidden): pods "ks-installer-76b9558dd6-4n95g" is forbidden: User "system:node:kube-master" cannot get resource "pods/log" in API group "" in the namespace "kubesphere-system"
+```

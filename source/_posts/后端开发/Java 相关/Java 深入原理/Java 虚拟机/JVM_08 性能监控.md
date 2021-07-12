@@ -408,7 +408,31 @@ Full thread dump Java HotSpot(TM) 64-Bit Server VM (24.71-b01 mixed mode):
 
 [参考](https://www.cnblogs.com/ityouknow/p/5714703.html)
 
-## 问题
+## 常见问题
+## 使用 jinfo 打印 Java 进程信息时报错：Can't attach symbolicator to the process
+场景：在 Mac 上使用 jinfo 打印 Java 进程信息时报错，当使用 sudo 命令时提示安装 JDK。
+
+```bash
+zhangqinghua$ jinfo 21277
+Attaching to process ID 21277, please wait...
+Error attaching to process: sun.jvm.hotspot.debugger.DebuggerException: Can't attach symbolicator to the process
+sun.jvm.hotspot.debugger.DebuggerException: sun.jvm.hotspot.debugger.DebuggerException: Can't attach symbolicator to the process
+	at sun.jvm.hotspot.debugger.bsd.BsdDebuggerLocal$BsdDebuggerLocalWorkerThread.execute(BsdDebuggerLocal.java:169)
+   ...
+
+zhangqinghua$ sudo jinfo 21425
+Password:
+No Java runtime present, requesting install.
+
+```
+
+![](https://cdn.jsdelivr.net/gh/zhangqinghua/hexo_image/20210706102751.png)
+
+原因：
+
+
+
+## 面试题
 JVM相关的分析工具有使用过哪些？具体的性能调优步骤吗？
 
 讲一下 OOM 以及遇到这种情况怎么处理的，是否使用过日志分析工具
