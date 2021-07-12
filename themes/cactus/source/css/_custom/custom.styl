@@ -1,3 +1,8 @@
+/*body宽度为900px*/
+.max-width {
+   max-width: 60.25rem !important;
+}
+
 /*表格，等长*/
 table {
   table-layout: fixed;
@@ -20,7 +25,6 @@ ol > li > p {
 
 /*缩小边距（代码框、li等）*/
 .highlight {
-  margin: 0 -0.5rem !important;
   padding: 0px 0 !important;
 }
 
@@ -48,16 +52,16 @@ body table {
 
 /*图片固定宽度*/
 article .content img, article .content video {
-  width: 102% !important;
-  margin: -9px !important;
-  padding-top: 9px !important;
+  width: 100% !important;
   max-width: none !important; 
 }
 
 /*滚动条背景透明*/
 figure::-webkit-scrollbar {
-  background-color: rgba(100, 1, 1, 0);
+  /*background-color: rgba(100, 1, 1, 0);*/
+  height: 0px;
 }
+
 
 /*概要缩小边框*/
 article .content blockquote {
@@ -67,7 +71,17 @@ article .content blockquote {
   padding: 0.5em 0 !important;
 }
 
-/*代码优化*/
+/*代码优化 100%宽度*/
+.highlight {
+   /*底部留下1rem距离*/
+   margin: 0 0 1rem 0 !important; 
+   width: 100% !important;
+}
+
+/*代码优化 去掉代码行数*/
+.highlight td.gutter {
+   display: none !important;
+}
 .highlight .code pre {
   font-size: 14px !important;
 }
